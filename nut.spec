@@ -10,7 +10,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.0
-Release: 5
+Release: 6
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -82,6 +82,9 @@ necessary to develop NUT client applications.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
+
+iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
+mv man/newhidups.8_ man/newhidups.8
 
 %build
 %configure \
@@ -248,6 +251,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Thu Nov 25 2004 Miloslav Trmac <mitr@redhat.com> - 2.0.0-6
+- Convert newhidups.8 to UTF-8
+
 * Tue Oct 05 2004 Than Ngo <than@redhat.com> 2.0.0-5
 - more buildrequires
 - don't build on s390/s390x
