@@ -10,10 +10,10 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.0
-Release: 6
+Release: 7
 Group: Applications/System
 License: GPL
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
+BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
 Url: http://us2.networkupstools.org/
 Source: http://us2.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
 Source1: ups.init
@@ -37,7 +37,10 @@ BuildPrereq: net-snmp-devel
 BuildPrereq: elfutils-devel
 BuildPrereq: XFree86-devel
 BuildPrereq: libjpeg-devel
+
+%ifnarch s390 s390x
 BuildPrereq: libusb-devel
+%endif
 
 ExcludeArch: s390 s390x
 
@@ -251,6 +254,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Wed Dec 08 2004 Than Ngo <than@redhat.com> 2.0.0-7
+- don't requires libusb-devel on s390/s390x
+- add %%{release} in buildroot 
+
 * Thu Nov 25 2004 Miloslav Trmac <mitr@redhat.com> - 2.0.0-6
 - Convert newhidups.8 to UTF-8
 
