@@ -4,7 +4,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 0.45.4
-Release: 4
+Release: 5
 Group: Applications/System
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
@@ -12,6 +12,7 @@ Source2: ups.sysconfig
 Patch0: nut-0.45.3-buildroot.patch
 Patch1: nut-0.45.2-config.patch
 Patch2: nut-0.45.0-conffiles.patch
+Patch3: nut-0.45.4-conf.patch
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: nut-client
@@ -50,6 +51,7 @@ browser.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .config
 %patch2 -p1 -b .conf
+%patch3 -p1 -b .conf1
 
 %build
 %configure \
@@ -131,6 +133,9 @@ rm -rf %{buildroot}
 %{cgidir}/*
 
 %changelog
+* Wed Jul 31 2002 Than Ngo <than@redhat.com> 0.45.4-5
+- Fixed wrong CMDSCRIPT (bug #69817)
+
 * Fri Jun 21 2002 Tim Powers <timp@redhat.com>
 - automated rebuild
 
