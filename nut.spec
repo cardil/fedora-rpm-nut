@@ -10,7 +10,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.0
-Release: 4
+Release: 5
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -36,6 +36,8 @@ BuildPrereq: libpng-devel
 BuildPrereq: net-snmp-devel
 BuildPrereq: elfutils-devel
 BuildPrereq: XFree86-devel
+BuildPrereq: libjpeg-devel
+BuildPrereq: libusb-devel
 
 %description
 These programs are part of a developing project to monitor the assortment 
@@ -244,6 +246,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Tue Oct 05 2004 Than Ngo <than@redhat.com> 2.0.0-5
+- more buildrequires
+
 * Thu Aug 26 2004 Nalin Dahyabhai <nalin@redhat.com> 2.0.0-4
 - fix syntax error in -client postun scriptlet (#131040)
 
