@@ -10,7 +10,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.0
-Release: 3
+Release: 4
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -155,7 +155,7 @@ exit 0
 if [ "$1" -ge "1" ]; then
     /sbin/service ups condrestart > /dev/null 2>&1
 fi
-exit0
+exit 0
 
 %clean
 rm -rf %{buildroot}
@@ -244,6 +244,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Thu Aug 26 2004 Nalin Dahyabhai <nalin@redhat.com> 2.0.0-4
+- fix syntax error in -client postun scriptlet (#131040)
+
 * Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
 - rebuilt
 
