@@ -1,0 +1,202 @@
+%define initdir /etc/rc.d/init.d
+%define cgidir  /var/www/nut-cgi-bin
+Summary: Network UPS Tools
+Name: nut
+Version: 0.44.0
+Release: 4
+Group: Applications/System
+Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
+Source1: ups.init
+Source2: ups.sysconfig
+Patch0: nut-0.44.0-buildroot.patch
+Patch1: nut-0.44.0-config.patch
+License: GPL
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+Requires: nut-client
+Prereq: fileutils /sbin/chkconfig /sbin/service
+BuildPrereq: gd-devel
+
+%description
+These programs are part of a developing project to monitor the assortment 
+of UPSes that are found out there in the field. Many models have serial 
+serial ports of some kind that allow some form of state checking. This
+capability has been harnessed where possible to allow for safe shutdowns, 
+live status tracking on web pages, and more.
+
+%package client
+Group: Applications/System
+Summary: Network UPS Tools client monitoring utilities
+Prereq: chkconfig
+
+%description client
+This package includes the client utilities that are required to monitor a
+ups that the client host has access to, but where the UPS is physically
+attached to a different computer on the network.
+
+%package cgi
+Group: Applications/System
+Summary: CGI utilities for the Network UPS Tools
+Requires: webserver
+
+%description cgi
+This package includes CGI programs for accessing UPS status via a web
+browser.
+ 
+%prep
+%setup -q
+# remove chown /var/lib/state so that we don't have to build rpms as root.
+%patch0 -p1 -b .buildroot
+%patch1 -p0 -b .config
+
+
+%build
+%configure \
+    --with-uid=`id -u nobody` \
+    --with-gid=`id -g nobody` \
+    --with-statepath=%{_localstatedir}/lib/ups \
+    --sysconfdir=%{_sysconfdir}/ups \
+    --with-cgipath=%{cgidir}
+
+make
+
+%install
+rm -rf %{buildroot}
+
+make install install-cgi INSTALLROOT=%{buildroot}
+mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
+install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
+
+mkdir -p %{buildroot}%{_localstatedir}/lib/ups
+
+# install SYSV init stuff
+mkdir -p %{buildroot}%{initdir}
+install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
+
+%post client
+/sbin/chkconfig --add ups
+
+%preun client
+if [ "$1" = "0" ]; then
+    /sbin/service ups stop > /dev/null 2>&1
+    /sbin/chkconfig --del ups
+fi
+
+%postun client
+if [ "$1" -ge "1" ]; then
+    /sbin/service ups condrestart > /dev/null 2>&1
+fi
+
+%clean
+rm -rf %{buildroot}
+
+%files
+%defattr(-,root,root)
+%doc COPYING CREDITS Changes QUICKSTART README docs
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
+%{_bindir}/apcsmart
+%{_bindir}/bestups
+%{_bindir}/fentonups
+%{_bindir}/genericups
+%{_bindir}/optiups
+%{_bindir}/ups-trust425+625
+%{_bindir}/upsd
+%{_bindir}/upslog
+
+%files client
+%defattr(-,root,root)
+%attr(755,root,root) %{initdir}/ups
+%config(noreplace) %{_sysconfdir}/ups/hosts.conf
+%config(noreplace) %{_sysconfdir}/ups/multimon.conf
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.conf
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsmon.conf
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsset.passwd
+%dir %attr(755,nobody,nobody) %{_localstatedir}/lib/ups
+%{_bindir}/upsc
+%{_bindir}/upscmd
+%{_bindir}/upsct
+%{_bindir}/upsct2
+%{_bindir}/upsmon
+
+%files cgi
+%defattr(-,root,root)
+%{cgidir}/*
+
+
+%changelog
+* Tue Aug 01 2000 Than Ngo <than@redhat.de>
+- rebuilt with Michael changes
+
+* Mon Jul 31 2000 Michael Stefaniuc <mstefani@redhat.com>
+- changed /etc/sysconfig/ups to adress the changes in 0.44.0
+- moved /etc/sysconfig/ups to the server package
+- changed the initscript
+- small config file patch
+
+* Fri Jul 28 2000 Than Ngo <than@redhat.de>
+- fixed initscripts so that condrestart doesn't return 1 when the test fails
+
+* Mon Jul 24 2000 Than Ngo <than@redhat.de>
+- nut CGIs is disable as default (Bug #14282)
+
+* Tue Jul 18 2000 Than Ngo <than@redhat.de>
+- update to 0.44.0
+- inits back to rc.d/init.d, using service to fire them up
+
+* Wed Jul 12 2000 Than Ngo <than@redhat.de>
+- fix initscript and specfile, it should work with 6.x and 7.x
+- add --with-statepath and --sysconfdir to %configure (thanks Michael)
+
+* Sat Jul 08 2000 Than Ngo <than@redhat.de>
+- add Prereq: /etc/init.d
+
+* Tue Jun 27 2000 Than Ngo <than@redhat.de>
+- don't prereq, only require initscripts
+
+* Mon Jun 26 2000 Than Ngo <than@redhat.de>
+- /etc/rc.d/init.d -> /etc/init.d
+- prereq initscripts >= 5.20
+
+* Fri Jun 16 2000 Bill Nottingham <notting@redhat.com>
+- don't run by default
+
+* Mon Jun 12 2000 Preston Brown <pbrown@redhat.com>
+- adopted for Winston.  Use our new path macros.
+- change nocgi pkg to a cgi pkg (inclusive rather than exclusive).
+- new init script
+
+* Sat May 06 2000 <bo-rpm@vircio.com> (0.43.2-1)
+- Updated Package to new release
+
+* Thu Jan 20 2000 <bo-rpm@vircio.com> (0.42.2-1)
+- Updated package to new release
+- Dropped bestups patch since that is fixed in 0.42.2
+
+* Sat Dec 18 1999 <bo-rpm@vircio.com> (0.42.1-4)
+- Package now uses chkconfig
+
+* Sat Dec 18 1999 <bo-rpm@vircio.com> (0.42.1-3)
+- applied an improved patch to deal with the 
+  bestups string length issue.
+
+* Sat Dec 11 1999 <bo-rpm@vircio.com> (0.42.1-1)
+- fixed string length in bestups.c line 279.
+
+* Sat Dec 11 1999 <bo-rpm@vircio.com> (0.42.1-1)
+- upgraded package to 0.42.1 from 0.42.0
+
+* Mon Dec 6 1999 <bo-rpm@vircio.com> (0.42.0-8)
+- added requirement of nut-client for nut.
+
+* Mon Dec 6 1999 <bo-rpm@vircio.com> (0.42.0-7)
+- removed overlapping files between the nut and nut-client rpms
+
+* Mon Nov 23 1999 <bo-rpm@vircio.com> (0.42.0-6)
+- stop ups before uninstalling
+
+* Mon Nov 23 1999 <bo-rpm@vircio.com> (0.42.0-5)
+- build against gd 1.6.3
+
+* Thu Nov 03 1999 <bo-rpm@vircio.com> (0.42.0-4)
+- Initial build of nut (well almost).
+- Removed chmod from the make file so that the package
+  does not have to be built as root.....
