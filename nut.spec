@@ -9,8 +9,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 1.4.1
-Release: 3
+Version: 2.0.0
+Release: 1
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -33,6 +33,8 @@ BuildPrereq: gd-devel
 BuildPrereq: freetype-devel
 BuildPrereq: netpbm-devel
 BuildPrereq: libpng-devel
+BuildPrereq: net-snmp-devel
+BuildPrereq: elfutils-devel
 
 %description
 These programs are part of a developing project to monitor the assortment 
@@ -88,9 +90,9 @@ necessary to develop NUT client applications.
     --with-gd-libs \
     --with-linux-hiddev=/usr/include/linux/hiddev.h
 
-make %{?smp_mflags}
-make %{?smp_mflags} -C drivers hidups
-make %{?smp_mflags} -C drivers energizerups
+make %{?_smp_mflags}
+make %{?_smp_mflags} snmp
+make %{?_smp_mflags} usb
 
 %install
 rm -rf %{buildroot}
@@ -100,7 +102,11 @@ mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_localstatedir}/lib/ups \
          %{buildroot}%{initdir}
 
-make install install-cgi install-misc DESTDIR=%{buildroot}
+make install install-conf \
+     install-cgi-conf \
+     install-cgi \
+     install-usb \
+     install-snmp DESTDIR=%{buildroot}
 
 install -m 755 drivers/hidups %{buildroot}%{modeldir}/
 install -m 755 drivers/dummycons %{buildroot}%{modeldir}/
@@ -135,24 +141,27 @@ rm -rf %{buildroot}%{_includedir} \
 
 %post client
 /sbin/chkconfig --add ups
+exit 0
 
 %preun client
 if [ "$1" = "0" ]; then
     /sbin/service ups stop > /dev/null 2>&1
     /sbin/chkconfig --del ups
 fi
+exit 0
 
 %postun client
 if [ "$1" -ge "1" ]; then
     /sbin/service ups condrestart > /dev/null 2>&1
 fi
+exit0
 
 %clean
 rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%doc COPYING CREDITS CHANGES README docs
+%doc COPYING CREDITS CHANGES README docs UPGRADING
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.users
@@ -161,14 +170,13 @@ rm -rf %{buildroot}
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_datadir}/cmdvartab
+%{_datadir}/driver.list
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
 %{_mandir}/man8/apcsmart.8.gz
-%{_mandir}/man8/bcmxcp.8.gz
 %{_mandir}/man8/belkin.8.gz
 %{_mandir}/man8/bestups.8.gz
-%{_mandir}/man8/bestfortress.8.gz
 %{_mandir}/man8/bestuferrups.8.gz
 %{_mandir}/man8/cyberpower.8.gz
 %{_mandir}/man8/everups.8.gz
@@ -179,12 +187,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/liebert.8.gz
 %{_mandir}/man8/masterguard.8.gz
 %{_mandir}/man8/mge-utalk.8.gz
-%{_mandir}/man8/microdowell.8.gz
-%{_mandir}/man8/newapc.8.gz
 %{_mandir}/man8/nutupsdrv.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/powercom.8.gz
-%{_mandir}/man8/sec.8.gz
 %{_mandir}/man8/sms.8.gz
 %{_mandir}/man8/tripplite.8.gz
 %{_mandir}/man8/tripplitesu.8.gz
@@ -192,10 +197,14 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsd.8.gz
 %{_mandir}/man8/upsdrvctl.8.gz
 %{_mandir}/man8/mge-shut.8.gz
-%{_mandir}/man8/dummycons.8.gz
 %{_mandir}/man8/energizerups.8.gz
 %{_mandir}/man8/safenet.8.gz
-%{_mandir}/man8/ferrups.8.gz
+%{_mandir}/man8/belkinunv.8.gz
+%{_mandir}/man8/cyberpower1100.8.gz
+%{_mandir}/man8/hidups.8.gz
+%{_mandir}/man8/ippon.8.gz
+%{_mandir}/man8/newhidups.8.gz
+%{_mandir}/man8/snmp-ups.8.gz
 
 %files client
 %defattr(-,root,root)
@@ -234,6 +243,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Fri Apr 02 2004 Than Ngo <than@redhat.com> 2.0.0-1
+- 2.0.0
+
 * Sat Feb 14 2004 Than Ngo <than@redhat.com> 1.4.1-3 
 - add some missing drivers
 
