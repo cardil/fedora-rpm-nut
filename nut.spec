@@ -2,14 +2,14 @@
 %define cgidir  /var/www/nut-cgi-bin
 Summary: Network UPS Tools
 Name: nut
-Version: 0.44.0
-Release: 4
+Version: 0.44.1
+Release: 5
 Group: Applications/System
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 Patch0: nut-0.44.0-buildroot.patch
-Patch1: nut-0.44.0-config.patch
+Patch1: nut-0.44.1-config.patch
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: nut-client
@@ -46,7 +46,7 @@ browser.
 %setup -q
 # remove chown /var/lib/state so that we don't have to build rpms as root.
 %patch0 -p1 -b .buildroot
-%patch1 -p0 -b .config
+%patch1 -p1 -b .config
 
 
 %build
@@ -123,6 +123,22 @@ rm -rf %{buildroot}
 
 
 %changelog
+* Fri Feb  9 2001 Than Ngo <than@redhat.com>
+- fixed typo (Bug #26535)
+
+* Tue Feb  6 2001 Trond Eivind Glomsrød <teg@redhat.com>
+- Fix some of the i18n
+- make it exit cleanly if not configured
+
+* Fri Jan 26 2001 Than Ngo <than@redhat.com>
+- initscript internationalisation
+
+* Thu Jan 11 2001 Than Ngo <than@redhat.com>
+- fixed init script error (bug #23525)
+
+* Sat Oct 21 2000 Than Ngo <than@redhat.com>
+- update to 0.44.1
+
 * Tue Aug 01 2000 Than Ngo <than@redhat.de>
 - rebuilt with Michael changes
 
