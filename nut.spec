@@ -10,12 +10,12 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.0
-Release: 1
+Release: 2
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
-
-Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
+Url: http://us2.networkupstools.org/
+Source: http://us2.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
@@ -35,6 +35,7 @@ BuildPrereq: netpbm-devel
 BuildPrereq: libpng-devel
 BuildPrereq: net-snmp-devel
 BuildPrereq: elfutils-devel
+BuildPrereq: XFree86-devel
 
 %description
 These programs are part of a developing project to monitor the assortment 
@@ -164,7 +165,7 @@ rm -rf %{buildroot}
 %doc COPYING CREDITS CHANGES README docs UPGRADING
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsd.conf
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.users
+%config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %{modeldir}/*
 %{_sbindir}/upsd
@@ -243,6 +244,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Mon May 10 2004 Than Ngo <than@redhat.com> 2.0.0-2
+- fixed permission problem, bug #122867
+
 * Fri Apr 02 2004 Than Ngo <than@redhat.com> 2.0.0-1
 - 2.0.0
 
