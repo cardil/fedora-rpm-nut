@@ -3,7 +3,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 0.45.0
-Release: 2
+Release: 3
 Group: Applications/System
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
@@ -17,7 +17,7 @@ License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: nut-client
 Prereq: fileutils /sbin/chkconfig /sbin/service
-BuildPrereq: gd-devel
+BuildPrereq: gd-devel, freetype-devel, netpbm-devel, libpng-devel
 
 %description
 These programs are part of a developing project to monitor the assortment 
@@ -147,6 +147,9 @@ rm -rf %{buildroot}
 %{cgidir}/*
 
 %changelog
+* Tue Jul 24 2001 Than Ngo <than@redhat.com> 0.45.0-3
+- fix build dependencies (bug #49858)
+
 * Fri Jul  6 2001 Than Ngo <than@redhat.com> 0.45.0-2
 - rebuild
 
