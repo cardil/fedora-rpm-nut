@@ -5,10 +5,12 @@
 %define cgidir  /var/www/nut-cgi-bin
 %define modeldir /sbin
 
+%define devel 0
+
 Summary: Network UPS Tools
 Name: nut
-Version: 1.2.0
-Release: 6
+Version: 1.4.0
+Release: 3
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -17,7 +19,7 @@ Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
-Patch0: nut-1.2.0-buildroot.patch
+Patch0: nut-1.4.0-buildroot.patch
 Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
 
@@ -58,42 +60,48 @@ Requires: webserver
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
 browser.
+
+%package devel
+Group: Development/Libraries
+Summary: Development files for NUT Client
+Requires: webserver
+
+%description devel
+This package contains the development header files and libraries
+necessary to develop NUT client applications.
  
 %prep
 %setup -q
-# remove chown /var/lib/state so that we don't have to build rpms as root.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
 
 %build
 %configure \
-    --with-cgi \
     --with-user=%{name} \
     --with-group=uucp \
     --with-statepath=%{_localstatedir}/lib/ups \
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
+    --with-cgi \
+    --with-gd-libs \
     --with-linux-hiddev=/usr/include/linux/hiddev.h
 
-make
-make -C drivers hidups
+make %{?smp_mflags}
+make %{?smp_mflags} -C drivers hidups
 
 %install
 rm -rf %{buildroot}
 
-mkdir -p %{buildroot}%{modeldir}
-make install install-cgi DESTDIR=%{buildroot}
+mkdir -p %{buildroot}%{modeldir} \
+         %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}%{_localstatedir}/lib/ups \
+         %{buildroot}%{initdir}
+
+make install install-cgi install-misc DESTDIR=%{buildroot}
 install -m 755 drivers/hidups %{buildroot}%{modeldir}/hidups
-
-mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
-
-mkdir -p %{buildroot}%{_localstatedir}/lib/ups
-
-# install SYSV init stuff
-mkdir -p %{buildroot}%{initdir}
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
 # rename
@@ -102,11 +110,21 @@ do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
 done
 
+%if !%{devel}
+rm -rf %{buildroot}%{_includedir} \
+       %{buildroot}%{_mandir}/man3/upscli_* \
+       %{buildroot}%{_libdir}/upsclient.o
+%endif
+
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 
 %pre client
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
+        -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
+
+%pre cgi
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 
@@ -130,39 +148,111 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %doc COPYING CREDITS CHANGES README docs
+%config(noreplace) %attr(444,root,root) %{_sysconfdir}/ups/ups.conf
+%config(noreplace) %attr(444,root,root) %{_sysconfdir}/ups/upsd.conf
+%config(noreplace) %attr(400,root,root) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %{modeldir}/*
 %{_sbindir}/upsd
 %{_bindir}/upslog
-%{_mandir}/man8/*
+%{_datadir}/cmdvartab
+%{_mandir}/man5/ups.conf.5.gz
+%{_mandir}/man5/upsd.conf.5.gz
+%{_mandir}/man5/upsd.users.5.gz
+%{_mandir}/man8/apcsmart.8.gz
+%{_mandir}/man8/bcmxcp.8.gz
+%{_mandir}/man8/belkin.8.gz
+%{_mandir}/man8/bestups.8.gz
+%{_mandir}/man8/bestferrups801-807.8.gz
+%{_mandir}/man8/bestfortress.8.gz
+%{_mandir}/man8/bestuferrups.8.gz
+%{_mandir}/man8/cyberpower.8.gz
+%{_mandir}/man8/everups.8.gz
+%{_mandir}/man8/etapro.8.gz
+%{_mandir}/man8/fentonups.8.gz
+%{_mandir}/man8/genericups.8.gz
+%{_mandir}/man8/hp.8.gz
+%{_mandir}/man8/isbmex.8.gz
+%{_mandir}/man8/liebert.8.gz
+%{_mandir}/man8/masterguard.8.gz
+%{_mandir}/man8/mge-utalk.8.gz
+%{_mandir}/man8/microdowell.8.gz
+%{_mandir}/man8/newapc.8.gz
+%{_mandir}/man8/nutupsdrv.8.gz
+%{_mandir}/man8/oneac.8.gz
+%{_mandir}/man8/powercom.8.gz
+%{_mandir}/man8/powernet.8.gz
+%{_mandir}/man8/sec.8.gz
+%{_mandir}/man8/sms.8.gz
+%{_mandir}/man8/snmp-ups.8.gz
+%{_mandir}/man8/tripplite.8.gz
+%{_mandir}/man8/tripplitesu.8.gz
+%{_mandir}/man8/victronups.8.gz
+%{_mandir}/man8/upsd.8.gz
+%{_mandir}/man8/upsdrvctl.8.gz
+%{_mandir}/man8/mge-shut.8.gz
 
 %files client
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
-%config(noreplace) %{_sysconfdir}/ups/hosts.conf
 %dir %{_sysconfdir}/ups
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/ups.conf
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.conf
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.users
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsmon.conf
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsset.conf
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upssched.conf
-%dir %attr(700,nut,nut) %{_localstatedir}/lib/ups
+%config(noreplace) %attr(400,nut,nut) %{_sysconfdir}/ups/upsmon.conf
+%config(noreplace) %attr(400,nut,nut) %{_sysconfdir}/ups/upssched.conf
+%dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
 %{_bindir}/upsc
 %{_bindir}/upscmd
 %{_bindir}/upsrw
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
 %{_sbindir}/upssched-cmd
-%{_mandir}/man5/*
+%{_mandir}/man5/upsmon.conf.5.gz
+%{_mandir}/man5/upssched.conf.5.gz
+%{_mandir}/man8/upsc.8.gz
+%{_mandir}/man8/upscmd.8.gz
+%{_mandir}/man8/upsrw.8.gz
+%{_mandir}/man8/upslog.8.gz
+%{_mandir}/man8/upsmon.8.gz
+%{_mandir}/man8/upssched.8.gz
 
 %files cgi
 %defattr(-,root,root)
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/hosts.conf
+%config(noreplace) %attr(600,nut,root) %{_sysconfdir}/ups/upsset.conf
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats.html
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats-single.html
 %{cgidir}/*
+%{_mandir}/man5/hosts.conf.5.gz
+%{_mandir}/man5/upsstats.html.5.gz
+%{_mandir}/man5/upsset.conf.5.gz
+%{_mandir}/man8/upsimage.cgi.8.gz
+%{_mandir}/man8/upsstats.cgi.8.gz
+%{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Wed Sep 24 2003 Mike McLean <mikem@redhat.com> 1.4.0-3
+- fixed 'nut' user problem with nut-cgi (bug#104872)
+
+* Mon Sep 15 2003 Than Ngo <than@redhat.com> 1.4.0-2
+- added missing hidups driver (bug #104412)
+
+* Tue Sep 09 2003 Than Ngo <than@redhat.com> 1.4.0-1
+- 1.4.0
+- fixed permission problem (bug #103023)
+- fixed rpm file list (bug #90848)
+- added support multiple drivers, thanks to Gilbert E. Detillieux (bug #79465)
+
+* Thu Jun 26 2003 Than Ngo <than@redhat.com> 1.2.2-3
+- Add variable to ups sysconfig file for upsd (bug #97900)
+
+* Wed Jun 04 2003 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Wed May  7 2003 Than Ngo <than@redhat.com> 1.2.2-1
+- 1.2.2
+
+* Tue May 06 2003 Phil Knirsch <pknirsch@redhat.com> 1.2.0-7
+- Bumped release and rebuilt because of new gd version.
+
 * Thu Feb 13 2003 Than Ngo <than@redhat.com> 1.2.0-6
 - build with correct userid #84199
 - fix directory permission
@@ -235,7 +325,7 @@ rm -rf %{buildroot}
 * Fri Feb  9 2001 Than Ngo <than@redhat.com>
 - fixed typo (Bug #26535)
 
-* Tue Feb  6 2001 Trond Eivind Glomsrød <teg@redhat.com>
+* Tue Feb  6 2001 Trond Eivind Glomsrd <teg@redhat.com>
 - Fix some of the i18n
 - make it exit cleanly if not configured
 
