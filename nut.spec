@@ -2,17 +2,15 @@
 %define cgidir  /var/www/nut-cgi-bin
 Summary: Network UPS Tools
 Name: nut
-Version: 0.45.0
-Release: 3
+Version: 0.45.4
+Release: 1
 Group: Applications/System
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
-Patch0: nut-0.44.3-buildroot.patch
-Patch1: nut-0.44.1-config.patch
-Patch2: nut-0.45.0-nonblock.patch
-Patch3: nut-0.45.0-conffiles.patch
-Patch4: nut-0.45.0-client.patch
+Patch0: nut-0.45.3-buildroot.patch
+Patch1: nut-0.45.2-config.patch
+Patch2: nut-0.45.0-conffiles.patch
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: nut-client
@@ -50,9 +48,7 @@ browser.
 # remove chown /var/lib/state so that we don't have to build rpms as root.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .config
-%patch2 -p1 -b .nonblock
-%patch3 -p1 -b .conf
-%patch4 -p1 -b .client
+%patch2 -p1 -b .conf
 
 %build
 %configure \
@@ -147,6 +143,20 @@ rm -rf %{buildroot}
 %{cgidir}/*
 
 %changelog
+* Tue Feb 26 2002 Than Ngo <than@redhat.com> 0.45.4-1
+- update to 0.45.4
+
+* Wed Jan 09 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
+* Fri Dec 14 2001 Than Ngo <than@redhat.com> 0.45.3-1
+- update to 0.45.2
+- fix bug #57417
+
+* Mon Nov 27 2001 Than Ngo <than@redhat.com> 0.45.2-1
+- update to 0.45.2
+- clean up some patch files for 0.45.2
+
 * Tue Jul 24 2001 Than Ngo <than@redhat.com> 0.45.0-3
 - fix build dependencies (bug #49858)
 
