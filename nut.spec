@@ -9,8 +9,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.0.0
-Release: 7
+Version: 2.0.1
+Release: 1
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -22,6 +22,7 @@ Source2: ups.sysconfig
 Patch0: nut-1.4.0-buildroot.patch
 Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
+Patch3: nut-2.0.1-bad.patch
 
 Requires: nut-client
 
@@ -85,6 +86,7 @@ necessary to develop NUT client applications.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
+%patch3 -p1 -b .bad
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
 mv man/newhidups.8_ man/newhidups.8
@@ -211,11 +213,15 @@ rm -rf %{buildroot}
 %{_mandir}/man8/energizerups.8.gz
 %{_mandir}/man8/safenet.8.gz
 %{_mandir}/man8/belkinunv.8.gz
-%{_mandir}/man8/cyberpower1100.8.gz
 %{_mandir}/man8/hidups.8.gz
 %{_mandir}/man8/ippon.8.gz
 %{_mandir}/man8/newhidups.8.gz
 %{_mandir}/man8/snmp-ups.8.gz
+%{_mandir}/man8/bestfcom.8.gz
+%{_mandir}/man8/cpsups.8.gz
+%{_mandir}/man8/metasys.8.gz
+%{_mandir}/man8/mustek.8.gz
+%{_mandir}/man8/powermust.8.gz
 
 %files client
 %defattr(-,root,root)
@@ -254,6 +260,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Thu Mar 10 2005 Than Ngo <than@redhat.com> 2.0.1-1
+- 2.0.1
+- fix uninit local variable, #131773
+
 * Wed Dec 08 2004 Than Ngo <than@redhat.com> 2.0.0-7
 - don't requires libusb-devel on s390/s390x
 - add %%{release} in buildroot 
