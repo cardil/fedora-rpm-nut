@@ -1,9 +1,10 @@
 %define initdir /etc/rc.d/init.d
 %define cgidir  /var/www/nut-cgi-bin
+%define modeldir /sbin
 Summary: Network UPS Tools
 Name: nut
 Version: 0.45.4
-Release: 1
+Release: 4
 Group: Applications/System
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
@@ -56,14 +57,20 @@ browser.
     --with-group=nobody \
     --with-statepath=%{_localstatedir}/lib/ups \
     --sysconfdir=%{_sysconfdir}/ups \
-    --with-cgipath=%{cgidir}
+    --with-cgipath=%{cgidir} \
+    --with-modelpath=%{modeldir} \
+    --with-linux-hiddev=/usr/include/linux/hiddev.h
 
 make
+make -C models hidups
 
 %install
 rm -rf %{buildroot}
 
+mkdir -p %{buildroot}%{modeldir}
 make install install-cgi INSTALLROOT=%{buildroot}
+install -m 755 models/hidups %{buildroot}%{modeldir}/hidups
+
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 
@@ -94,27 +101,7 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %doc COPYING CREDITS CHANGES README docs
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
-%{_bindir}/apcsmart
-%{_bindir}/belkin
-%{_bindir}/bestfort
-%{_bindir}/bestuferrups
-%{_bindir}/engetron
-%{_bindir}/ipt-anzen
-%{_bindir}/mge-ellipse
-%{_bindir}/mgeups
-%{_bindir}/mustekups
-%{_bindir}/newapc
-%{_bindir}/powercom
-%{_bindir}/toshiba1500
-%{_bindir}/upseyeux
-%{_bindir}/victronups
-%{_bindir}/bestups
-%{_bindir}/fentonups
-%{_bindir}/genericups
-%{_bindir}/optiups
-%{_bindir}/ups-trust425+625
-%{_bindir}/multilink
-%{_bindir}/sec
+%{modeldir}/*
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_mandir}/man8/*
@@ -137,12 +124,24 @@ rm -rf %{buildroot}
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
 %{_sbindir}/upssched-cmd
+%{_mandir}/man5/*
 
 %files cgi
 %defattr(-,root,root)
 %{cgidir}/*
 
 %changelog
+* Fri Jun 21 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
+* Sun Jun 02 2002 Than Ngo <than@redhat.com> 0.45.4-3
+- fix forced shutdown (bug #65824, #60516)
+- enable hidups driver
+- add missing manages (bug #65188)
+
+* Thu May 23 2002 Tim Powers <timp@redhat.com>
+- automated rebuild
+
 * Tue Feb 26 2002 Than Ngo <than@redhat.com> 0.45.4-1
 - update to 0.45.4
 

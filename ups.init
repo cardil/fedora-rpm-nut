@@ -30,7 +30,7 @@ start() {
 		fi
 
 		echo -n $"Starting $MODEL: "
-		daemon /usr/bin/$MODEL $OPTIONS $DEVICE 
+		daemon /sbin/$MODEL $OPTIONS $DEVICE 
 		echo
 
 		prog="upsd"
