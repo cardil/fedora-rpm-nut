@@ -10,7 +10,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.0
-Release: 2
+Release: 3
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
@@ -244,6 +244,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Tue Jun 15 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
 * Mon May 10 2004 Than Ngo <than@redhat.com> 2.0.0-2
 - fixed permission problem, bug #122867
 
