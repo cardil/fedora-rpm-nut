@@ -1,7 +1,9 @@
 #!/bin/bash
 #
 # chkconfig: - 26 74
-# description: The ups daemon automatically starts a shutdown
+# description: Network UPS Tools is a collection of programs which provide a common \
+# interface for monitoring and administering UPS hardware.
+
 # processname: upsd
 # config: /etc/ups/
 

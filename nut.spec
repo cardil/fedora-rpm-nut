@@ -1,28 +1,41 @@
+%define nut_uid 57
+%define nut_gid 57
+
 %define initdir /etc/rc.d/init.d
 %define cgidir  /var/www/nut-cgi-bin
 %define modeldir /sbin
+
 Summary: Network UPS Tools
 Name: nut
-Version: 0.45.4
-Release: 5
+Version: 1.2.0
+Release: 6
 Group: Applications/System
+License: GPL
+BuildRoot: %{_tmppath}/%{name}-%{version}-root
+
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
-Patch0: nut-0.45.3-buildroot.patch
-Patch1: nut-0.45.2-config.patch
-Patch2: nut-0.45.0-conffiles.patch
-Patch3: nut-0.45.4-conf.patch
-License: GPL
-BuildRoot: %{_tmppath}/%{name}-%{version}-root
+
+Patch0: nut-1.2.0-buildroot.patch
+Patch1: nut-0.45.0-conffiles.patch
+Patch2: nut-0.45.4-conf.patch
+
 Requires: nut-client
-Prereq: fileutils /sbin/chkconfig /sbin/service
-BuildPrereq: gd-devel, freetype-devel, netpbm-devel, libpng-devel
+
+Prereq: fileutils
+Prereq: /sbin/chkconfig
+Prereq: /sbin/service
+
+BuildPrereq: gd-devel
+BuildPrereq: freetype-devel
+BuildPrereq: netpbm-devel
+BuildPrereq: libpng-devel
 
 %description
 These programs are part of a developing project to monitor the assortment 
 of UPSes that are found out there in the field. Many models have serial 
-serial ports of some kind that allow some form of state checking. This
+ports of some kind that allow some form of state checking. This
 capability has been harnessed where possible to allow for safe shutdowns, 
 live status tracking on web pages, and more.
 
@@ -30,6 +43,7 @@ live status tracking on web pages, and more.
 Group: Applications/System
 Summary: Network UPS Tools client monitoring utilities
 Prereq: chkconfig
+Prereq: /usr/sbin/useradd
 
 %description client
 This package includes the client utilities that are required to monitor a
@@ -49,29 +63,29 @@ browser.
 %setup -q
 # remove chown /var/lib/state so that we don't have to build rpms as root.
 %patch0 -p1 -b .buildroot
-%patch1 -p1 -b .config
-%patch2 -p1 -b .conf
-%patch3 -p1 -b .conf1
+%patch1 -p1 -b .conf
+%patch2 -p1 -b .conf1
 
 %build
 %configure \
-    --with-user=nobody \
-    --with-group=nobody \
+    --with-cgi \
+    --with-user=%{name} \
+    --with-group=uucp \
     --with-statepath=%{_localstatedir}/lib/ups \
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
-    --with-modelpath=%{modeldir} \
+    --with-drvpath=%{modeldir} \
     --with-linux-hiddev=/usr/include/linux/hiddev.h
 
 make
-make -C models hidups
+make -C drivers hidups
 
 %install
 rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{modeldir}
-make install install-cgi INSTALLROOT=%{buildroot}
-install -m 755 models/hidups %{buildroot}%{modeldir}/hidups
+make install install-cgi DESTDIR=%{buildroot}
+install -m 755 drivers/hidups %{buildroot}%{modeldir}/hidups
 
 mkdir -p %{buildroot}%{_sysconfdir}/sysconfig
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
@@ -81,6 +95,20 @@ mkdir -p %{buildroot}%{_localstatedir}/lib/ups
 # install SYSV init stuff
 mkdir -p %{buildroot}%{initdir}
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
+
+# rename
+for file in %{buildroot}%{_sysconfdir}/ups/*.sample
+do
+   mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
+done
+
+%pre
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
+        -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
+
+%pre client
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
+        -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 
 %post client
 /sbin/chkconfig --add ups
@@ -112,17 +140,17 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
 %config(noreplace) %{_sysconfdir}/ups/hosts.conf
-%config(noreplace) %{_sysconfdir}/ups/multimon.conf
+%dir %{_sysconfdir}/ups
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsset.conf
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upssched.conf
-%dir %attr(755,nobody,nobody) %{_localstatedir}/lib/ups
+%dir %attr(700,nut,nut) %{_localstatedir}/lib/ups
 %{_bindir}/upsc
 %{_bindir}/upscmd
-%{_bindir}/upsct
-%{_bindir}/upsct2
+%{_bindir}/upsrw
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
 %{_sbindir}/upssched-cmd
@@ -130,9 +158,36 @@ rm -rf %{buildroot}
 
 %files cgi
 %defattr(-,root,root)
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats.html
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats-single.html
 %{cgidir}/*
 
 %changelog
+* Thu Feb 13 2003 Than Ngo <than@redhat.com> 1.2.0-6
+- build with correct userid #84199
+- fix directory permission
+
+* Tue Feb 11 2003 Than Ngo <than@redhat.com> 1.2.0-5
+- add user nut, bug #81500 
+- fix permission issue, bug #81524, #83997
+- own /etc/ups, bug #73959
+
+* Wed Jan 22 2003 Tim Powers <timp@redhat.com>
+- rebuilt
+
+* Wed Jan  8 2003 Thomas Woerner <twoerner@redhat.com> 1.2.0-3
+- added html templates for cgi scripts (#78532)
+- added hidups driver (#80334)
+
+* Wed Dec  18 2002 Dan Walsh <dwalsh@redhat.com> 1.2.0-2
+- Fix service description
+
+* Wed Nov  6 2002 han Ngo <than@redhat.com> 1.2.0-1
+- update to 1.2.0
+
+* Mon Nov  4 2002 Than Ngo <than@redhat.com> 1.00-1
+- update to 1.00
+
 * Wed Jul 31 2002 Than Ngo <than@redhat.com> 0.45.4-5
 - Fixed wrong CMDSCRIPT (bug #69817)
 
