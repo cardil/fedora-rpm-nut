@@ -9,7 +9,7 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 1.4.0
+Version: 1.4.1
 Release: 3
 Group: Applications/System
 License: GPL
@@ -90,6 +90,7 @@ necessary to develop NUT client applications.
 
 make %{?smp_mflags}
 make %{?smp_mflags} -C drivers hidups
+make %{?smp_mflags} -C drivers energizerups
 
 %install
 rm -rf %{buildroot}
@@ -100,7 +101,11 @@ mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{initdir}
 
 make install install-cgi install-misc DESTDIR=%{buildroot}
-install -m 755 drivers/hidups %{buildroot}%{modeldir}/hidups
+
+install -m 755 drivers/hidups %{buildroot}%{modeldir}/
+install -m 755 drivers/dummycons %{buildroot}%{modeldir}/
+install -m 755 drivers/energizerups %{buildroot}%{modeldir}/
+
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
@@ -113,7 +118,7 @@ done
 %if !%{devel}
 rm -rf %{buildroot}%{_includedir} \
        %{buildroot}%{_mandir}/man3/upscli_* \
-       %{buildroot}%{_libdir}/upsclient.o
+       %{buildroot}%{_libdir}/*upsclient*
 %endif
 
 %pre
@@ -148,9 +153,9 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %doc COPYING CREDITS CHANGES README docs
-%config(noreplace) %attr(444,root,root) %{_sysconfdir}/ups/ups.conf
-%config(noreplace) %attr(444,root,root) %{_sysconfdir}/ups/upsd.conf
-%config(noreplace) %attr(400,root,root) %{_sysconfdir}/ups/upsd.users
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/ups.conf
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsd.conf
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %{modeldir}/*
 %{_sbindir}/upsd
@@ -163,7 +168,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/bcmxcp.8.gz
 %{_mandir}/man8/belkin.8.gz
 %{_mandir}/man8/bestups.8.gz
-%{_mandir}/man8/bestferrups801-807.8.gz
 %{_mandir}/man8/bestfortress.8.gz
 %{_mandir}/man8/bestuferrups.8.gz
 %{_mandir}/man8/cyberpower.8.gz
@@ -171,7 +175,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/etapro.8.gz
 %{_mandir}/man8/fentonups.8.gz
 %{_mandir}/man8/genericups.8.gz
-%{_mandir}/man8/hp.8.gz
 %{_mandir}/man8/isbmex.8.gz
 %{_mandir}/man8/liebert.8.gz
 %{_mandir}/man8/masterguard.8.gz
@@ -181,16 +184,18 @@ rm -rf %{buildroot}
 %{_mandir}/man8/nutupsdrv.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/powercom.8.gz
-%{_mandir}/man8/powernet.8.gz
 %{_mandir}/man8/sec.8.gz
 %{_mandir}/man8/sms.8.gz
-%{_mandir}/man8/snmp-ups.8.gz
 %{_mandir}/man8/tripplite.8.gz
 %{_mandir}/man8/tripplitesu.8.gz
 %{_mandir}/man8/victronups.8.gz
 %{_mandir}/man8/upsd.8.gz
 %{_mandir}/man8/upsdrvctl.8.gz
 %{_mandir}/man8/mge-shut.8.gz
+%{_mandir}/man8/dummycons.8.gz
+%{_mandir}/man8/energizerups.8.gz
+%{_mandir}/man8/safenet.8.gz
+%{_mandir}/man8/ferrups.8.gz
 
 %files client
 %defattr(-,root,root)
@@ -229,6 +234,16 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Sat Feb 14 2004 Than Ngo <than@redhat.com> 1.4.1-3 
+- add some missing drivers
+
+* Fri Feb 13 2004 Elliot Lee <sopwith@redhat.com>
+- rebuilt
+
+* Wed Feb 11 2004 Than Ngo <than@redhat.com> 1.4.1-1
+- 1.4.1
+- fixed permission problem (bug #115290)
+
 * Wed Sep 24 2003 Mike McLean <mikem@redhat.com> 1.4.0-3
 - fixed 'nut' user problem with nut-cgi (bug#104872)
 
