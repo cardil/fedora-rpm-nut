@@ -2,14 +2,17 @@
 %define cgidir  /var/www/nut-cgi-bin
 Summary: Network UPS Tools
 Name: nut
-Version: 0.44.1
-Release: 5
+Version: 0.45.0
+Release: 2
 Group: Applications/System
 Source: http://www.exploits.org/nut/release/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
-Patch0: nut-0.44.0-buildroot.patch
+Patch0: nut-0.44.3-buildroot.patch
 Patch1: nut-0.44.1-config.patch
+Patch2: nut-0.45.0-nonblock.patch
+Patch3: nut-0.45.0-conffiles.patch
+Patch4: nut-0.45.0-client.patch
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-root
 Requires: nut-client
@@ -47,12 +50,14 @@ browser.
 # remove chown /var/lib/state so that we don't have to build rpms as root.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .config
-
+%patch2 -p1 -b .nonblock
+%patch3 -p1 -b .conf
+%patch4 -p1 -b .client
 
 %build
 %configure \
-    --with-uid=`id -u nobody` \
-    --with-gid=`id -g nobody` \
+    --with-user=nobody \
+    --with-group=nobody \
     --with-statepath=%{_localstatedir}/lib/ups \
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir}
@@ -91,16 +96,32 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%doc COPYING CREDITS Changes QUICKSTART README docs
+%doc COPYING CREDITS CHANGES README docs
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %{_bindir}/apcsmart
+%{_bindir}/belkin
+%{_bindir}/bestfort
+%{_bindir}/bestuferrups
+%{_bindir}/engetron
+%{_bindir}/ipt-anzen
+%{_bindir}/mge-ellipse
+%{_bindir}/mgeups
+%{_bindir}/mustekups
+%{_bindir}/newapc
+%{_bindir}/powercom
+%{_bindir}/toshiba1500
+%{_bindir}/upseyeux
+%{_bindir}/victronups
 %{_bindir}/bestups
 %{_bindir}/fentonups
 %{_bindir}/genericups
 %{_bindir}/optiups
 %{_bindir}/ups-trust425+625
-%{_bindir}/upsd
+%{_bindir}/multilink
+%{_bindir}/sec
+%{_sbindir}/upsd
 %{_bindir}/upslog
+%{_mandir}/man8/*
 
 %files client
 %defattr(-,root,root)
@@ -108,21 +129,37 @@ rm -rf %{buildroot}
 %config(noreplace) %{_sysconfdir}/ups/hosts.conf
 %config(noreplace) %{_sysconfdir}/ups/multimon.conf
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.conf
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsmon.conf
-%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsset.passwd
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upsset.conf
+%config(noreplace) %attr(600,root,root) %{_sysconfdir}/ups/upssched.conf
 %dir %attr(755,nobody,nobody) %{_localstatedir}/lib/ups
 %{_bindir}/upsc
 %{_bindir}/upscmd
 %{_bindir}/upsct
 %{_bindir}/upsct2
-%{_bindir}/upsmon
+%{_sbindir}/upsmon
+%{_sbindir}/upssched
+%{_sbindir}/upssched-cmd
 
 %files cgi
 %defattr(-,root,root)
 %{cgidir}/*
 
-
 %changelog
+* Fri Jul  6 2001 Than Ngo <than@redhat.com> 0.45.0-2
+- rebuild
+
+* Wed Jun 13 2001 Than Ngo <than@redhat.com>
+- update to 0.45.0
+- add some patches from alane@geeksrus.net (bug #44361, #44363)
+
+* Sun Apr 22 2001 Than Ngo <than@redhat.com>
+- add all available UPS drivers (Bug #36937)
+
+* Fri Apr 13 2001 Than Ngo <than@redhat.com>
+- update to 0.44.3 (Bug #35255)
+
 * Fri Feb  9 2001 Than Ngo <than@redhat.com>
 - fixed typo (Bug #26535)
 
