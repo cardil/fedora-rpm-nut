@@ -39,6 +39,8 @@ BuildPrereq: XFree86-devel
 BuildPrereq: libjpeg-devel
 BuildPrereq: libusb-devel
 
+ExcludeArch: s390 s390x
+
 %description
 These programs are part of a developing project to monitor the assortment 
 of UPSes that are found out there in the field. Many models have serial 
@@ -248,6 +250,7 @@ rm -rf %{buildroot}
 %changelog
 * Tue Oct 05 2004 Than Ngo <than@redhat.com> 2.0.0-5
 - more buildrequires
+- don't build on s390/s390x
 
 * Thu Aug 26 2004 Nalin Dahyabhai <nalin@redhat.com> 2.0.0-4
 - fix syntax error in -client postun scriptlet (#131040)
