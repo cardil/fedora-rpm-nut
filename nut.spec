@@ -9,7 +9,7 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.0.1
+Version: 2.0.2
 Release: 1
 Group: Applications/System
 License: GPL
@@ -23,6 +23,7 @@ Patch0: nut-1.4.0-buildroot.patch
 Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
 Patch3: nut-2.0.1-bad.patch
+Patch4: nut-2.0.2-buffer.patch
 
 Requires: nut-client
 
@@ -87,6 +88,7 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
 %patch3 -p1 -b .bad
+%patch4 -p1 -b .buffer
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
 mv man/newhidups.8_ man/newhidups.8
@@ -222,7 +224,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/metasys.8.gz
 %{_mandir}/man8/mustek.8.gz
 %{_mandir}/man8/powermust.8.gz
-
+%{_mandir}/man8/bcmxcp.8*
+%{_mandir}/man8/solis.8*
+%{_mandir}/man8/upscode2.8*
 %files client
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
@@ -260,6 +264,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Wed Jul 20 2005 Than Ngo <than@redhat.com> 2.0.2-1
+- fix compiler warnings #156027
+- update to 2.0.2
+
 * Thu Mar 10 2005 Than Ngo <than@redhat.com> 2.0.1-1
 - 2.0.1
 - fix uninit local variable, #131773
