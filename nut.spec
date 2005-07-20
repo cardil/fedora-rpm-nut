@@ -3,6 +3,7 @@
 
 %define initdir /etc/rc.d/init.d
 %define cgidir  /var/www/nut-cgi-bin
+%define piddir  /var/run/nut
 %define modeldir /sbin
 
 %define devel 0
@@ -97,7 +98,9 @@ mv man/newhidups.8_ man/newhidups.8
 %configure \
     --with-user=%{name} \
     --with-group=uucp \
-    --with-statepath=%{_localstatedir}/lib/ups \
+    --with-statepath=%{piddir} \
+    --with-pidpath=%{piddir} \
+    --with-altpidpath=%{piddir} \
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
@@ -114,6 +117,7 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}%{piddir} \
          %{buildroot}%{_localstatedir}/lib/ups \
          %{buildroot}%{initdir}
 
@@ -234,6 +238,7 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(400,nut,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(400,nut,nut) %{_sysconfdir}/ups/upssched.conf
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
+%dir %attr(750,nut,nut) %{piddir}
 %{_bindir}/upsc
 %{_bindir}/upscmd
 %{_bindir}/upsrw
@@ -266,6 +271,7 @@ rm -rf %{buildroot}
 %changelog
 * Wed Jul 20 2005 Than Ngo <than@redhat.com> 2.0.2-1
 - fix compiler warnings #156027
+- fix pid issue  #159450
 - update to 2.0.2
 
 * Thu Mar 10 2005 Than Ngo <than@redhat.com> 2.0.1-1
