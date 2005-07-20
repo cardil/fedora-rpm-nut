@@ -181,8 +181,8 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root)
 %doc COPYING CREDITS CHANGES README docs UPGRADING
-%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/ups.conf
-%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsd.conf
+%config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
+%config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %{modeldir}/*
@@ -235,8 +235,8 @@ rm -rf %{buildroot}
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
 %dir %{_sysconfdir}/ups
-%config(noreplace) %attr(400,nut,nut) %{_sysconfdir}/ups/upsmon.conf
-%config(noreplace) %attr(400,nut,nut) %{_sysconfdir}/ups/upssched.conf
+%config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
+%config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
 %dir %attr(750,nut,nut) %{piddir}
 %{_bindir}/upsc
@@ -272,6 +272,7 @@ rm -rf %{buildroot}
 * Wed Jul 20 2005 Than Ngo <than@redhat.com> 2.0.2-1
 - fix compiler warnings #156027
 - fix pid issue  #159450
+- fix wrong ownership and permissions #159449, #141123
 - update to 2.0.2
 
 * Thu Mar 10 2005 Than Ngo <than@redhat.com> 2.0.1-1
