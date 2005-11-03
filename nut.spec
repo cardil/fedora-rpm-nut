@@ -11,12 +11,12 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.2
-Release: 1
+Release: 2
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
-Url: http://us2.networkupstools.org/
-Source: http://us2.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
+Url: http://wwww.networkupstools.org/
+Source: http://www.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
@@ -269,6 +269,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Thu Nov 03 2005 Than Ngo <than@redhat.com> 2.0.2-2
+- rebuilt against new libnetsnmp
+
 * Wed Jul 20 2005 Than Ngo <than@redhat.com> 2.0.2-1
 - fix compiler warnings #156027
 - fix pid issue  #159450
