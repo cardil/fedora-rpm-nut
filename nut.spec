@@ -38,7 +38,7 @@ BuildPrereq: netpbm-devel
 BuildPrereq: libpng-devel
 BuildPrereq: net-snmp-devel
 BuildPrereq: elfutils-devel
-BuildPrereq: XFree86-devel
+BuildPrereq: xorg-x11-devel
 BuildPrereq: libjpeg-devel
 
 %ifnarch s390 s390x
