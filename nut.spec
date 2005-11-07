@@ -11,7 +11,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.2
-Release: 2
+Release: 3
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -269,6 +269,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Mon Nov 07 2005 Than Ngo <than@redhat.com> 2.0.2-3 
+- rebuilt
+
 * Thu Nov 03 2005 Than Ngo <than@redhat.com> 2.0.2-2
 - rebuilt against new libnetsnmp
 
