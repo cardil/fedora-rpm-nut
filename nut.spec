@@ -11,7 +11,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.2
-Release: 4
+Release: 5
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -38,7 +38,8 @@ BuildPrereq: netpbm-devel
 BuildPrereq: libpng-devel
 BuildPrereq: net-snmp-devel
 BuildPrereq: elfutils-devel
-BuildPrereq: xorg-x11-devel
+BuildPrereq: libX11-devel
+BuildPrereq: libXpm-devel
 BuildPrereq: libjpeg-devel
 
 %ifnarch s390 s390x
@@ -269,6 +270,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Wed Nov 23 2005 Than Ngo <than@redhat.com> 2.0.2-5
+- fix for modular X
+
 * Wed Nov 09 2005 Than Ngo <than@redhat.com> 2.0.2-4
 - rebuilt
 
