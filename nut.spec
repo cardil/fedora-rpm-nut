@@ -10,8 +10,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.0.2
-Release: 6.2
+Version: 2.0.3
+Release: 1
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -24,7 +24,6 @@ Patch0: nut-1.4.0-buildroot.patch
 Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
 Patch3: nut-2.0.1-bad.patch
-Patch4: nut-2.0.2-buffer.patch
 
 Requires: nut-client
 
@@ -90,7 +89,6 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
 %patch3 -p1 -b .bad
-%patch4 -p1 -b .buffer
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
 mv man/newhidups.8_ man/newhidups.8
@@ -118,6 +116,7 @@ rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_sysconfdir}/sysconfig \
+         %{buildroot}%{_sysconfdir}/udev/rules.d \
          %{buildroot}%{piddir} \
          %{buildroot}%{_localstatedir}/lib/ups \
          %{buildroot}%{initdir}
@@ -134,6 +133,8 @@ install -m 755 drivers/energizerups %{buildroot}%{modeldir}/
 
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
+
+install -m 644 scripts/hotplug-ng/nut-usbups.rules %{buildroot}%{_sysconfdir}/udev/rules.d
 
 # rename
 for file in %{buildroot}%{_sysconfdir}/ups/*.sample
@@ -181,11 +182,12 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%doc COPYING CREDITS CHANGES README docs UPGRADING
+%doc COPYING CREDITS CHANGES README docs UPGRADING INSTALL NEWS
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
 %{modeldir}/*
 %{_sbindir}/upsd
 %{_bindir}/upslog
@@ -232,6 +234,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/bcmxcp.8*
 %{_mandir}/man8/solis.8*
 %{_mandir}/man8/upscode2.8*
+%{_mandir}/man8/bcmxcp_usb.8.gz
+%{_mandir}/man8/gamatronic.8.gz
+%{_mandir}/man8/tripplite_usb.8.gz
 %files client
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
@@ -270,6 +275,11 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Mon Apr 24 2006 Than Ngo <than@redhat.com> 2.0.3-1
+- update to 2.0.3
+- drop nut-2.0.2-buffer.patch, it's included in new upstream
+- add udev rule #189674, #187105
+
 * Fri Feb 10 2006 Jesse Keating <jkeating@redhat.com> - 2.0.2-6.2
 - bump again for double-long bug on ppc(64)
 
