@@ -11,7 +11,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.3
-Release: 1
+Release: 2
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -40,6 +40,7 @@ BuildPrereq: elfutils-devel
 BuildPrereq: libX11-devel
 BuildPrereq: libXpm-devel
 BuildPrereq: libjpeg-devel
+BuildPrereq: fontconfig-devel
 
 %ifnarch s390 s390x
 BuildPrereq: libusb-devel
@@ -275,6 +276,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Tue May 16 2006 Than Ngo <than@redhat.com> 2.0.3-2 
+- fix #191914, BR fontconfig-devel for cgi
+
 * Mon Apr 24 2006 Than Ngo <than@redhat.com> 2.0.3-1
 - update to 2.0.3
 - drop nut-2.0.2-buffer.patch, it's included in new upstream
