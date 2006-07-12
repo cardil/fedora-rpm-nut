@@ -11,7 +11,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.3
-Release: 2
+Release: 2.1
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -276,6 +276,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 2.0.3-2.1
+- rebuild
+
 * Tue May 16 2006 Than Ngo <than@redhat.com> 2.0.3-2 
 - fix #191914, BR fontconfig-devel for cgi
 
