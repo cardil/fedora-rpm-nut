@@ -10,8 +10,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.0.3
-Release: 2.1
+Version: 2.0.4
+Release: 1
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -24,6 +24,7 @@ Patch0: nut-1.4.0-buildroot.patch
 Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
 Patch3: nut-2.0.1-bad.patch
+Patch4: nut-ipv6.patch
 
 Requires: nut-client
 
@@ -90,6 +91,7 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
 %patch3 -p1 -b .bad
+%patch4 -p1 -b .IPv6
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
 mv man/newhidups.8_ man/newhidups.8
@@ -276,6 +278,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Tue Nov 21 2006 Than Ngo <than@redhat.com> - 2.0.4-1
+- add IPv6 support, thanks to Dan KopeÄek (#198394)
+
 * Wed Jul 12 2006 Jesse Keating <jkeating@redhat.com> - 2.0.3-2.1
 - rebuild
 
