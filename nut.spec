@@ -11,7 +11,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.4
-Release: 1
+Release: 2
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -278,6 +278,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Wed Nov 29 2006 Karsten Hopp <karsten@redhat.com> 2.0.4-2
+- rebuild with new net-snmp-libs
+
 * Tue Nov 21 2006 Than Ngo <than@redhat.com> - 2.0.4-1
 - add IPv6 support, thanks to Dan KopeÄek (#198394)
 
