@@ -90,7 +90,8 @@ necessary to develop NUT client applications.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
-%patch3 -p1 -b .bad
+#KH:
+#patch3 -p1 -b .bad
 %patch4 -p1 -b .IPv6
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
@@ -280,6 +281,7 @@ rm -rf %{buildroot}
 %changelog
 * Wed Nov 29 2006 Karsten Hopp <karsten@redhat.com> 2.0.4-2
 - rebuild with new net-snmp-libs
+- disable nut-2.0.1-bad.patch, not required
 
 * Tue Nov 21 2006 Than Ngo <than@redhat.com> - 2.0.4-1
 - add IPv6 support, thanks to Dan KopeÄek (#198394)
