@@ -11,7 +11,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.5
-Release: 1
+Release: 2
 Group: Applications/System
 License: GPL
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
@@ -132,12 +132,13 @@ make install install-conf \
      install-snmp DESTDIR=%{buildroot}
 
 install -m 755 drivers/hidups %{buildroot}%{modeldir}/
-install -m 755 drivers/dummycons %{buildroot}%{modeldir}/
+# install -m 755 drivers/dummycons %{buildroot}%{modeldir}/
 install -m 755 drivers/energizerups %{buildroot}%{modeldir}/
 
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
+install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
 install -m 644 scripts/hotplug-ng/nut-usbups.rules %{buildroot}%{_sysconfdir}/udev/rules.d
 
 # rename
@@ -145,6 +146,8 @@ for file in %{buildroot}%{_sysconfdir}/ups/*.sample
 do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
 done
+
+rm -f %{buildroot}/usr/html/*
 
 %if !%{devel}
 rm -rf %{buildroot}%{_includedir} \
@@ -186,7 +189,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root)
-%doc COPYING CREDITS CHANGES README docs UPGRADING INSTALL NEWS
+%doc COPYING CREDITS ChangeLog README docs UPGRADING INSTALL NEWS
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
@@ -234,13 +237,18 @@ rm -rf %{buildroot}
 %{_mandir}/man8/cpsups.8.gz
 %{_mandir}/man8/metasys.8.gz
 %{_mandir}/man8/mustek.8.gz
-%{_mandir}/man8/powermust.8.gz
 %{_mandir}/man8/bcmxcp.8*
 %{_mandir}/man8/solis.8*
 %{_mandir}/man8/upscode2.8*
 %{_mandir}/man8/bcmxcp_usb.8.gz
 %{_mandir}/man8/gamatronic.8.gz
 %{_mandir}/man8/tripplite_usb.8.gz
+%{_mandir}/man8/dummy-ups.8.gz
+%{_mandir}/man8/al175.8.gz
+%{_mandir}/man8/megatec.8.gz
+%{_mandir}/man8/nitram.8.gz
+%{_mandir}/man8/optiups.8.gz
+%{_mandir}/man8/powerpanel.8.gz
 %files client
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
@@ -279,6 +287,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %changelog
+* Tue Jan 23 2007 Karsten Hopp <karsten@redhat.com> 2.0.5-2
+- rename fatal to fatal_with_errno in ipv6 patch
+- fix filelist
+
 * Tue Jan 23 2007 Karsten Hopp <karsten@redhat.com> 2.0.5-1
 - update to 2.0.5
 

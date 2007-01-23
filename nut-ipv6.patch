@@ -49,7 +49,7 @@
 +				return(0); 
 +		}
 +	default:
-+		fatal ("mask_cmp: Unknown address family");
++		fatal_with_errno ("mask_cmp: Unknown address family");
 +		return(0);
 +	}
 +}
@@ -112,7 +112,7 @@
 +		stmp = strchr (addr, ']');
 +		if (stmp == NULL) {
 +			free (tmp);
-+			fatal("Expecting \']\' in \"%s\"", addr);
++			fatal_with_errno("Expecting \']\' in \"%s\"", addr);
 +		}
 +
 +		*stmp = '\0';
@@ -123,7 +123,7 @@
 +
 +		if (inet_pton (AF_INET6, addr, &s6.sin6_addr) < 1) {
 +			free (tmp);
-+			fatal ("Invalid IPv6 address: \"%s\"", addr);
++			fatal_with_errno ("Invalid IPv6 address: \"%s\"", addr);
 +		}
 +
 +		/* prefix */
@@ -131,7 +131,7 @@
 +
 +		if (tmp->mask < 0 || tmp->mask > 128) {
 +			free (tmp);
-+			fatal ("Invalid IPv6 prefix");
++			fatal_with_errno ("Invalid IPv6 prefix");
 +		}
 +
 +		{ register unsigned char i;
@@ -155,7 +155,7 @@
 +
 +			if (tmp->mask < 0 || tmp->mask > 32) {
 +				free (tmp);
-+				fatal ("Invalid CIDR type block: Must be > 0 && < 32");
++				fatal_with_errno ("Invalid CIDR type block: Must be > 0 && < 32");
 +			}
 +			tmp->mask = 0xffffffff << (32 - tmp->mask);
 +		} else {
@@ -167,7 +167,7 @@
 +
 +		if (inet_pton (AF_INET, addr, &s4.sin_addr) < 1) {
 +			free (tmp);
-+			fatal ("Invalid IPv4 address: \"%s\"", addr);
++			fatal_with_errno ("Invalid IPv4 address: \"%s\"", addr);
 +		}
 +
 +		s4.sin_addr.s_addr &= htonl (tmp->mask);
@@ -316,14 +316,14 @@
 +
 +	service = malloc (sizeof (char) * 6);
 +	if (service == NULL)
-+		fatal("malloc");
++		fatal_with_errno("malloc");
 +
 +	if (snprintf (service, 6, "%hu", (unsigned short int)net_port) < 1)
-+		fatal("snprintf");
++		fatal_with_errno("snprintf");
 +
 +	if (getaddrinfo (listenaddr, service, &hints, &r) != 0) {
 +		free (service);
-+		fatal("getaddrinfo");
++		fatal_with_errno("getaddrinfo");
 +	}
 +	free (service);
 +
@@ -331,16 +331,16 @@
 +		listenfd = socket(r->ai_family, r->ai_socktype, r->ai_protocol);
 +		if (listenfd < 0) {
 +			if (r->ai_next == NULL)
-+				fatal("socket");
++				fatal_with_errno("socket");
 +			continue;
 +		}
 +		res = setsockopt(listenfd, SOL_SOCKET, SO_REUSEADDR, (void *) &one, sizeof(one));
 +		if (res != 0)
-+			fatal("setsockopt(SO_REUSEADDR)");
++			fatal_with_errno("setsockopt(SO_REUSEADDR)");
 +
 +		if (bind (listenfd, r->ai_addr, r->ai_addrlen) == -1) {
 +			if (r->ai_next == NULL)
-+				fatal("Can't bind TCP port number %u", net_port);
++				fatal_with_errno("Can't bind TCP port number %u", net_port);
 +			close (listenfd);
 +			continue;
 +		}
@@ -348,16 +348,16 @@
 -	if (fcntl(listenfd, F_SETFL, res | O_NDELAY) == -1)
 -		fatal_with_errno("fcntl(set)");
 +		if ((res = fcntl(listenfd, F_GETFL, 0)) == -1)
-+			fatal("fcntl(get)");
++			fatal_with_errno("fcntl(get)");
  
 -	if (listen(listenfd, 16))
 -		fatal_with_errno("listen");
 +		if (fcntl(listenfd, F_SETFL, res | O_NDELAY) == -1)
-+			fatal("fcntl(set)");
++			fatal_with_errno("fcntl(set)");
  
 +		if (listen(listenfd, 16) == -1) {
 +			if (r->ai_next == NULL)
-+				fatal("listen");
++				fatal_with_errno("listen");
 +			close (listenfd);
 +			continue;
 +		}
