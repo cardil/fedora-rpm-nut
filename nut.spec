@@ -177,7 +177,6 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc COPYING CREDITS ChangeLog README docs UPGRADING INSTALL NEWS
-%attr(755,root,root) %{initdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
@@ -241,6 +240,7 @@ rm -rf %{buildroot}
 %files client
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
+%dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
