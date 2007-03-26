@@ -23,6 +23,7 @@ Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
 Patch3: nut-2.0.5-multilib.patch
 Patch4: nut-ipv6.patch
+Patch5: nut-2.0.5-pkgconfig.patch
 
 Requires: nut-client
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -38,6 +39,7 @@ BuildRequires: libX11-devel
 BuildRequires: libXpm-devel
 BuildRequires: libjpeg-devel
 BuildRequires: fontconfig-devel
+BuildRequires: pkgconfig
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -88,6 +90,7 @@ necessary to develop NUT client applications.
 %patch2 -p1 -b .conf1
 %patch3 -p1 -b .multilib
 %patch4 -p1 -b .IPv6
+%patch5 -p1 -b .pkgconfig
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
 mv man/newhidups.8_ man/newhidups.8
@@ -104,7 +107,7 @@ mv man/newhidups.8_ man/newhidups.8
     --with-drvpath=%{modeldir} \
     --with-cgi \
     --with-gd-libs \
-    --with-linux-hiddev=/usr/include/linux/hiddev.h
+    --with-linux-hiddev=%{_includedir}/linux/hiddev.h
 
 make %{?_smp_mflags}
 make %{?_smp_mflags} snmp
@@ -125,7 +128,6 @@ make install install-conf \
      install-cgi \
      install-usb \
      install-lib \
-     PKG_CFG_DIR=%{buildroot}%{_libdir}/pkgconfig \
      install-snmp DESTDIR=%{buildroot}
 
 install -m 755 drivers/hidups %{buildroot}%{modeldir}/
@@ -137,13 +139,13 @@ install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
 install -m 644 scripts/hotplug-ng/nut-usbups.rules %{buildroot}%{_sysconfdir}/udev/rules.d
 
+rm -rf %{buildroot}%{_prefix}/html
+
 # rename
 for file in %{buildroot}%{_sysconfdir}/ups/*.sample
 do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
 done
-
-rm -f %{buildroot}/usr/html/*
 
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
