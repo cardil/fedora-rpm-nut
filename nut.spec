@@ -6,15 +6,13 @@
 %define piddir  /var/run/nut
 %define modeldir /sbin
 
-%define devel 0
-
 Summary: Network UPS Tools
 Name: nut
 Version: 2.0.5
-Release: 2
+Release: 3
 Group: Applications/System
 License: GPL
-BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root
+Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
 Source1: ups.init
@@ -23,28 +21,25 @@ Source2: ups.sysconfig
 Patch0: nut-1.4.0-buildroot.patch
 Patch1: nut-0.45.0-conffiles.patch
 Patch2: nut-0.45.4-conf.patch
-Patch3: nut-2.0.1-bad.patch
 Patch4: nut-ipv6.patch
 
 Requires: nut-client
+Requires(post): fileutils /sbin/chkconfig /sbin/service
+Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
-Prereq: fileutils
-Prereq: /sbin/chkconfig
-Prereq: /sbin/service
-
-BuildPrereq: gd-devel
-BuildPrereq: freetype-devel
-BuildPrereq: netpbm-devel
-BuildPrereq: libpng-devel
-BuildPrereq: net-snmp-devel
-BuildPrereq: elfutils-devel
-BuildPrereq: libX11-devel
-BuildPrereq: libXpm-devel
-BuildPrereq: libjpeg-devel
-BuildPrereq: fontconfig-devel
+BuildRequires: gd-devel
+BuildRequires: freetype-devel
+BuildRequires: netpbm-devel
+BuildRequires: libpng-devel
+BuildRequires: net-snmp-devel
+BuildRequires: elfutils-devel
+BuildRequires: libX11-devel
+BuildRequires: libXpm-devel
+BuildRequires: libjpeg-devel
+BuildRequires: fontconfig-devel
 
 %ifnarch s390 s390x
-BuildPrereq: libusb-devel
+BuildRequires: libusb-devel
 %endif
 
 ExcludeArch: s390 s390x
@@ -90,8 +85,6 @@ necessary to develop NUT client applications.
 %patch0 -p1 -b .buildroot
 %patch1 -p1 -b .conf
 %patch2 -p1 -b .conf1
-#KH:
-#patch3 -p1 -b .bad
 %patch4 -p1 -b .IPv6
 
 iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
@@ -129,10 +122,10 @@ make install install-conf \
      install-cgi-conf \
      install-cgi \
      install-usb \
+     install-lib \
      install-snmp DESTDIR=%{buildroot}
 
 install -m 755 drivers/hidups %{buildroot}%{modeldir}/
-# install -m 755 drivers/dummycons %{buildroot}%{modeldir}/
 install -m 755 drivers/energizerups %{buildroot}%{modeldir}/
 
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
@@ -148,12 +141,6 @@ do
 done
 
 rm -f %{buildroot}/usr/html/*
-
-%if !%{devel}
-rm -rf %{buildroot}%{_includedir} \
-       %{buildroot}%{_mandir}/man3/upscli_* \
-       %{buildroot}%{_libdir}/*upsclient*
-%endif
 
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
@@ -188,8 +175,9 @@ exit 0
 rm -rf %{buildroot}
 
 %files
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %doc COPYING CREDITS ChangeLog README docs UPGRADING INSTALL NEWS
+%attr(755,root,root) %{initdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
@@ -249,10 +237,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/nitram.8.gz
 %{_mandir}/man8/optiups.8.gz
 %{_mandir}/man8/powerpanel.8.gz
+
 %files client
 %defattr(-,root,root)
 %attr(755,root,root) %{initdir}/ups
-%dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
@@ -273,12 +261,12 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upssched.8.gz
 
 %files cgi
-%defattr(-,root,root)
+%defattr(-,root,root,-)
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/hosts.conf
 %config(noreplace) %attr(600,nut,root) %{_sysconfdir}/ups/upsset.conf
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats.html
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats-single.html
-%{cgidir}/*
+%{cgidir}/
 %{_mandir}/man5/hosts.conf.5.gz
 %{_mandir}/man5/upsstats.html.5.gz
 %{_mandir}/man5/upsset.conf.5.gz
@@ -286,7 +274,18 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsstats.cgi.8.gz
 %{_mandir}/man8/upsset.cgi.8.gz
 
+%files devel
+%defattr(-,root,root,-)
+%{_bindir}/libupsclient-config
+%{_includedir}/*
+%{_mandir}/man3/upscli_*
+%{_libdir}/*upsclient*
+%{_libdir}/pkgconfig/libupsclient.pc
+
 %changelog
+* Mon Mar 26 2007 Than Ngo <than@redhat.com> 2.0.5-3
+- cleanup
+
 * Tue Jan 23 2007 Karsten Hopp <karsten@redhat.com> 2.0.5-2
 - rename fatal to fatal_with_errno in ipv6 patch
 - fix filelist
