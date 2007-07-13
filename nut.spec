@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.0
-Release: 1%{?dist}
+Release: 1.1%{?dist}
 Group: Applications/System
 License: GPL
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -21,7 +21,7 @@ Source2: ups.sysconfig
 Patch0: nut-2.2.0-conf.patch
 Patch1: nut-2.2.0-multilib.patch
 
-Requires: nut-client => 2.0.0 hal
+Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
@@ -37,6 +37,8 @@ BuildRequires: libjpeg-devel
 BuildRequires: fontconfig-devel
 BuildRequires: pkgconfig
 BuildRequires: hal-devel
+BuildRequires: dbus-glib-devel
+BuildRequires: openssl-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
