@@ -3,7 +3,6 @@ SERVER=yes
 # Model of the UPS (filename to call for it, without path)
 # Example - one of
 #	apcsmart	- APC SMartUPS and similar
-#	fentonups	- Fenton UPS
 #	optiups
 #	bestups
 #	genericups

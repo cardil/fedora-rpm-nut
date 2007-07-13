@@ -85,6 +85,19 @@ restart() {
 	start
 }
 
+reload() {
+	# FIXME: upsd and upsmon always return 0
+	# => can't tell if reload was successful
+	if [ "$SERVER" = "yes" ]; then
+		action "Reloading upsd:" /usr/sbin/upsd -c reload
+		RETVAL=$?
+	fi
+	action "Reloading upsmon:" /usr/sbin/upsmon -c reload
+	if [ "$RETVAL" = 0 ]; then
+		RETVAL=$?
+	fi
+}
+
 # See how we are called.
 case "$1" in
 	start)
@@ -96,9 +109,15 @@ case "$1" in
 	restart)
 		restart ;;
 
-	condrestart)
+	try-restart)
 		[ -f /var/lock/subsys/ups ] && restart || :
 		;;
+
+	reload)
+		reload ;;
+
+	force-reload)
+		restart ;;
 
 	status)
 		if [ "$SERVER" = "yes" ]; then
@@ -113,8 +132,8 @@ case "$1" in
 		;;
 
 	*)
-		echo $"Usage: $0 {start|stop|restart|condrestart|status}"
-		exit 1
+		echo $"Usage: $0 {start|stop|restart|try-restart|reload|force-reload|status}"
+		RETVAL=3
 esac
 
 exit $RETVAL

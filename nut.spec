@@ -8,8 +8,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.0.5
-Release: 3
+Version: 2.2.0
+Release: 1%{?dist}
 Group: Applications/System
 License: GPL
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -18,14 +18,10 @@ Source: http://www.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
-Patch0: nut-1.4.0-buildroot.patch
-Patch1: nut-0.45.0-conffiles.patch
-Patch2: nut-0.45.4-conf.patch
-Patch3: nut-2.0.5-multilib.patch
-Patch4: nut-ipv6.patch
-Patch5: nut-2.0.5-pkgconfig.patch
+Patch0: nut-2.2.0-conf.patch
+Patch1: nut-2.2.0-multilib.patch
 
-Requires: nut-client
+Requires: nut-client => 2.0.0
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
@@ -68,7 +64,7 @@ attached to a different computer on the network.
 %package cgi
 Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
-Requires: webserver
+Requires: %{name}-client = %{version}-%{release} webserver
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -77,7 +73,7 @@ browser.
 %package devel
 Group: Development/Libraries
 Summary: Development files for NUT Client
-Requires: webserver
+Requires: %{name}-client = %{version}-%{release} webserver
 
 %description devel
 This package contains the development header files and libraries
@@ -85,15 +81,8 @@ necessary to develop NUT client applications.
  
 %prep
 %setup -q
-%patch0 -p1 -b .buildroot
-%patch1 -p1 -b .conf
-%patch2 -p1 -b .conf1
-%patch3 -p1 -b .multilib
-%patch4 -p1 -b .IPv6
-%patch5 -p1 -b .pkgconfig
-
-iconv -f iso-8859-1 -t utf-8 < man/newhidups.8 > man/newhidups.8_
-mv man/newhidups.8_ man/newhidups.8
+%patch0 -p1 -b .conf
+%patch1 -p1 -b .multilib
 
 %build
 %configure \
@@ -105,9 +94,12 @@ mv man/newhidups.8_ man/newhidups.8
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
-    --with-cgi \
+    --with-all \
+	--with-ipv6 \
     --with-gd-libs \
-    --with-linux-hiddev=%{_includedir}/linux/hiddev.h
+    --with-linux-hiddev=%{_includedir}/linux/hiddev.h \
+	--with-pkgconfig-dir=%{_libdir}/pkgconfig \
+	--disable-static
 
 make %{?_smp_mflags}
 make %{?_smp_mflags} snmp
@@ -123,25 +115,19 @@ mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_localstatedir}/lib/ups \
          %{buildroot}%{initdir}
 
-make install install-conf \
-     install-cgi-conf \
-     install-cgi \
-     install-usb \
-     install-lib \
-     install-snmp DESTDIR=%{buildroot}
+make install DESTDIR=%{buildroot}
 
-install -m 755 drivers/hidups %{buildroot}%{modeldir}/
 install -m 755 drivers/energizerups %{buildroot}%{modeldir}/
 
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
 install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
-install -m 644 scripts/hotplug-ng/nut-usbups.rules %{buildroot}%{_sysconfdir}/udev/rules.d
 
 rm -rf %{buildroot}%{_prefix}/html
+rm -f %{buildroot}%{_libdir}/*.la
 
-# rename
+cd conf; make install DESTDIR=%{buildroot}
 for file in %{buildroot}%{_sysconfdir}/ups/*.sample
 do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
@@ -181,7 +167,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING CREDITS ChangeLog README docs UPGRADING INSTALL NEWS
+%doc COPYING ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
@@ -202,7 +188,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/cyberpower.8.gz
 %{_mandir}/man8/everups.8.gz
 %{_mandir}/man8/etapro.8.gz
-%{_mandir}/man8/fentonups.8.gz
 %{_mandir}/man8/genericups.8.gz
 %{_mandir}/man8/isbmex.8.gz
 %{_mandir}/man8/liebert.8.gz
@@ -211,7 +196,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/nutupsdrv.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/powercom.8.gz
-%{_mandir}/man8/sms.8.gz
 %{_mandir}/man8/tripplite.8.gz
 %{_mandir}/man8/tripplitesu.8.gz
 %{_mandir}/man8/victronups.8.gz
@@ -221,14 +205,10 @@ rm -rf %{buildroot}
 %{_mandir}/man8/energizerups.8.gz
 %{_mandir}/man8/safenet.8.gz
 %{_mandir}/man8/belkinunv.8.gz
-%{_mandir}/man8/hidups.8.gz
-%{_mandir}/man8/ippon.8.gz
-%{_mandir}/man8/newhidups.8.gz
 %{_mandir}/man8/snmp-ups.8.gz
 %{_mandir}/man8/bestfcom.8.gz
 %{_mandir}/man8/cpsups.8.gz
 %{_mandir}/man8/metasys.8.gz
-%{_mandir}/man8/mustek.8.gz
 %{_mandir}/man8/bcmxcp.8*
 %{_mandir}/man8/solis.8*
 %{_mandir}/man8/upscode2.8*
@@ -241,6 +221,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/nitram.8.gz
 %{_mandir}/man8/optiups.8.gz
 %{_mandir}/man8/powerpanel.8.gz
+%{_mandir}/man8/megatec_usb.8.gz
+%{_mandir}/man8/rhino.8.gz
+%{_mandir}/man8/usbhid-ups.8.gz
 
 %files client
 %defattr(-,root,root)
@@ -255,7 +238,8 @@ rm -rf %{buildroot}
 %{_bindir}/upsrw
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
-%{_sbindir}/upssched-cmd
+%{_bindir}/upssched-cmd
+%{_libdir}/libupsclient.so.*
 %{_mandir}/man5/upsmon.conf.5.gz
 %{_mandir}/man5/upssched.conf.5.gz
 %{_mandir}/man8/upsc.8.gz
@@ -283,11 +267,20 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_bindir}/libupsclient-config
 %{_includedir}/*
-%{_mandir}/man3/upscli_*
-%{_libdir}/*upsclient*
+%{_mandir}/man3/upscli*
+%{_libdir}/libupsclient.so
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Jul 13 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-1
+- new upstream version (Resolves: #248074)
+- initscripts update
+- spec file cleanup
+
+* Mon May 07 2007 Arnaud Quette <aquette-dev@gmail.com> 2.1.0-1
+- update to 2.1.0 development tree
+- HAL, ...
+
 * Mon Mar 26 2007 Than Ngo <than@redhat.com> 2.0.5-3
 - cleanup
 
