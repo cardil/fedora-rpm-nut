@@ -21,7 +21,7 @@ Source2: ups.sysconfig
 Patch0: nut-2.2.0-conf.patch
 Patch1: nut-2.2.0-multilib.patch
 
-Requires: nut-client => 2.0.0
+Requires: nut-client => 2.0.0 hal
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
@@ -36,6 +36,7 @@ BuildRequires: libXpm-devel
 BuildRequires: libjpeg-devel
 BuildRequires: fontconfig-devel
 BuildRequires: pkgconfig
+BuildRequires: hal-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -272,6 +273,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Jul 13 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-1.1
+- rebuild
+
 * Fri Jul 13 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-1
 - new upstream version (Resolves: #248074)
 - initscripts update
