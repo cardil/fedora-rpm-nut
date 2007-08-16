@@ -9,9 +9,9 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.0
-Release: 1.1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
-License: GPL
+License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
@@ -20,6 +20,8 @@ Source2: ups.sysconfig
 
 Patch0: nut-2.2.0-conf.patch
 Patch1: nut-2.2.0-multilib.patch
+Patch2: nut-2.2.0-udevusb.patch
+Patch3: nut-2.2.0-glibcopen.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -86,6 +88,8 @@ necessary to develop NUT client applications.
 %setup -q
 %patch0 -p1 -b .conf
 %patch1 -p1 -b .multilib
+%patch2 -p1 -b .udevusb
+%patch3 -p1 -b .open
 
 %build
 %configure \
@@ -105,8 +109,6 @@ necessary to develop NUT client applications.
 	--disable-static
 
 make %{?_smp_mflags}
-make %{?_smp_mflags} snmp
-make %{?_smp_mflags} usb
 
 %install
 rm -rf %{buildroot}
@@ -275,6 +277,11 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed Aug 15 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-2
+- fix #249028 - usb udev rules
+- update initscript and sysconfig file
+- fix calls to open() for compatibility with the new glibc
+
 * Fri Jul 13 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-1.1
 - rebuild
 

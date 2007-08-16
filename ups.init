@@ -25,28 +25,24 @@ fi
 
 start() {
 	if [ "$SERVER" = "yes" ]; then
-		# Exit if server = yes and model = NONE (not configured)
-
-		if [ "$MODEL" = "NONE" ]; then 
-			exit 0
-		fi
-
-		echo -n $"Starting $MODEL: "
-		if [ "$MODEL" = "upsdrvctl" ]; then
-			daemon /sbin/upsdrvctl start
-		else
-			daemon /sbin/$MODEL $OPTIONS $DEVICE 
-		fi
+		echo -n $"Starting UPS driver controller: "
+		daemon /sbin/upsdrvctl start
+		RETVAL=$?
 		echo
 
 		prog="upsd"
 		echo -n $"Starting $prog: "
 		daemon /usr/sbin/upsd $UPSD_OPTIONS
-		RETVAL=$?
+		if [ "$RETVAL" = 0 ]; then
+			RETVAL=$?
+		fi
 		echo
 
 		echo -n $"Starting UPS monitor (master): "
 		daemon /usr/sbin/upsmon
+		if [ "$RETVAL" = 0 ]; then
+			RETVAL=$?
+		fi
 		echo
 	else
 		echo -n $"Starting UPS monitor (slave): "
@@ -122,7 +118,11 @@ case "$1" in
 	status)
 		if [ "$SERVER" = "yes" ]; then
 			if [ "$MODEL" = "upsdrvctl" ]; then
-				/sbin/upsdrvctl -v status
+				# show status of each configured driver
+				for MYMODEL in $(egrep '^[[:space:]]*driver' /etc/ups/ups.conf \
+						| sed 's/.*=[[:space:]]*//'); do 
+					status $MYMODEL
+				done
 			else
 				status $MODEL
 			fi

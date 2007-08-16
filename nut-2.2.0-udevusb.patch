@@ -1,0 +1,10 @@
+--- nut-2.2.0/scripts/udev/nut-usbups.rules.in.udevusb	2007-08-15 13:25:38.000000000 +0200
++++ nut-2.2.0/scripts/udev/nut-usbups.rules.in	2007-08-15 13:25:50.000000000 +0200
+@@ -1,6 +1,6 @@
+ # udev rules for the NUT USB drivers
+ 
+-SUBSYSTEM!="usb_device", GOTO="nut-usbups_rules_end"
++SUBSYSTEM!="usb", GOTO="nut-usbups_rules_end"
+ ACTION!="add", GOTO="nut-usbups_rules_end"
+ 
+ # MGE UPS SYSTEMS - usbhid-ups
