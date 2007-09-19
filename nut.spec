@@ -9,12 +9,12 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
-Source: http://www.networkupstools.org/source/2.0/%{name}-%{version}.tar.gz
+Source: http://www.networkupstools.org/source/2.2/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
@@ -22,6 +22,7 @@ Patch0: nut-2.2.0-conf.patch
 Patch1: nut-2.2.0-multilib.patch
 Patch2: nut-2.2.0-udevusb.patch
 Patch3: nut-2.2.0-glibcopen.patch
+Patch4: nut-2.2.0-wrongssl.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -78,7 +79,7 @@ browser.
 %package devel
 Group: Development/Libraries
 Summary: Development files for NUT Client
-Requires: %{name}-client = %{version}-%{release} webserver
+Requires: %{name}-client = %{version}-%{release} webserver openssl-devel
 
 %description devel
 This package contains the development header files and libraries
@@ -90,6 +91,7 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .multilib
 %patch2 -p1 -b .udevusb
 %patch3 -p1 -b .open
+%patch4 -p1 -b .wrongssl
 
 %build
 %configure \
@@ -277,6 +279,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Thu Sep 06 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-3
+- fix wrong libssl flags in devel, fix devel package dependencies
+
 * Wed Aug 15 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-2
 - fix #249028 - usb udev rules
 - update initscript and sysconfig file
