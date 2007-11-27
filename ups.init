@@ -26,27 +26,27 @@ fi
 start() {
 	if [ "$SERVER" = "yes" ]; then
 		echo -n $"Starting UPS driver controller: "
-		daemon /sbin/upsdrvctl start
+		daemon /sbin/upsdrvctl start > /dev/null 2>&1 && success || failure
 		RETVAL=$?
 		echo
 
 		prog="upsd"
 		echo -n $"Starting $prog: "
-		daemon /usr/sbin/upsd $UPSD_OPTIONS
+		daemon /usr/sbin/upsd $UPSD_OPTIONS > /dev/null 2>&1 && success || failure
 		if [ "$RETVAL" = 0 ]; then
 			RETVAL=$?
 		fi
 		echo
 
 		echo -n $"Starting UPS monitor (master): "
-		daemon /usr/sbin/upsmon
+		daemon /usr/sbin/upsmon > dev/null 2>&1 && success || failure
 		if [ "$RETVAL" = 0 ]; then
 			RETVAL=$?
 		fi
 		echo
 	else
 		echo -n $"Starting UPS monitor (slave): "
-		daemon /usr/sbin/upsmon
+		daemon /usr/sbin/upsmon > /dev/null 2>&1 && success || failure
 		echo
 	fi
 
@@ -61,15 +61,14 @@ stop() {
 	if [ "$SERVER" = "yes" ]; then
 		prog="upsd"
 		echo -n $"Stopping $prog: "
-		killproc upsd
+		killproc upsd > /dev/null 2>&1 && success || failure
 		RETVAL=$?
 		echo
 
-		echo -n $"Shutting down $MODEL: "
-		if [ "$MODEL" = "upsdrvctl" ]; then
-			/sbin/upsdrvctl stop
-		else
-			killproc $MODEL
+		echo -n $"Shutting down upsdrvctl: "
+		/sbin/upsdrvctl stop > /dev/null 2>&1 && success || failure
+		if [ "$RETVAL" = 0 ]; then
+			RETVAL=$?
 		fi
 		echo
 	fi

@@ -1,0 +1,12 @@
+diff -up nut-2.2.0/scripts/hal/20-ups-nut-device.fdi.usbhal nut-2.2.0/scripts/hal/20-ups-nut-device.fdi
+--- nut-2.2.0/scripts/hal/20-ups-nut-device.fdi.usbhal	2007-07-02 16:19:48.000000000 +0200
++++ nut-2.2.0/scripts/hal/20-ups-nut-device.fdi	2007-11-27 09:43:35.000000000 +0100
+@@ -1,7 +1,7 @@
+ <?xml version="1.0" encoding="ISO-8859-1"?> <!-- -*- SGML -*- -->
+ <deviceinfo version="0.2">
+   <device>
+-    <match key="info.bus" string="usb_device">
++    <match key="info.bus" string="usb">
+ 
+       <!-- MGE UPS SYSTEMS -->
+       <match key="usb_device.vendor_id" int="0x0463">

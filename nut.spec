@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.0
-Release: 3%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -23,6 +23,7 @@ Patch1: nut-2.2.0-multilib.patch
 Patch2: nut-2.2.0-udevusb.patch
 Patch3: nut-2.2.0-glibcopen.patch
 Patch4: nut-2.2.0-wrongssl.patch
+Patch5: nut-2.2.0-usbhal.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -84,7 +85,7 @@ Requires: %{name}-client = %{version}-%{release} webserver openssl-devel
 %description devel
 This package contains the development header files and libraries
 necessary to develop NUT client applications.
- 
+
 %prep
 %setup -q
 %patch0 -p1 -b .conf
@@ -92,6 +93,7 @@ necessary to develop NUT client applications.
 %patch2 -p1 -b .udevusb
 %patch3 -p1 -b .open
 %patch4 -p1 -b .wrongssl
+%patch5 -p1 -b .usbhal
 
 %build
 %configure \
@@ -112,6 +114,15 @@ necessary to develop NUT client applications.
 
 make %{?_smp_mflags}
 
+# fix old enconding manpages
+mv man/upscode2.8 man/upscode2.8.iso
+iconv -f ISO8859-1 -t UTF-8 -o man/upscode2.8 man/upscode2.8.iso 
+mv man/bcmxcp.8 man/bcmxcp.8.iso
+iconv -f ISO8859-1 -t UTF-8 -o man/bcmxcp.8 man/bcmxcp.8.iso 
+mv man/bcmxcp_usb.8 man/bcmxcp_usb.8.iso
+iconv -f ISO8859-1 -t UTF-8 -o man/bcmxcp_usb.8 man/bcmxcp_usb.8.iso 
+rm -f man/*.iso
+
 %install
 rm -rf %{buildroot}
 
@@ -120,7 +131,9 @@ mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_sysconfdir}/udev/rules.d \
          %{buildroot}%{piddir} \
          %{buildroot}%{_localstatedir}/lib/ups \
-         %{buildroot}%{initdir}
+         %{buildroot}%{initdir} \
+         %{buildroot}%{_libexecdir} \
+         %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty
 
 make install DESTDIR=%{buildroot}
 
@@ -130,6 +143,11 @@ install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
 install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
+
+install -m 644 scripts/hal/20-ups-nut-device.fdi \
+        %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty
+
+mv %{buildroot}%{modeldir}/hald-addon* %{buildroot}%{_libexecdir}
 
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
@@ -154,6 +172,7 @@ done
 
 %post client
 /sbin/chkconfig --add ups
+/sbin/ldconfig
 exit 0
 
 %preun client
@@ -161,6 +180,7 @@ if [ "$1" = "0" ]; then
     /sbin/service ups stop > /dev/null 2>&1
     /sbin/chkconfig --del ups
 fi
+/sbin/ldconfig
 exit 0
 
 %postun client
@@ -179,12 +199,14 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
-%config(noreplace) %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
+%config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
 %{modeldir}/*
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_datadir}/cmdvartab
 %{_datadir}/driver.list
+%{_libexecdir}/hald-addon*
+%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
@@ -279,6 +301,15 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Nov 27 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-5
+- fix udev rules and hal information files
+- fix init script
+
+* Wed Sep 19 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-4
+- fix manpages encodings
+- run ldconfig after client (un)install
+- fix HAL support
+
 * Thu Sep 06 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-3
 - fix wrong libssl flags in devel, fix devel package dependencies
 
