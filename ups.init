@@ -116,15 +116,7 @@ case "$1" in
 
 	status)
 		if [ "$SERVER" = "yes" ]; then
-			if [ "$MODEL" = "upsdrvctl" ]; then
-				# show status of each configured driver
-				for MYMODEL in $(egrep '^[[:space:]]*driver' /etc/ups/ups.conf \
-						| sed 's/.*=[[:space:]]*//'); do 
-					status $MYMODEL
-				done
-			else
-				status $MODEL
-			fi
+			status upsdrvctl
 			status upsd
 		fi
 		status upsmon
