@@ -303,6 +303,7 @@ rm -rf %{buildroot}
 %changelog
 * Wed Nov 28 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-6
 - fix forgotten bug in init script
+- do not hardcode the uucp group in udev patch
 
 * Tue Nov 27 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-5
 - fix udev rules and hal information files
