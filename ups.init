@@ -1,11 +1,22 @@
 #! /bin/bash
 #
+# ups: Starts the Network UPS Tools
+#
 # chkconfig: - 26 74
 # description: Network UPS Tools is a collection of programs which provide a common \
-# interface for monitoring and administering UPS hardware.
-
+#		interface for monitoring and administering UPS hardware.
 # processname: upsd
 # config: /etc/ups/
+# config: /etc/sysconfig/ups
+#
+### BEGIN INIT INFO
+# Provides: ups
+# Required-Start: $syslog $network $named
+# Default-Stop: 0 1 6
+# Short-Description: Starts the Network UPS tools
+# Description: Network UPS Tools is a collection of programs which provide a common \
+#		interface for monitoring and administering UPS hardware. 
+### END INIT INFO
 
 # Source function library.
 if [ -f /etc/init.d/functions ]; then
@@ -39,7 +50,7 @@ start() {
 		echo
 
 		echo -n $"Starting UPS monitor (master): "
-		daemon /usr/sbin/upsmon > dev/null 2>&1 && success || failure
+		daemon /usr/sbin/upsmon > /dev/null 2>&1 && success || failure
 		if [ "$RETVAL" = 0 ]; then
 			RETVAL=$?
 		fi
@@ -116,7 +127,6 @@ case "$1" in
 
 	status)
 		if [ "$SERVER" = "yes" ]; then
-			status upsdrvctl
 			status upsd
 		fi
 		status upsmon

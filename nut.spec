@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.0
-Release: 6%{?dist}
+Release: 6.1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -301,6 +301,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Thu Nov 29 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-6.1
+- init script update, fix a typo
+
 * Wed Nov 28 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-6
 - fix forgotten bug in init script
 - do not hardcode the uucp group in udev patch
