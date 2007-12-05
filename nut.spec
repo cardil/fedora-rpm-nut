@@ -301,6 +301,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed Dec 05 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-6.2
+- rebuild
+
 * Thu Nov 29 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-6.1
 - init script update, fix a typo
 
