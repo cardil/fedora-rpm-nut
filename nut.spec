@@ -8,8 +8,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.2.0
-Release: 6.2%{?dist}
+Version: 2.2.1
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -18,11 +18,10 @@ Source: http://www.networkupstools.org/source/2.2/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
-Patch0: nut-2.2.0-conf.patch
-Patch1: nut-2.2.0-multilib.patch
-Patch2: nut-2.2.0-udevusb.patch
-Patch3: nut-2.2.0-glibcopen.patch
-Patch4: nut-2.2.0-wrongssl.patch
+Patch0: nut-2.2.1-conf.patch
+Patch1: nut-2.2.1-multilib.patch
+Patch2: nut-2.2.1-udevusb.patch
+Patch3: nut-2.2.1-glibcopen.patch
 Patch5: nut-2.2.0-usbhal.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
@@ -92,7 +91,6 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .multilib
 %patch2 -p1 -b .udevusb
 %patch3 -p1 -b .open
-%patch4 -p1 -b .wrongssl
 %patch5 -p1 -b .usbhal
 
 %build
@@ -301,6 +299,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed Jan 09 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.1-1
+- new upstream version
+
 * Wed Dec 05 2007 Tomas Smetana <tsmetana@redhat.com> 2.2.0-6.2
 - rebuild
 

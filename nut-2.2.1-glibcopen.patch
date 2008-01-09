@@ -1,0 +1,12 @@
+diff -up nut-2.2.1/drivers/megatec_usb.c.open nut-2.2.1/drivers/megatec_usb.c
+--- nut-2.2.1/drivers/megatec_usb.c.open	2008-01-09 14:22:27.000000000 +0100
++++ nut-2.2.1/drivers/megatec_usb.c	2008-01-09 14:23:00.000000000 +0100
+@@ -207,7 +207,7 @@ int ser_open(const char *port)
+ 	/* link the matchers */
+ 	regex_matcher->next = &subdriver_matcher;
+ 
+-	ret = usb->open(&udev, &usbdevice, regex_matcher, NULL);
++	ret = (usb->open)(&udev, &usbdevice, regex_matcher, NULL);
+ 	if (ret < 0)
+ 		usb_open_error(port);
+ 
