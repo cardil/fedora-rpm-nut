@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -299,6 +299,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Feb 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.1-2
+- rebuild (gcc-4.3)
+
 * Wed Jan 09 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.1-1
 - new upstream version
 
