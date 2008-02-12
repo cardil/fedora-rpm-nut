@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -22,7 +22,8 @@ Patch0: nut-2.2.1-conf.patch
 Patch1: nut-2.2.1-multilib.patch
 Patch2: nut-2.2.1-udevusb.patch
 Patch3: nut-2.2.1-glibcopen.patch
-Patch5: nut-2.2.0-usbhal.patch
+Patch4: nut-2.2.0-usbhal.patch
+Patch5: nut-2.2.1-compile.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -91,7 +92,8 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .multilib
 %patch2 -p1 -b .udevusb
 %patch3 -p1 -b .open
-%patch5 -p1 -b .usbhal
+%patch4 -p1 -b .usbhal
+%patch5 -p1 -b .netdb
 
 %build
 %configure \
@@ -299,6 +301,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Feb 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.1-3
+- fix compilation error with new glibc headers
+
 * Tue Feb 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.1-2
 - rebuild (gcc-4.3)
 

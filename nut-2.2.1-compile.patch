@@ -1,0 +1,12 @@
+diff -up nut-2.2.1/include/common.h.netdb nut-2.2.1/include/common.h
+--- nut-2.2.1/include/common.h.netdb	2008-01-28 03:12:22.000000000 +0100
++++ nut-2.2.1/include/common.h	2008-01-28 03:12:47.000000000 +0100
+@@ -38,6 +38,8 @@
+ #include <syslog.h>
+ #include <unistd.h>
+ #include <assert.h>
++#define __USE_GNU
++#include <netdb.h>
+ 
+ #include "timehead.h"
+ #include "attribute.h"
