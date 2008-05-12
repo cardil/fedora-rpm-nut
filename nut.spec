@@ -25,7 +25,7 @@ Patch3: nut-2.2.1-glibcopen.patch
 Patch4: nut-2.2.2-usbhal.patch
 Patch5: nut-2.2.2-halpath.patch
 
-Requires: nut-client => 2.0.0 hal dbus-glib nss_compat_ossl
+Requires: nut-client => 2.0.0 hal dbus-glib openssl-devel
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
