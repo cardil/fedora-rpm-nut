@@ -8,8 +8,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.2.1
-Release: 3%{?dist}
+Version: 2.2.2
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -20,12 +20,12 @@ Source2: ups.sysconfig
 
 Patch0: nut-2.2.1-conf.patch
 Patch1: nut-2.2.1-multilib.patch
-Patch2: nut-2.2.1-udevusb.patch
+Patch2: nut-2.2.2-udevusb.patch
 Patch3: nut-2.2.1-glibcopen.patch
-Patch4: nut-2.2.0-usbhal.patch
-Patch5: nut-2.2.1-compile.patch
+Patch4: nut-2.2.2-usbhal.patch
+Patch5: nut-2.2.2-halpath.patch
 
-Requires: nut-client => 2.0.0 hal dbus-glib
+Requires: nut-client => 2.0.0 hal dbus-glib nss_compat_ossl
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
@@ -43,6 +43,10 @@ BuildRequires: pkgconfig
 BuildRequires: hal-devel
 BuildRequires: dbus-glib-devel
 BuildRequires: openssl-devel
+BuildRequires: autoconf
+BuildRequires: automake
+BuildRequires: libtool
+BuildRequires: neon-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -77,10 +81,19 @@ Requires: %{name}-client = %{version}-%{release} webserver
 This package includes CGI programs for accessing UPS status via a web
 browser.
 
+%package xml
+Group: Applications/System
+Summary: XML UPS driver for the Network UPS Tools
+Requires: %{name}-client = %{version}-%{release}
+
+%description xml
+This package adds the netxml-ups driver, that allows NUT to monitor a XML
+capable UPS.
+
 %package devel
 Group: Development/Libraries
 Summary: Development files for NUT Client
-Requires: %{name}-client = %{version}-%{release} webserver openssl-devel
+Requires: %{name}-client = %{version}-%{release} webserver nss_compat_ossl-devel
 
 %description devel
 This package contains the development header files and libraries
@@ -93,9 +106,10 @@ necessary to develop NUT client applications.
 %patch2 -p1 -b .udevusb
 %patch3 -p1 -b .open
 %patch4 -p1 -b .usbhal
-%patch5 -p1 -b .netdb
+%patch5 -p1 -b .halpath
 
 %build
+autoreconf
 %configure \
     --with-user=%{name} \
     --with-group=uucp \
@@ -144,10 +158,10 @@ install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
 install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
 
-install -m 644 scripts/hal/20-ups-nut-device.fdi \
-        %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty
+install -m 644 scripts/hal/ups-nut-device.fdi \
+        %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
 
-mv %{buildroot}%{modeldir}/hald-addon* %{buildroot}%{_libexecdir}
+#mv %{buildroot}%{modeldir}/hald-addon* %{buildroot}%{_libexecdir}
 
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
@@ -201,6 +215,7 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
 %{modeldir}/*
+%exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_datadir}/cmdvartab
@@ -277,6 +292,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upslog.8.gz
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
+%{_mandir}/man8/netxml-ups.8.gz
 
 %files cgi
 %defattr(-,root,root,-)
@@ -292,15 +308,22 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsstats.cgi.8.gz
 %{_mandir}/man8/upsset.cgi.8.gz
 
+%files xml
+%defattr(-,root,root)
+%{modeldir}/netxml-ups
+%doc %{_mandir}/man8/netxml-ups.8.gz
+
 %files devel
 %defattr(-,root,root,-)
-%{_bindir}/libupsclient-config
 %{_includedir}/*
 %{_mandir}/man3/upscli*
 %{_libdir}/libupsclient.so
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon May 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-1
+- new upstream version
+
 * Tue Feb 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.1-3
 - fix compilation error with new glibc headers
 

@@ -1,7 +1,7 @@
-diff -up nut-2.2.1/scripts/udev/nut-usbups.rules.in.udevusb nut-2.2.1/scripts/udev/nut-usbups.rules.in
---- nut-2.2.1/scripts/udev/nut-usbups.rules.in.udevusb	2008-01-09 13:58:41.000000000 +0100
-+++ nut-2.2.1/scripts/udev/nut-usbups.rules.in	2008-01-09 13:59:33.000000000 +0100
-@@ -8,64 +8,64 @@ BUS!="usb", GOTO="nut-usbups_rules_end"
+diff -up nut-2.2.2/scripts/udev/nut-usbups.rules.in.udevusb nut-2.2.2/scripts/udev/nut-usbups.rules.in
+--- nut-2.2.2/scripts/udev/nut-usbups.rules.in.udevusb	2008-05-09 14:47:18.000000000 +0200
++++ nut-2.2.2/scripts/udev/nut-usbups.rules.in	2008-05-09 14:47:40.000000000 +0200
+@@ -8,68 +8,68 @@ BUS!="usb", GOTO="nut-usbups_rules_end"
  LABEL="nut-usbups_rules_real"
  
  # MGE UPS SYSTEMS - usbhid-ups
@@ -28,7 +28,7 @@ diff -up nut-2.2.1/scripts/udev/nut-usbups.rules.in.udevusb nut-2.2.1/scripts/ud
 -SYSFS{idVendor}=="06da", SYSFS{idProduct}=="ffff", MODE="664", GROUP="@RUN_AS_GROUP@"
 +ATTR{idVendor}=="06da", ATTR{idProduct}=="ffff", MODE="664", GROUP="@RUN_AS_GROUP@"
  
- # Cypress Semiconductor USB to Serial
+ # Cypress Semiconductor USB to Serial - megatec_usb
 -SYSFS{idVendor}=="0665", SYSFS{idProduct}=="5161", MODE="664", GROUP="@RUN_AS_GROUP@"
 +ATTR{idVendor}=="0665", ATTR{idProduct}=="5161", MODE="664", GROUP="@RUN_AS_GROUP@"
  
@@ -50,9 +50,15 @@ diff -up nut-2.2.1/scripts/udev/nut-usbups.rules.in.udevusb nut-2.2.1/scripts/ud
 -SYSFS{idVendor}=="ffff", SYSFS{idProduct}=="0000", MODE="664", GROUP="@RUN_AS_GROUP@"
 +ATTR{idVendor}=="ffff", ATTR{idProduct}=="0000", MODE="664", GROUP="@RUN_AS_GROUP@"
  
+ # Unitek - megatec_usb
+-SYSFS{idVendor}=="0f03", SYSFS{idProduct}=="0001", MODE="664", GROUP="@RUN_AS_GROUP@"
++ATTR{idVendor}=="0f03", ATTR{idProduct}=="0001", MODE="664", GROUP="@RUN_AS_GROUP@"
+ 
  # Powerware - bcmxcp_usb
 -SYSFS{idVendor}=="0592", SYSFS{idProduct}=="0002", MODE="664", GROUP="@RUN_AS_GROUP@"
+-SYSFS{idVendor}=="06da", SYSFS{idProduct}=="0002", MODE="664", GROUP="@RUN_AS_GROUP@"
 +ATTR{idVendor}=="0592", ATTR{idProduct}=="0002", MODE="664", GROUP="@RUN_AS_GROUP@"
++ATTR{idVendor}=="06da", ATTR{idProduct}=="0002", MODE="664", GROUP="@RUN_AS_GROUP@"
  
  # Tripp Lite - tripplite_usb
 -SYSFS{idVendor}=="09ae", SYSFS{idProduct}=="0001", MODE="664", GROUP="@RUN_AS_GROUP@"

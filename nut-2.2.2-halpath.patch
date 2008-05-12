@@ -1,0 +1,28 @@
+diff -up nut-2.2.2/m4/nut_check_libhal.m4.halpath nut-2.2.2/m4/nut_check_libhal.m4
+--- nut-2.2.2/m4/nut_check_libhal.m4.halpath	2008-05-12 08:22:14.000000000 +0200
++++ nut-2.2.2/m4/nut_check_libhal.m4	2008-05-12 08:22:51.000000000 +0200
+@@ -63,22 +63,8 @@ if test -z "${nut_have_libhal_seen}"; th
+    dnl As per HAL spec, §5 Callouts and §2 Device Information Files
+    dnl - addon install path: $libdir/hal
+    AC_MSG_CHECKING(for libhal Callouts path)
+-   if (test -d "/usr/lib/hal" || test -d "/usr/lib64/hal")
+-   then
+-     # For Debian
+-     HAL_CALLOUTS_PATH="${libdir}/hal"
+-	   AC_MSG_RESULT(${HAL_CALLOUTS_PATH})
+-   else # For RedHat
+-     if (test -d "/usr/libexec")
+-     then
+-       HAL_CALLOUTS_PATH="${libexecdir}"
+-       AC_MSG_RESULT(${HAL_CALLOUTS_PATH})
+-     else
+-       # FIXME
+-       HAL_CALLOUTS_PATH=""
+-	     AC_MSG_RESULT(not found)
+-     fi
+-   fi
++   HAL_CALLOUTS_PATH="${libexecdir}"
++   AC_MSG_RESULT(${HAL_CALLOUTS_PATH})
+ 
+    dnl - fdi install path: $datarootdir/hal/fdi/information/20thirdparty
+    AC_MSG_CHECKING(for libhal Device Information path)
