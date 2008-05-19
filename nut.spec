@@ -25,7 +25,7 @@ Patch3: nut-2.2.1-glibcopen.patch
 Patch4: nut-2.2.2-usbhal.patch
 Patch5: nut-2.2.2-halpath.patch
 
-Requires: nut-client => 2.0.0 hal dbus-glib openssl-devel
+Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
@@ -93,7 +93,7 @@ capable UPS.
 %package devel
 Group: Development/Libraries
 Summary: Development files for NUT Client
-Requires: %{name}-client = %{version}-%{release} webserver nss_compat_ossl-devel
+Requires: %{name}-client = %{version}-%{release} webserver openssl-devel
 
 %description devel
 This package contains the development header files and libraries
@@ -321,6 +321,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon May 19 2008 Tomas Smetana <tsmetana@redhat.com>
+- fix requirements in spec file
+
 * Mon May 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-1
 - new upstream version
 
