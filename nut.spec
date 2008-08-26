@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -64,8 +64,9 @@ live status tracking on web pages, and more.
 %package client
 Group: Applications/System
 Summary: Network UPS Tools client monitoring utilities
-Prereq: chkconfig
-Prereq: /usr/sbin/useradd
+Requires(post): chkconfig
+Requires(preun): chkconfig
+Requires(pre): /usr/sbin/useradd
 
 %description client
 This package includes the client utilities that are required to monitor a
@@ -76,6 +77,7 @@ attached to a different computer on the network.
 Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
+Requires(pre): /usr/sbin/useradd
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -89,6 +91,17 @@ Requires: %{name}-client = %{version}-%{release}
 %description xml
 This package adds the netxml-ups driver, that allows NUT to monitor a XML
 capable UPS.
+
+%package hal
+Summary:        UPS Monitoring Software
+Group:          Hardware/UPS
+Requires:       hal
+Conflicts:      apcupsd, %{name}
+
+%description hal
+This package contains the HAL enabled version of the drivers. You can use
+this for most USB connected UPSes that are powering a single system with a
+graphical desktop.
 
 %package devel
 Group: Development/Libraries
@@ -104,7 +117,7 @@ necessary to develop NUT client applications.
 %patch0 -p1 -b .conf
 %patch1 -p1 -b .multilib
 %patch2 -p1 -b .udevusb
-%patch3 -p1 -b .open
+#%patch3 -p1 -b .open
 %patch4 -p1 -b .usbhal
 %patch5 -p1 -b .halpath
 
@@ -201,6 +214,7 @@ exit 0
 if [ "$1" -ge "1" ]; then
     /sbin/service ups condrestart > /dev/null 2>&1
 fi
+/sbin/ldconfig
 exit 0
 
 %clean
@@ -213,15 +227,12 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
-%config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_datadir}/cmdvartab
 %{_datadir}/driver.list
-%{_libexecdir}/hald-addon*
-%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
@@ -313,6 +324,13 @@ rm -rf %{buildroot}
 %{modeldir}/netxml-ups
 %doc %{_mandir}/man8/netxml-ups.8.gz
 
+%files hal
+%defattr(-,root,root)
+%doc AUTHORS COPYING ChangeLog MAINTAINERS NEWS README UPGRADING docs/nut-hal.txt
+%config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
+%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
+%{_libexecdir}/hald-addon*
+
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/*
@@ -321,8 +339,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
-* Mon May 19 2008 Tomas Smetana <tsmetana@redhat.com>
+* Mon Aug 25 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-2
 - fix requirements in spec file
+- build a separate hal package
 
 * Mon May 12 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-1
 - new upstream version
