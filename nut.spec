@@ -94,7 +94,7 @@ capable UPS.
 
 %package hal
 Summary:        UPS Monitoring Software
-Group:          Hardware/UPS
+Group:          Applications/System
 Requires:       hal
 Conflicts:      apcupsd, %{name}
 
