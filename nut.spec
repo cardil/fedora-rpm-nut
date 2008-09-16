@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.2
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -227,6 +227,7 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
+%config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
@@ -339,6 +340,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon Sep 15 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-3
+- fix #461374 - add missing udev rules
+
 * Mon Aug 25 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-2
 - fix requirements in spec file
 - build a separate hal package
