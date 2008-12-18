@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.2
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -124,7 +124,7 @@ necessary to develop NUT client applications.
 %patch6 -p1 -b .trippliteusb_476850
 
 %build
-autoreconf
+autoreconf -i
 %configure \
     --with-user=%{name} \
     --with-group=uucp \
@@ -140,6 +140,9 @@ autoreconf
     --with-linux-hiddev=%{_includedir}/linux/hiddev.h \
 	--with-pkgconfig-dir=%{_libdir}/pkgconfig \
 	--disable-static
+
+sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
+sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 make %{?_smp_mflags}
 
@@ -342,6 +345,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Thu Dec 18 2008 Michal Hlavinka <mhlavink@redhat.com> 2.2.2-5
+- remove rpath, fix libtool
+
 * Wed Dec 17 2008 Michal Hlavinka <mhlavink@redhat.com> 2.2.2-4
 - fix #476850 - tripplite_usb driver segfaults when UPS on battery
 
