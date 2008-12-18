@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.2.2
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -24,6 +24,7 @@ Patch2: nut-2.2.2-udevusb.patch
 Patch3: nut-2.2.1-glibcopen.patch
 Patch4: nut-2.2.2-usbhal.patch
 Patch5: nut-2.2.2-halpath.patch
+Patch6: nut-2.2.2-trippliteusb_476850.patch 
 
 Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -120,6 +121,7 @@ necessary to develop NUT client applications.
 #%patch3 -p1 -b .open
 %patch4 -p1 -b .usbhal
 %patch5 -p1 -b .halpath
+%patch6 -p1 -b .trippliteusb_476850
 
 %build
 autoreconf
@@ -340,6 +342,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed Dec 17 2008 Michal Hlavinka <mhlavink@redhat.com> 2.2.2-4
+- fix #476850 - tripplite_usb driver segfaults when UPS on battery
+
 * Mon Sep 15 2008 Tomas Smetana <tsmetana@redhat.com> 2.2.2-3
 - fix #461374 - add missing udev rules
 
