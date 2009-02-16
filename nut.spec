@@ -8,8 +8,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.2.2
-Release: 6%{?dist}
+Version: 2.4.0
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -21,10 +21,7 @@ Source2: ups.sysconfig
 Patch0: nut-2.2.1-conf.patch
 Patch1: nut-2.2.1-multilib.patch
 Patch2: nut-2.2.2-udevusb.patch
-Patch3: nut-2.2.1-glibcopen.patch
-Patch4: nut-2.2.2-usbhal.patch
-Patch5: nut-2.2.2-halpath.patch
-Patch6: nut-2.2.2-trippliteusb_476850.patch 
+Patch3: nut-2.2.2-halpath.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
 Requires(post): fileutils /sbin/chkconfig /sbin/service
@@ -48,6 +45,7 @@ BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: libtool
 BuildRequires: neon-devel
+BuildRequires: powerman-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -94,10 +92,10 @@ This package adds the netxml-ups driver, that allows NUT to monitor a XML
 capable UPS.
 
 %package hal
-Summary:        UPS Monitoring Software
-Group:          Applications/System
-Requires:       hal
-Conflicts:      apcupsd, %{name}
+Summary: UPS Monitoring Software
+Group: Applications/System
+Requires: hal
+Conflicts: apcupsd, %{name}
 
 %description hal
 This package contains the HAL enabled version of the drivers. You can use
@@ -118,10 +116,7 @@ necessary to develop NUT client applications.
 %patch0 -p1 -b .conf
 %patch1 -p1 -b .multilib
 %patch2 -p1 -b .udevusb
-#%patch3 -p1 -b .open
-%patch4 -p1 -b .usbhal
-%patch5 -p1 -b .halpath
-%patch6 -p1 -b .trippliteusb_476850
+%patch3 -p1 -b .halpath
 
 %build
 autoreconf -i
@@ -135,12 +130,13 @@ autoreconf -i
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
     --with-all \
-	--with-ipv6 \
+    --with-ipv6 \
     --with-gd-libs \
     --with-linux-hiddev=%{_includedir}/linux/hiddev.h \
-	--with-pkgconfig-dir=%{_libdir}/pkgconfig \
-	--disable-static
+    --with-pkgconfig-dir=%{_libdir}/pkgconfig \
+    --disable-static
 
+#remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
@@ -169,8 +165,6 @@ mkdir -p %{buildroot}%{modeldir} \
 
 make install DESTDIR=%{buildroot}
 
-install -m 755 drivers/energizerups %{buildroot}%{modeldir}/
-
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
@@ -178,8 +172,6 @@ install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
 
 install -m 644 scripts/hal/ups-nut-device.fdi \
         %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
-
-#mv %{buildroot}%{modeldir}/hald-addon* %{buildroot}%{_libexecdir}
 
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
@@ -228,11 +220,12 @@ rm -rf %{buildroot}
 %files
 %defattr(-,root,root,-)
 %doc COPYING ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
+%config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/nut.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
-%config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
+%config %attr(644,root,root) /lib/udev/rules.d/52-nut-usbups.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
@@ -243,47 +236,46 @@ rm -rf %{buildroot}
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
 %{_mandir}/man8/apcsmart.8.gz
+%{_mandir}/man8/bcmxcp.8*
+%{_mandir}/man8/bcmxcp_usb.8.gz
 %{_mandir}/man8/belkin.8.gz
+%{_mandir}/man8/bestfcom.8.gz
+%{_mandir}/man8/belkinunv.8.gz
 %{_mandir}/man8/bestups.8.gz
 %{_mandir}/man8/bestuferrups.8.gz
+%{_mandir}/man8/blazer.8.gz
 %{_mandir}/man8/cyberpower.8.gz
+%{_mandir}/man8/dummy-ups.8.gz
 %{_mandir}/man8/everups.8.gz
 %{_mandir}/man8/etapro.8.gz
+%{_mandir}/man8/gamatronic.8.gz
 %{_mandir}/man8/genericups.8.gz
 %{_mandir}/man8/isbmex.8.gz
 %{_mandir}/man8/liebert.8.gz
 %{_mandir}/man8/masterguard.8.gz
+%{_mandir}/man8/megatec.8.gz
+%{_mandir}/man8/megatec_usb.8.gz
+%{_mandir}/man8/metasys.8.gz
 %{_mandir}/man8/mge-utalk.8.gz
+%{_mandir}/man8/mge-shut.8.gz
 %{_mandir}/man8/nutupsdrv.8.gz
 %{_mandir}/man8/oneac.8.gz
+%{_mandir}/man8/optiups.8.gz
 %{_mandir}/man8/powercom.8.gz
+%{_mandir}/man8/powerman-pdu.8.gz
+%{_mandir}/man8/powerpanel.8.gz
+%{_mandir}/man8/rhino.8.gz
+%{_mandir}/man8/richcomm_usb.8.gz
+%{_mandir}/man8/safenet.8.gz
+%{_mandir}/man8/snmp-ups.8.gz
+%{_mandir}/man8/solis.8*
 %{_mandir}/man8/tripplite.8.gz
+%{_mandir}/man8/tripplite_usb.8.gz
 %{_mandir}/man8/tripplitesu.8.gz
 %{_mandir}/man8/victronups.8.gz
+%{_mandir}/man8/upscode2.8*
 %{_mandir}/man8/upsd.8.gz
 %{_mandir}/man8/upsdrvctl.8.gz
-%{_mandir}/man8/mge-shut.8.gz
-%{_mandir}/man8/energizerups.8.gz
-%{_mandir}/man8/safenet.8.gz
-%{_mandir}/man8/belkinunv.8.gz
-%{_mandir}/man8/snmp-ups.8.gz
-%{_mandir}/man8/bestfcom.8.gz
-%{_mandir}/man8/cpsups.8.gz
-%{_mandir}/man8/metasys.8.gz
-%{_mandir}/man8/bcmxcp.8*
-%{_mandir}/man8/solis.8*
-%{_mandir}/man8/upscode2.8*
-%{_mandir}/man8/bcmxcp_usb.8.gz
-%{_mandir}/man8/gamatronic.8.gz
-%{_mandir}/man8/tripplite_usb.8.gz
-%{_mandir}/man8/dummy-ups.8.gz
-%{_mandir}/man8/al175.8.gz
-%{_mandir}/man8/megatec.8.gz
-%{_mandir}/man8/nitram.8.gz
-%{_mandir}/man8/optiups.8.gz
-%{_mandir}/man8/powerpanel.8.gz
-%{_mandir}/man8/megatec_usb.8.gz
-%{_mandir}/man8/rhino.8.gz
 %{_mandir}/man8/usbhid-ups.8.gz
 
 %files client
@@ -333,7 +325,6 @@ rm -rf %{buildroot}
 %files hal
 %defattr(-,root,root)
 %doc AUTHORS COPYING ChangeLog MAINTAINERS NEWS README UPGRADING docs/nut-hal.txt
-%config %attr(644,root,root) %{_sysconfdir}/udev/rules.d/*
 %{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
 %{_libexecdir}/hald-addon*
 
@@ -345,6 +336,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon Feb 16 2009 Michal Hlavinka <mhlavink@redhat.com> 2.4.0-1
+- update to new stable branch 2.4
+
 * Sat Jan 17 2009 Tomas Mraz <tmraz@redhat.com> 2.2.2-6
 - rebuild with new openssl
 
@@ -637,7 +631,7 @@ rm -rf %{buildroot}
 
 * Wed Jul 12 2000 Than Ngo <than@redhat.de>
 - fix initscript and specfile, it should work with 6.x and 7.x
-- add --with-statepath and --sysconfdir to %configure (thanks Michael)
+- add --with-statepath and --sysconfdir to %%configure (thanks Michael)
 
 * Sat Jul 08 2000 Than Ngo <than@redhat.de>
 - add Prereq: /etc/init.d
