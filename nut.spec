@@ -8,7 +8,7 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.4.0
+Version: 2.4.1
 Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
@@ -256,6 +256,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/megatec.8.gz
 %{_mandir}/man8/megatec_usb.8.gz
 %{_mandir}/man8/metasys.8.gz
+%{_mandir}/man8/microdowell.8.gz
 %{_mandir}/man8/mge-utalk.8.gz
 %{_mandir}/man8/mge-shut.8.gz
 %{_mandir}/man8/nutupsdrv.8.gz
@@ -336,6 +337,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Feb 17 2009 Michal Hlavinka <mhlavink@redhat.com> 2.4.1-1
+- update to 2.4.1
+- added support for microdowell ups
+
 * Mon Feb 16 2009 Michal Hlavinka <mhlavink@redhat.com> 2.4.0-1
 - update to new stable branch 2.4
 
