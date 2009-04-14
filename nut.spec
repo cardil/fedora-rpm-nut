@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -122,7 +122,7 @@ necessary to develop NUT client applications.
 autoreconf -i
 %configure \
     --with-user=%{name} \
-    --with-group=uucp \
+    --with-group=dialout \
     --with-statepath=%{piddir} \
     --with-pidpath=%{piddir} \
     --with-altpidpath=%{piddir} \
@@ -183,15 +183,15 @@ do
 done
 
 %pre
-/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G dialout \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 
 %pre client
-/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G dialout \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 
 %pre cgi
-/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G uucp \
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G dialout \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 
 %post client
@@ -337,6 +337,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Apr 14 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-3
+- udev changed group from uucp to dialout, follow the change (#494020)
+
 * Wed Feb 25 2009 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.4.1-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_11_Mass_Rebuild
 
