@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -183,16 +183,19 @@ do
 done
 
 %pre
-/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G dialout \
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
+/usr/sbin/usermod -G dialout %{name}
 
 %pre client
-/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G dialout \
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
+/usr/sbin/usermod -G dialout %{name}
 
 %pre cgi
-/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} -G dialout \
+/usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
+/usr/sbin/usermod -G dialout %{name}
 
 %post client
 /sbin/chkconfig --add ups
@@ -337,6 +340,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Apr 17 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-4
+- change group even for existing nut user (#495999)
+
 * Tue Apr 14 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-3
 - udev changed group from uucp to dialout, follow the change (#494020)
 
