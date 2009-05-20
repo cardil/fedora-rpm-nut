@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.1
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -24,6 +24,7 @@ Patch2: nut-2.2.2-udevusb.patch
 Patch3: nut-2.2.2-halpath.patch
 
 Requires: nut-client => 2.0.0 hal dbus-glib
+Requires(pre): hal
 Requires(post): fileutils /sbin/chkconfig /sbin/service
 Requires(postun): fileutils /sbin/chkconfig /sbin/service
 
@@ -65,7 +66,7 @@ Group: Applications/System
 Summary: Network UPS Tools client monitoring utilities
 Requires(post): chkconfig
 Requires(preun): chkconfig
-Requires(pre): /usr/sbin/useradd
+Requires(pre): /usr/sbin/useradd hal
 
 %description client
 This package includes the client utilities that are required to monitor a
@@ -76,7 +77,7 @@ attached to a different computer on the network.
 Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
-Requires(pre): /usr/sbin/useradd
+Requires(pre): /usr/sbin/useradd hal
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -340,6 +341,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed May 20 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-5
+- add requires for hal (#501687)
+
 * Fri Apr 17 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-4
 - change group even for existing nut user (#495999)
 
