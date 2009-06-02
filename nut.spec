@@ -183,7 +183,7 @@ do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
 done
 
-mv %{buildroot}/lib/udev/rules.d/62-nut-usbups.rules /lib/udev/rules.d/62-nut-usbups.rules
+mv %{buildroot}/lib/udev/rules.d/52-nut-usbups.rules /lib/udev/rules.d/62-nut-usbups.rules
 
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
