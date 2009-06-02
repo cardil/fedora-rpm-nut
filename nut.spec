@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.1
-Release: 5%{?dist}
+Release: 6%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -183,6 +183,8 @@ do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
 done
 
+mv %{buildroot}/lib/udev/rules.d/62-nut-usbups.rules /lib/udev/rules.d/62-nut-usbups.rules
+
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
@@ -229,7 +231,7 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
-%config %attr(644,root,root) /lib/udev/rules.d/52-nut-usbups.rules
+%config %attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
@@ -341,6 +343,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed May 20 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-6
+- fix coexistence with virtualbox (#488368)
+
 * Wed May 20 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-5
 - add requires for hal (#501687)
 
