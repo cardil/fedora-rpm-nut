@@ -9,43 +9,46 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.1
-Release: 8%{?dist}
+Release: 9%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
-Source: http://www.networkupstools.org/source/2.2/%{name}-%{version}.tar.gz
+Source: http://www.networkupstools.org/source/2.4/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 
 Patch0: nut-2.2.1-conf.patch
-Patch1: nut-2.2.1-multilib.patch
+
+# sent upstream, for nut <= 2.4.1
 Patch2: nut-2.2.2-udevusb.patch
+
+
 Patch3: nut-2.2.2-halpath.patch
 
-Requires: nut-client => 2.0.0 hal dbus-glib
+Requires: nut-client => 2.4.0 hal
 Requires(pre): hal
-Requires(post): fileutils /sbin/chkconfig /sbin/service
-Requires(postun): fileutils /sbin/chkconfig /sbin/service
+Requires(post): fileutils chkconfig initscripts
+Requires(postun): fileutils chkconfig initscripts
 
-BuildRequires: gd-devel
-BuildRequires: freetype-devel
-BuildRequires: netpbm-devel
-BuildRequires: libpng-devel
-BuildRequires: net-snmp-devel
-BuildRequires: elfutils-devel
-BuildRequires: libX11-devel
-BuildRequires: libXpm-devel
-BuildRequires: libjpeg-devel
-BuildRequires: fontconfig-devel
-BuildRequires: pkgconfig
-BuildRequires: hal-devel
-BuildRequires: dbus-glib-devel
-BuildRequires: openssl-devel
 BuildRequires: autoconf
 BuildRequires: automake
+BuildRequires: dbus-glib-devel
+BuildRequires: elfutils-devel
+BuildRequires: fontconfig-devel
+BuildRequires: freetype-devel
+BuildRequires: gd-devel
+BuildRequires: hal-devel
+BuildRequires: libjpeg-devel
+BuildRequires: libpng-devel
 BuildRequires: libtool
+BuildRequires: libX11-devel
+BuildRequires: libXpm-devel
 BuildRequires: neon-devel
+BuildRequires: net-snmp-devel
+BuildRequires: netpbm-devel
+BuildRequires: openssl-devel
+BuildRequires: pkgconfig
 BuildRequires: powerman-devel
 
 %ifnarch s390 s390x
@@ -115,7 +118,6 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch0 -p1 -b .conf
-%patch1 -p1 -b .multilib
 %patch2 -p1 -b .udevusb
 %patch3 -p1 -b .halpath
 
@@ -135,7 +137,8 @@ autoreconf -i
     --with-gd-libs \
     --with-linux-hiddev=%{_includedir}/linux/hiddev.h \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
-    --disable-static
+    --disable-static \
+    --libdir=%{_libdir}
 
 #remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
@@ -177,13 +180,25 @@ install -m 644 scripts/hal/ups-nut-device.fdi \
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
 
-cd conf; make install DESTDIR=%{buildroot}
+pushd conf; 
+make install DESTDIR=%{buildroot}
 for file in %{buildroot}%{_sysconfdir}/ups/*.sample
 do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
 done
+popd
 
 mv %{buildroot}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/lib/udev/rules.d/62-nut-usbups.rules
+
+#pushd %{buildroot}
+# fix encoding
+for fe in ./docs/cables/powerware.txt
+do
+  iconv -f iso-8859-1 -t utf-8 <$fe >$fe.new
+  touch -r $fe $fe.new
+  mv -f $fe.new $fe
+done
+
 
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
@@ -231,7 +246,7 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
-%config %attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
+%attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
@@ -308,7 +323,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upslog.8.gz
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
-%{_mandir}/man8/netxml-ups.8.gz
 
 %files cgi
 %defattr(-,root,root,-)
@@ -343,6 +357,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Thu Nov 05 2009 Michal Hlavinka <mhlavink@redhat.com> - 2.4.1-9
+- spec cleanup
+
 * Fri Aug 21 2009 Tomas Mraz <tmraz@redhat.com> - 2.4.1-8
 - rebuilt with new openssl
 

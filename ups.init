@@ -12,6 +12,7 @@
 ### BEGIN INIT INFO
 # Provides: ups
 # Required-Start: $syslog $network $named
+# Required-Stop: $local_fs
 # Default-Stop: 0 1 6
 # Short-Description: Starts the Network UPS tools
 # Description: Network UPS Tools is a collection of programs which provide a common \
