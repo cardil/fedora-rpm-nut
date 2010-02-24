@@ -6,7 +6,7 @@ Index: nut/conf/upssched.conf.sample.in
  # A shell script with a big case..esac construct should work nicely for this.
  # An example has been provided to help you get started.
  
--CMDSCRIPT /usr/local/ups/bin/upssched-cmd
+-CMDSCRIPT @BINDIR@/upssched-cmd
 +CMDSCRIPT @bindir@/upssched-cmd
  
  # ============================================================================
