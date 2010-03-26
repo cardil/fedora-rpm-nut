@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.3
-Release: 1%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -22,6 +22,12 @@ Patch0: nut-2.2.1-conf.patch
 
 #rejected upstream
 Patch1: nut-2.2.2-halpath.patch
+
+#from upstream, required for nut <= 2.4.3, bz#575334
+Patch2: nut-2.4.3-bz575334.patch
+
+#sent upstream, rhbz#573806
+Patch3: nut-2.4.3-udev.patch
 
 Requires: nut-client => 2.4.0 hal
 Requires(pre): hal
@@ -116,6 +122,8 @@ necessary to develop NUT client applications.
 %setup -q
 %patch0 -p1 -b .conf
 %patch1 -p1 -b .halpath
+%patch2 -p1 -b .bz575334
+%patch3 -p1 -b .udevpatch
 
 %build
 autoreconf -i
@@ -356,6 +364,13 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Mar 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-3
+- replace BUS with SUBSYSTEMS in udev rules (#573806)
+
+* Mon Mar 23 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-2
+- reduced size of buffer to maximum size supported by low-speed USB devices
+- fixes #575334
+
 * Wed Feb 24 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-1
 - cyberpower driver was replaced by the powerpanel driver
 - general USB support has been vastly improved, including many bug
