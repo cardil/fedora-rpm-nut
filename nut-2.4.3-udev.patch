@@ -18,4 +18,4 @@ Index: nut/scripts/udev/nut-usbups.rules.in
 +SUBSYSTEMS!="usb", GOTO="nut-usbups_rules_end"
  
  LABEL="nut-usbups_rules_real"
- #  Krauler UP-M500VA  - megatec_usb
+ #  Krauler UP-M500VA  - blazer_usb
