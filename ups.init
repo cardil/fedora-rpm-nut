@@ -51,14 +51,14 @@ start() {
 		echo
 
 		echo -n $"Starting UPS monitor (master): "
-		daemon /usr/sbin/upsmon > /dev/null 2>&1 && success || failure
+		daemon --pidfile /var/run/nut/upsmon.pid /usr/sbin/upsmon > /dev/null 2>&1 && success || failure
 		if [ "$RETVAL" = 0 ]; then
 			RETVAL=$?
 		fi
 		echo
 	else
 		echo -n $"Starting UPS monitor (slave): "
-		daemon /usr/sbin/upsmon > /dev/null 2>&1 && success || failure
+		daemon --pidfile /var/run/nut/upsmon.pid /usr/sbin/upsmon > /dev/null 2>&1 && success || failure
 		echo
 	fi
 
@@ -67,7 +67,7 @@ start() {
 
 stop() {
 	echo -n $"Stopping UPS monitor: "
-	killproc upsmon
+	killproc -p /var/run/nut/upsmon.pid upsmon
 	echo
 
 	if [ "$SERVER" = "yes" ]; then
@@ -89,6 +89,12 @@ stop() {
 
 restart() {
 	stop
+        waitmore=5
+        while [ -n "$(ls /var/run/nut/)" -a $waitmore -ge 1 ]
+        do
+          sleep 1
+          waitmore=$((waitmore-1))
+        done
 	start
 }
 

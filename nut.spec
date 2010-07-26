@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.3
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -26,8 +26,11 @@ Patch1: nut-2.2.2-halpath.patch
 #from upstream, required for nut <= 2.4.3, bz#575334
 Patch2: nut-2.4.3-bz575334.patch
 
-#sent upstream, rhbz#573806
+# sent upstream, for nut<=2.4.3, rhbz#573806
 Patch3: nut-2.4.3-udev.patch
+
+# for nut <= 2.4.3, rhbz#616375
+Patch4: nut-2.4.3-portcrash.patch
 
 Requires: nut-client => 2.4.0 hal
 Requires(pre): hal
@@ -124,6 +127,7 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .halpath
 %patch2 -p1 -b .bz575334
 %patch3 -p1 -b .udevpatch
+%patch4 -p1 -b .portcrash
 
 %build
 autoreconf -i
@@ -365,6 +369,11 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon Jul 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-5
+- fix crash when port= is ommited (#616375)
+- fix issue where nut fails to restart because it did not finished termination 
+  yet and old instance blocks devices (#193058)
+
 * Fri Jul 07 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-4
 - follow licensing guideline update
 
