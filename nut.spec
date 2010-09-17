@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.3
-Release: 5%{?dist}
+Release: 6%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -369,6 +369,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Sep 17 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-6
+- fix inconsitent name of upsdrvctl in init script (#633116)
+
 * Mon Jul 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-5
 - fix crash when port= is ommited (#616375)
 - fix issue where nut fails to restart because it did not finished termination 

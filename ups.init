@@ -77,7 +77,7 @@ stop() {
 		RETVAL=$?
 		echo
 
-		echo -n $"Shutting down upsdrvctl: "
+		echo -n $"Shutting down UPS driver controller: "
 		/sbin/upsdrvctl stop > /dev/null 2>&1 && success || failure
 		if [ "$RETVAL" = 0 ]; then
 			RETVAL=$?
