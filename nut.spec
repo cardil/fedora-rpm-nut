@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.3
-Release: 7%{?dist}
+Release: 8%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -369,6 +369,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Nov 05 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-8
+- rebuild because libraries were updated
+
 * Wed Sep 29 2010 jkeating - 2.4.3-7
 - Rebuilt for gcc bug 634757
 
