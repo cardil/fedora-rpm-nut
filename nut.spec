@@ -9,7 +9,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.4.3
-Release: 8%{?dist}
+Release: 9%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -17,6 +17,7 @@ Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.4/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
+Source3: nut-client.tmpfiles
 
 Patch0: nut-2.2.1-conf.patch
 
@@ -179,6 +180,10 @@ make install DESTDIR=%{buildroot}
 install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
 install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
+%if %{?fedora}0 > 140 || %{?rhel}0 > 60
+  install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/tmpfiles.d/nut-client.conf
+%endif
+
 install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
 
 install -m 644 scripts/hal/ups-nut-device.fdi \
@@ -223,6 +228,7 @@ done
 /usr/sbin/usermod -G dialout %{name}
 
 %post client
+install -d -m 0750 -o nut -g nut %{piddir}
 /sbin/chkconfig --add ups
 /sbin/ldconfig
 exit 0
@@ -231,6 +237,7 @@ exit 0
 if [ "$1" = "0" ]; then
     /sbin/service ups stop > /dev/null 2>&1
     /sbin/chkconfig --del ups
+    rm -rf %{piddir}
 fi
 /sbin/ldconfig
 exit 0
@@ -318,8 +325,11 @@ rm -rf %{buildroot}
 %dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
+%if %{?fedora}0 > 140 || %{?rhel}0 > 60
+  %config(noreplace) %{_sysconfdir}/tmpfiles.d/nut-client.conf
+%endif
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
-%dir %attr(750,nut,nut) %{piddir}
+%ghost %{piddir}
 %{_bindir}/upsc
 %{_bindir}/upscmd
 %{_bindir}/upsrw
@@ -369,6 +379,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Nov 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-9
+- use %%ghost for /var/run/nut (#656645)
+
 * Fri Nov 05 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-8
 - rebuild because libraries were updated
 
