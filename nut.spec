@@ -8,30 +8,18 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.4.3
-Release: 9%{?dist}
+Version: 2.6.0
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
-Source: http://www.networkupstools.org/source/2.4/%{name}-%{version}.tar.gz
+Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source1: ups.init
 Source2: ups.sysconfig
 Source3: nut-client.tmpfiles
 
 Patch0: nut-2.2.1-conf.patch
-
-#rejected upstream
-Patch1: nut-2.2.2-halpath.patch
-
-#from upstream, required for nut <= 2.4.3, bz#575334
-Patch2: nut-2.4.3-bz575334.patch
-
-# sent upstream, for nut<=2.4.3, rhbz#573806
-Patch3: nut-2.4.3-udev.patch
-
-# for nut <= 2.4.3, rhbz#616375
-Patch4: nut-2.4.3-portcrash.patch
 
 Requires: nut-client => 2.4.0 hal
 Requires(pre): hal
@@ -125,14 +113,14 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch0 -p1 -b .conf
-%patch1 -p1 -b .halpath
-%patch2 -p1 -b .bz575334
-%patch3 -p1 -b .udevpatch
-%patch4 -p1 -b .portcrash
 
 %build
 autoreconf -i
 %configure \
+    --with-all \
+    --with-hal \
+    --with-hal-callouts-path=%{_libexecdir} \
+    --with-cgi \
     --with-user=%{name} \
     --with-group=dialout \
     --with-statepath=%{piddir} \
@@ -141,27 +129,16 @@ autoreconf -i
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
-    --with-all \
-    --with-ipv6 \
-    --with-linux-hiddev=%{_includedir}/linux/hiddev.h \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --libdir=%{_libdir}
+#    --with-doc \ asciidoc >= 8.6.3 is required
 
 #remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 
 make %{?_smp_mflags}
-
-# fix old enconding manpages
-mv man/upscode2.8 man/upscode2.8.iso
-iconv -f ISO8859-1 -t UTF-8 -o man/upscode2.8 man/upscode2.8.iso 
-mv man/bcmxcp.8 man/bcmxcp.8.iso
-iconv -f ISO8859-1 -t UTF-8 -o man/bcmxcp.8 man/bcmxcp.8.iso 
-mv man/bcmxcp_usb.8 man/bcmxcp_usb.8.iso
-iconv -f ISO8859-1 -t UTF-8 -o man/bcmxcp_usb.8 man/bcmxcp_usb.8.iso 
-rm -f man/*.iso
 
 %install
 rm -rf %{buildroot}
@@ -184,7 +161,7 @@ install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
   install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/tmpfiles.d/nut-client.conf
 %endif
 
-install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
+#install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
 
 install -m 644 scripts/hal/ups-nut-device.fdi \
         %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
@@ -290,10 +267,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/isbmex.8.gz
 %{_mandir}/man8/ivtscd.8.gz
 %{_mandir}/man8/liebert.8.gz
-%{_mandir}/man8/liebertgxt2.8.gz
+%{_mandir}/man8/liebert-esp2.8.gz
 %{_mandir}/man8/masterguard.8.gz
-%{_mandir}/man8/megatec.8.gz
-%{_mandir}/man8/megatec_usb.8.gz
 %{_mandir}/man8/metasys.8.gz
 %{_mandir}/man8/microdowell.8.gz
 %{_mandir}/man8/mge-utalk.8.gz
@@ -379,6 +354,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon Jan 17 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-1
+- nut updated to 2.6.0
+- fixed reading reports than 8 bytes
+
 * Fri Nov 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-9
 - use %%ghost for /var/run/nut (#656645)
 
