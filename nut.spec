@@ -356,7 +356,7 @@ rm -rf %{buildroot}
 %changelog
 * Mon Jan 17 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-1
 - nut updated to 2.6.0
-- fixed reading reports than 8 bytes
+- fixed reading of reports bigger than 8 bytes
 
 * Fri Nov 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-9
 - use %%ghost for /var/run/nut (#656645)
