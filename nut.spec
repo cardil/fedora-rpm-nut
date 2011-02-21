@@ -1,3 +1,4 @@
+#TODO: split nut-client so it does not require python
 %define nut_uid 57
 %define nut_gid 57
 
@@ -6,10 +7,14 @@
 %define piddir  /var/run/nut
 %define modeldir /sbin
 
+%if ! (0%{?fedora} > 12 || 0%{?rhel} > 6)
+%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
+%endif
+
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -45,6 +50,7 @@ BuildRequires: netpbm-devel
 BuildRequires: openssl-devel
 BuildRequires: pkgconfig
 BuildRequires: powerman-devel
+BuildRequires: python-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -65,6 +71,8 @@ Summary: Network UPS Tools client monitoring utilities
 Requires(post): chkconfig
 Requires(preun): chkconfig
 Requires(pre): /usr/sbin/useradd hal
+#only for python and gui part
+#Requires:
 
 %description client
 This package includes the client utilities that are required to monitor a
@@ -113,6 +121,9 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch0 -p1 -b .conf
+sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
+sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
+sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 
 %build
 autoreconf -i
@@ -121,6 +132,7 @@ autoreconf -i
     --with-hal \
     --with-hal-callouts-path=%{_libexecdir} \
     --with-cgi \
+    --datadir=%{_datadir}/%{name} \
     --with-user=%{name} \
     --with-group=dialout \
     --with-statepath=%{piddir} \
@@ -188,6 +200,16 @@ do
   mv -f $fe.new $fe
 done
 
+# install PyNUT 
+install -p -D -m 644 scripts/python/module/PyNUT.py %{buildroot}%{python_sitelib}/PyNUT.py
+# install nut-monitor
+mkdir -p %{buildroot}%{_datadir}/nut/nut-monitor/pixmaps
+install -p -m 755 scripts/python/app/NUT-Monitor %{buildroot}%{_datadir}/nut/nut-monitor/nut-monitor
+install -p -m 644 scripts/python/app/gui-1.3.glade %{buildroot}%{_datadir}/nut/nut-monitor
+install -p -m 644 scripts/python/app/pixmaps/* %{buildroot}%{_datadir}/nut/nut-monitor/pixmaps/
+install -p -D scripts/python/app/nut-monitor.png %{buildroot}%{_datadir}/pixmaps/nut-monitor.png
+desktop-file-install --dir=%{buildroot}%{_datadir}/applications scripts/python/app/nut-monitor.desktop
+ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
 
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
@@ -242,8 +264,8 @@ rm -rf %{buildroot}
 %exclude %{modeldir}/netxml-ups
 %{_sbindir}/upsd
 %{_bindir}/upslog
-%{_datadir}/cmdvartab
-%{_datadir}/driver.list
+%{_datadir}/%{name}/cmdvartab
+%{_datadir}/%{name}/driver.list
 %{_mandir}/man5/nut.conf.5.gz
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
@@ -320,6 +342,11 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upslog.8.gz
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
+%{_bindir}/nut-monitor
+%{python_sitelib}/PyNUT.*
+%{_datadir}/nut
+%{_datadir}/pixmaps/nut-monitor.png
+%{_datadir}/applications/nut-monitor.desktop
 
 %files cgi
 %defattr(-,root,root,-)
@@ -354,6 +381,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon Feb 21 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-3
+- add nut-monitor (gui) to client sub-package
+
 * Tue Feb 08 2011 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.0-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_15_Mass_Rebuild
 
