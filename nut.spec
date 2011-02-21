@@ -51,6 +51,7 @@ BuildRequires: openssl-devel
 BuildRequires: pkgconfig
 BuildRequires: powerman-devel
 BuildRequires: python-devel
+BuildRequires: desktop-file-utils
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
