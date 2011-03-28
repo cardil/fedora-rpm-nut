@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.0
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -125,6 +125,7 @@ necessary to develop NUT client applications.
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
+sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 
 %build
 autoreconf -i
@@ -382,6 +383,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Mon Mar 28 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-4
+- fix list of ssl libraries in libupsclient.pc
+
 * Mon Feb 21 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-3
 - add nut-monitor (gui) to client sub-package
 
