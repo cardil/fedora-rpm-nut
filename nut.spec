@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.0
-Release: 5%{?dist}
+Release: 6%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -26,6 +26,7 @@ Source3: nut-client.tmpfiles
 
 Patch0: nut-2.2.1-conf.patch
 
+Requires(pre): udev
 Requires(post): fileutils chkconfig initscripts
 Requires(postun): fileutils chkconfig initscripts
 
@@ -68,7 +69,7 @@ Group: Applications/System
 Summary: Network UPS Tools client monitoring utilities
 Requires(post): chkconfig
 Requires(preun): chkconfig
-Requires(pre): /usr/sbin/useradd
+Requires(pre): shadow-utils udev
 #only for python and gui part
 #Requires:
 
@@ -81,7 +82,7 @@ attached to a different computer on the network.
 Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
-Requires(pre): /usr/sbin/useradd
+Requires(pre): shadow-utils
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -359,6 +360,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed Apr 20 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-6
+- standard dependency adds udev, but we need it for %%pre script
+
 * Wed Apr 20 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-5
 - drop hal support, it was removed from rawhide
 
