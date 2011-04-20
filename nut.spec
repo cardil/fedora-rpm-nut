@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -26,8 +26,6 @@ Source3: nut-client.tmpfiles
 
 Patch0: nut-2.2.1-conf.patch
 
-Requires: nut-client => 2.4.0 hal
-Requires(pre): hal
 Requires(post): fileutils chkconfig initscripts
 Requires(postun): fileutils chkconfig initscripts
 
@@ -38,7 +36,6 @@ BuildRequires: elfutils-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
 BuildRequires: gd-devel
-BuildRequires: hal-devel
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: libtool
@@ -71,7 +68,7 @@ Group: Applications/System
 Summary: Network UPS Tools client monitoring utilities
 Requires(post): chkconfig
 Requires(preun): chkconfig
-Requires(pre): /usr/sbin/useradd hal
+Requires(pre): /usr/sbin/useradd
 #only for python and gui part
 #Requires:
 
@@ -84,7 +81,7 @@ attached to a different computer on the network.
 Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
-Requires(pre): /usr/sbin/useradd hal
+Requires(pre): /usr/sbin/useradd
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -98,17 +95,6 @@ Requires: %{name}-client = %{version}-%{release}
 %description xml
 This package adds the netxml-ups driver, that allows NUT to monitor a XML
 capable UPS.
-
-%package hal
-Summary: UPS Monitoring Software
-Group: Applications/System
-Requires: hal
-Conflicts: apcupsd, %{name}
-
-%description hal
-This package contains the HAL enabled version of the drivers. You can use
-this for most USB connected UPSes that are powering a single system with a
-graphical desktop.
 
 %package devel
 Group: Development/Libraries
@@ -131,8 +117,7 @@ sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 autoreconf -i
 %configure \
     --with-all \
-    --with-hal \
-    --with-hal-callouts-path=%{_libexecdir} \
+    --without-hal \
     --with-cgi \
     --datadir=%{_datadir}/%{name} \
     --with-user=%{name} \
@@ -163,8 +148,7 @@ mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{piddir} \
          %{buildroot}%{_localstatedir}/lib/ups \
          %{buildroot}%{initdir} \
-         %{buildroot}%{_libexecdir} \
-         %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty
+         %{buildroot}%{_libexecdir}
 
 make install DESTDIR=%{buildroot}
 
@@ -176,9 +160,6 @@ install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 %endif
 
 #install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
-
-install -m 644 scripts/hal/ups-nut-device.fdi \
-        %{buildroot}%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
 
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
@@ -369,12 +350,6 @@ rm -rf %{buildroot}
 %{modeldir}/netxml-ups
 %doc %{_mandir}/man8/netxml-ups.8.gz
 
-%files hal
-%defattr(-,root,root)
-%doc AUTHORS COPYING ChangeLog MAINTAINERS NEWS README UPGRADING docs/nut-hal.txt
-%{_datadir}/hal/fdi/information/20thirdparty/20-ups-nut-device.fdi
-%{_libexecdir}/hald-addon*
-
 %files devel
 %defattr(-,root,root,-)
 %{_includedir}/*
@@ -383,6 +358,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Wed Apr 20 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-5
+- drop hal support, it was removed from rawhide
+
 * Mon Mar 28 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-4
 - fix list of ssl libraries in libupsclient.pc
 
