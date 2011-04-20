@@ -130,6 +130,7 @@ autoreconf -i
     --with-drvpath=%{modeldir} \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
+    --with-udev-dir=/lib/udev \
     --libdir=%{_libdir}
 #    --with-doc \ asciidoc >= 8.6.3 is required
 
