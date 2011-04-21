@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.0
-Release: 6%{?dist}
+Release: 7%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -29,6 +29,7 @@ Patch0: nut-2.2.1-conf.patch
 Requires(pre): udev
 Requires(post): fileutils chkconfig initscripts
 Requires(postun): fileutils chkconfig initscripts
+Obsoletes: nut-hal < 2.6.0-7
 
 BuildRequires: autoconf
 BuildRequires: automake
@@ -360,6 +361,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Thu Apr 21 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-7
+- nut-hal should be obsoleted to prevent broken dependency in yum
+
 * Wed Apr 20 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-6
 - standard dependency adds udev, but we need it for %%pre script
 
