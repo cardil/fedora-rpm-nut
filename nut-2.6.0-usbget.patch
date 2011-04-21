@@ -1,0 +1,28 @@
+Index: /trunk/drivers/libhid.c
+===================================================================
+--- trunk/drivers/libhid.c (revision 2719)
++++ trunk/drivers/libhid.c (revision 2893)
+@@ -142,5 +142,4 @@
+ 	int	id = pData->ReportID;
+ 	int	r;
+-	unsigned char	buf[SMALLBUF];
+ 
+ 	if (rbuf->ts[id] + age > time(NULL)) {
+@@ -150,15 +149,12 @@
+ 	}
+ 
+-	r = comm_driver->get_report(udev, id, buf, sizeof(buf));
++	r = comm_driver->get_report(udev, id, rbuf->data[id], rbuf->len[id]);
+ 	if (r <= 0) {
+ 		return -1;
+ 	}
+ 
+-	/* broken report descriptors are common, so store whatever we can */
+-	memcpy(rbuf->data[id], buf, (r < rbuf->len[id]) ? r : rbuf->len[id]);
+-
+ 	if (rbuf->len[id] != r) {
+ 		upsdebugx(2, "%s: expected %d bytes, but got %d instead", __func__, rbuf->len[id], r);
+-		upsdebug_hex(3, "Report[err]", buf, r);
++		upsdebug_hex(3, "Report[err]", rbuf->data[id], r);
+ 	} else {
+ 		upsdebug_hex(3, "Report[get]", rbuf->data[id], rbuf->len[id]);

@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.0
-Release: 7%{?dist}
+Release: 8%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -25,6 +25,9 @@ Source2: ups.sysconfig
 Source3: nut-client.tmpfiles
 
 Patch0: nut-2.2.1-conf.patch
+
+#for nut < 2.6.1
+Patch1: nut-2.6.0-usbget.patch
 
 Requires(pre): udev
 Requires(post): fileutils chkconfig initscripts
@@ -110,6 +113,7 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch0 -p1 -b .conf
+%patch1 -p1 -b .usbget
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -361,6 +365,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Thu Apr 21 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-8
+- fix usb report reading (#698512)
+
 * Thu Apr 21 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.0-7
 - nut-hal should be obsoleted to prevent broken dependency in yum
 
