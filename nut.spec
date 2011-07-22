@@ -20,9 +20,10 @@ License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
-Source1: ups.init
-Source2: ups.sysconfig
 Source3: nut-client.tmpfiles
+
+# add systemd support
+Patch1:  nut-2.6.1-systemd.patch
 
 Requires(pre): udev
 Requires(post): fileutils chkconfig initscripts
@@ -107,6 +108,7 @@ necessary to develop NUT client applications.
 
 %prep
 %setup -q
+%patch1 -p1 -b .systemd
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -127,6 +129,7 @@ autoreconf -i
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
+    --with-systemdsystemunitdir=/lib/systemd/systemd-unit \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --with-udev-dir=/lib/udev \
@@ -143,17 +146,13 @@ make %{?_smp_mflags}
 rm -rf %{buildroot}
 
 mkdir -p %{buildroot}%{modeldir} \
-         %{buildroot}%{_sysconfdir}/sysconfig \
          %{buildroot}%{_sysconfdir}/udev/rules.d \
+         %{buildroot}%{_sysconfdir}/ups \
          %{buildroot}%{piddir} \
          %{buildroot}%{_localstatedir}/lib/ups \
-         %{buildroot}%{initdir} \
          %{buildroot}%{_libexecdir}
 
 make install DESTDIR=%{buildroot}
-
-install -m 755 %{SOURCE2} %{buildroot}%{_sysconfdir}/sysconfig/ups
-install -m 755 %{SOURCE1} %{buildroot}%{initdir}/ups
 
 %if %{?fedora}0 > 140 || %{?rhel}0 > 60
   install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/tmpfiles.d/nut-client.conf
@@ -241,10 +240,11 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
-%config(noreplace) %attr(644,root,root) %{_sysconfdir}/sysconfig/ups
 %attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
+/lib/systemd/systemd-unit/nut-driver.service
+/lib/systemd/systemd-unit/nut-server.service
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_datadir}/%{name}/cmdvartab
@@ -301,7 +301,6 @@ rm -rf %{buildroot}
 %files client
 %doc COPYING
 %defattr(-,root,root)
-%attr(755,root,root) %{initdir}/ups
 %dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
@@ -316,6 +315,8 @@ rm -rf %{buildroot}
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
 %{_bindir}/upssched-cmd
+/lib/systemd/systemd-unit/nut-monitor.service
+/lib/systemd/system-shutdown/nutshutdown
 %{_libdir}/libupsclient.so.*
 %{_mandir}/man5/upsmon.conf.5.gz
 %{_mandir}/man5/upssched.conf.5.gz
