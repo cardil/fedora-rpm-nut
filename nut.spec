@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -198,6 +198,67 @@ ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 /usr/sbin/usermod -G dialout %{name}
 
+%post
+if [ $1 -eq 1 ] ; then 
+    # Initial installation 
+    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+else
+    # update (migration) sysv init -> systemd
+    # trigger won't work if we change NEVR in Fn-1
+    # also we are splitting one script to multiple service files
+    activate=/bin/false
+    enable=/bin/false
+    TMPF=/var/run/nut/systemdmigration
+    migrate=/bin/false
+    if [ -f /etc/init.d/ups ]; then
+        install -d -o nut -g nut -m 750 /var/run/nut
+        touch $TMPF
+        source $TMPF
+        if ! $enable; then  
+            [ -n "$(find /etc/rc.d/rc5.d/ -name 'S??ups' 2>/dev/null)" ] && enable=/bin/true || :
+        fi
+        if ! $active; then
+            systemctl is-active --quiet ups.service >/dev/null 2>&1 && activate=/bin/true || :
+        fi
+        echo "enable=$enable" >>$TMPF
+        echo "active=$active" >>$TMPF
+        migrate=/bin/true
+    fi
+    if [ -f /etc/sysconfig/ups ]; then
+        source /etc/sysconfig/ups
+        echo "MODE=$MODE" >>$TMPF
+        migrate=/bin/true
+    fi
+    if $migrate; then
+        source $TMPF
+        systemctl stop ups.service >/dev/null 2>&1 || :
+        /sbin/chkconfig ups off>/dev/null 2>&1 || :
+        /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+        case "$MODE" in
+            standalone|netserver|serveronly)
+                $enable && /bin/systemctl enable nut-server.service >/dev/null 2>&1 || :
+                $activate && /bin/systemctl start nut-server.service >/dev/null 2>&1 || :
+                ;;
+        esac
+    fi  
+fi
+
+%preun
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable nut-server.service >/dev/null 2>&1 || :
+    /bin/systemctl --no-reload disable nut-driver.service >/dev/null 2>&1 || :
+    /bin/systemctl stop nut-server.service >/dev/null 2>&1 || :
+    /bin/systemctl stop nut-driver.service >/dev/null 2>&1 || :
+fi
+
+%postun
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    # Package upgrade, not uninstall
+    /bin/systemctl try-restart nut-server.service >/dev/null 2>&1 || :
+fi
+
 %pre client
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
@@ -209,26 +270,63 @@ ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
 /usr/sbin/usermod -G dialout %{name}
 
 %post client
-install -d -m 0750 -o nut -g nut %{piddir}
-/sbin/chkconfig --add ups
-/sbin/ldconfig
-exit 0
+if [ $1 -eq 1 ] ; then 
+    # Initial installation 
+    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+else
+    # update (migration) sysv init -> systemd
+    # trigger won't work if we change NEVR in Fn-1
+    # also we are splitting one script to multiple service files
+    activate=/bin/false
+    enable=/bin/false
+    TMPF=/var/run/nut/systemdmigration
+    migrate=/bin/false
+    if [ -f /etc/init.d/ups ]; then
+        install -d -o nut -g nut -m 750 /var/run/nut
+        touch $TMPF
+        source $TMPF
+        if ! $enable; then  
+            [ -n "$(find /etc/rc.d/rc5.d/ -name 'S??ups' 2>/dev/null)" ] && enable=/bin/true || :
+        fi
+        if ! $active; then
+            systemctl is-active --quiet ups.service >/dev/null 2>&1 && activate=/bin/true || :
+        fi
+        echo "enable=$enable" >>$TMPF
+        echo "active=$active" >>$TMPF
+        migrate=/bin/true
+    fi
+    if [ -f /etc/sysconfig/ups ]; then
+        source /etc/sysconfig/ups
+        echo "MODE=$MODE" >>$TMPF
+        migrate=/bin/true
+    fi
+    if $migrate; then
+        source $TMPF
+        systemctl stop ups.service >/dev/null 2>&1 || :
+        /sbin/chkconfig --del ups.service >/dev/null 2>&1 || :
+        /bin/systemctl daemon-reload >/dev/null 2>&1 || :
+        case "$MODE" in
+            standalone|netserver|netclient)
+                $enable && /bin/systemctl enable nut-monitor.service >/dev/null 2>&1 || :
+                $activate && /bin/systemctl start nut-monitor.service >/dev/null 2>&1 || :
+                ;;
+        esac
+    fi  
+fi
 
 %preun client
-if [ "$1" = "0" ]; then
-    /sbin/service ups stop > /dev/null 2>&1
-    /sbin/chkconfig --del ups
-    rm -rf %{piddir}
+if [ $1 -eq 0 ] ; then
+    # Package removal, not upgrade
+    /bin/systemctl --no-reload disable nut-monitor.service >/dev/null 2>&1 || :
+    /bin/systemctl stop not-monitor.service >/dev/null 2>&1 || :
 fi
-/sbin/ldconfig
-exit 0
 
 %postun client
-if [ "$1" -ge "1" ]; then
-    /sbin/service ups condrestart > /dev/null 2>&1
+/bin/systemctl daemon-reload >/dev/null 2>&1 || :
+if [ $1 -ge 1 ] ; then
+    # Package upgrade, not uninstall
+    /bin/systemctl try-restart nut-monitor.service >/dev/null 2>&1 || :
 fi
-/sbin/ldconfig
-exit 0
 
 %clean
 rm -rf %{buildroot}
@@ -359,6 +457,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Jul 22 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.1-3
+- add initial support for systemd
+
 * Fri Jul 08 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.1-2
 - rebuilt for net-snmp update
 
