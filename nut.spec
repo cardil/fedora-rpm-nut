@@ -129,7 +129,7 @@ autoreconf -i
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
-    --with-systemdsystemunitdir=/lib/systemd/systemd-unit \
+    --with-systemdsystemunitdir=/lib/systemd/system \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --with-udev-dir=/lib/udev \
@@ -217,11 +217,11 @@ else
         if ! $enable; then  
             [ -n "$(find /etc/rc.d/rc5.d/ -name 'S??ups' 2>/dev/null)" ] && enable=/bin/true || :
         fi
-        if ! $active; then
+        if ! $activate; then
             systemctl is-active --quiet ups.service >/dev/null 2>&1 && activate=/bin/true || :
         fi
         echo "enable=$enable" >>$TMPF
-        echo "active=$active" >>$TMPF
+        echo "activate=$activate" >>$TMPF
         migrate=/bin/true
     fi
     if [ -f /etc/sysconfig/ups ]; then
@@ -232,7 +232,7 @@ else
     if $migrate; then
         source $TMPF
         systemctl stop ups.service >/dev/null 2>&1 || :
-        /sbin/chkconfig ups off>/dev/null 2>&1 || :
+        /sbin/chkconfig ups off >/dev/null 2>&1 || :
         /bin/systemctl daemon-reload >/dev/null 2>&1 || :
         case "$MODE" in
             standalone|netserver|serveronly)
@@ -288,11 +288,11 @@ else
         if ! $enable; then  
             [ -n "$(find /etc/rc.d/rc5.d/ -name 'S??ups' 2>/dev/null)" ] && enable=/bin/true || :
         fi
-        if ! $active; then
+        if ! $activate; then
             systemctl is-active --quiet ups.service >/dev/null 2>&1 && activate=/bin/true || :
         fi
         echo "enable=$enable" >>$TMPF
-        echo "active=$active" >>$TMPF
+        echo "activate=$activate" >>$TMPF
         migrate=/bin/true
     fi
     if [ -f /etc/sysconfig/ups ]; then
@@ -341,8 +341,8 @@ rm -rf %{buildroot}
 %attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
-/lib/systemd/systemd-unit/nut-driver.service
-/lib/systemd/systemd-unit/nut-server.service
+/lib/systemd/system/nut-driver.service
+/lib/systemd/system/nut-server.service
 %{_sbindir}/upsd
 %{_bindir}/upslog
 %{_datadir}/%{name}/cmdvartab
@@ -413,7 +413,7 @@ rm -rf %{buildroot}
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
 %{_bindir}/upssched-cmd
-/lib/systemd/systemd-unit/nut-monitor.service
+/lib/systemd/system/nut-monitor.service
 /lib/systemd/system-shutdown/nutshutdown
 %{_libdir}/libupsclient.so.*
 %{_mandir}/man5/upsmon.conf.5.gz
