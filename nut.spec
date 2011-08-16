@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -25,9 +25,9 @@ Source3: nut-client.tmpfiles
 # add systemd support
 Patch1:  nut-2.6.1-systemd.patch
 
-Requires(pre): udev
-Requires(post): fileutils chkconfig initscripts
-Requires(postun): fileutils chkconfig initscripts
+Requires(pre): shadow-utils udev
+Requires(post): fileutils chkconfig 
+Requires(postun): fileutils chkconfig 
 Obsoletes: nut-hal < 2.6.0-7
 
 BuildRequires: autoconf
@@ -82,7 +82,7 @@ attached to a different computer on the network.
 Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
-Requires(pre): shadow-utils
+Requires(pre): shadow-utils udev
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -457,6 +457,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Aug 16 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.1-4
+- update requirements of packages
+
 * Fri Jul 22 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.1-3
 - add initial support for systemd
 
