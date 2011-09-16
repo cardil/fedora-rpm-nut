@@ -13,17 +13,14 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.6.1
-Release: 4%{?dist}
+Version: 2.6.2
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
-
-# add systemd support
-Patch1:  nut-2.6.1-systemd.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
@@ -50,6 +47,7 @@ BuildRequires: pkgconfig
 BuildRequires: powerman-devel
 BuildRequires: python-devel
 BuildRequires: desktop-file-utils
+BuildRequires: freeipmi-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -108,7 +106,6 @@ necessary to develop NUT client applications.
 
 %prep
 %setup -q
-%patch1 -p1 -b .systemd
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -171,7 +168,9 @@ do
 done
 popd
 
+#fix collision with virtualbox
 mv %{buildroot}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/lib/udev/rules.d/62-nut-usbups.rules
+mv %{buildroot}/lib/udev/rules.d/52-nut-ipmipsu.rules %{buildroot}/lib/udev/rules.d/62-nut-ipmipsu.rules
 
 #pushd %{buildroot}
 # fix encoding
@@ -339,19 +338,36 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
 %attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
+%attr(644,root,root) /lib/udev/rules.d/62-nut-ipmipsu.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 /lib/systemd/system/nut-driver.service
 /lib/systemd/system/nut-server.service
 %{_sbindir}/upsd
+%{_bindir}/nut-scanner
 %{_bindir}/upslog
+%{_libdir}/libnutscan.so.*
 %{_datadir}/%{name}/cmdvartab
 %{_datadir}/%{name}/driver.list
+%{_mandir}/man3/nutscan_add_device_to_device.3.gz
+%{_mandir}/man3/nutscan_add_option_to_device.3.gz
+%{_mandir}/man3/nutscan_cidr_to_ip.3.gz
+%{_mandir}/man3/nutscan_display_parsable.3.gz
+%{_mandir}/man3/nutscan_display_ups_conf.3.gz
+%{_mandir}/man3/nutscan_free_device.3.gz
+%{_mandir}/man3/nutscan_new_device.3.gz
+%{_mandir}/man3/nutscan_scan_avahi.3.gz
+%{_mandir}/man3/nutscan_scan_ipmi.3.gz
+%{_mandir}/man3/nutscan_scan_nut.3.gz
+%{_mandir}/man3/nutscan_scan_snmp.3.gz
+%{_mandir}/man3/nutscan_scan_usb.3.gz
+%{_mandir}/man3/nutscan_scan_xml_http.3.gz
 %{_mandir}/man5/nut.conf.5.gz
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
 %{_mandir}/man8/apcsmart.8.gz
+%{_mandir}/man8/apcsmart-old.8.gz
 %{_mandir}/man8/bcmxcp.8*
 %{_mandir}/man8/bcmxcp_usb.8.gz
 %{_mandir}/man8/belkin.8.gz
@@ -377,6 +393,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/mge-utalk.8.gz
 %{_mandir}/man8/mge-shut.8.gz
 %{_mandir}/man8/nutupsdrv.8.gz
+%{_mandir}/man8/nut-ipmipsu.8.gz
+%{_mandir}/man8/nut-scanner.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/optiups.8.gz
 %{_mandir}/man8/powercom.8.gz
@@ -454,9 +472,13 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_mandir}/man3/upscli*
 %{_libdir}/libupsclient.so
+%{_libdir}/libnutscan.so
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Fri Sep 16 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.2-1
+- nut updated to 2.6.2
+
 * Tue Aug 16 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.1-4
 - update requirements of packages
 
