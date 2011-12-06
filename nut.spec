@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -476,6 +476,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libupsclient.pc
 
 %changelog
+* Tue Dec 06 2011 Adam Jackson <ajax@redhat.com> - 2.6.2-2
+- Rebuild for new libpng
+
 * Fri Sep 16 2011 Michal Hlavinka <mhlavink@redhat.com> - 2.6.2-1
 - nut updated to 2.6.2
 
