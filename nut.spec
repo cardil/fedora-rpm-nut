@@ -13,8 +13,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.6.2
-Release: 2%{?dist}
+Version: 2.6.3
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
@@ -29,6 +29,7 @@ Obsoletes: nut-hal < 2.6.0-7
 
 BuildRequires: autoconf
 BuildRequires: automake
+BuildRequires: avahi-devel
 BuildRequires: dbus-glib-devel
 BuildRequires: elfutils-devel
 BuildRequires: fontconfig-devel
@@ -37,6 +38,7 @@ BuildRequires: gd-devel
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
 BuildRequires: libtool
+BuildRequires: libtool-ltdl-devel
 BuildRequires: libX11-devel
 BuildRequires: libXpm-devel
 BuildRequires: neon-devel
@@ -115,6 +117,7 @@ sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 autoreconf -i
 %configure \
     --with-all \
+    --with-libltdl \
     --without-hal \
     --with-cgi \
     --datadir=%{_datadir}/%{name} \
@@ -471,11 +474,16 @@ rm -rf %{buildroot}
 %defattr(-,root,root,-)
 %{_includedir}/*
 %{_mandir}/man3/upscli*
+%{_mandir}/man3/nutscan*
 %{_libdir}/libupsclient.so
 %{_libdir}/libnutscan.so
 %{_libdir}/pkgconfig/libupsclient.pc
+%{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Jan 05 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-1
+- nut updated to 2.6.3
+
 * Tue Dec 06 2011 Adam Jackson <ajax@redhat.com> - 2.6.2-2
 - Rebuild for new libpng
 
