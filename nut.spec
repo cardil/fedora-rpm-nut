@@ -14,13 +14,14 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+
 Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
+Patch1: nut-2.6.3-tmpfiles.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
@@ -108,6 +109,7 @@ necessary to develop NUT client applications.
 
 %prep
 %setup -q
+%patch1 -p1 -b .tmpfiles
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -481,6 +483,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon Apr 16 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-2
+- do not forget to create /var/run/nut before starting service (#812825)
+
 * Thu Jan 05 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-1
 - nut updated to 2.6.3
 
