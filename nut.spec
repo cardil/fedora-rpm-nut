@@ -1,11 +1,10 @@
 #TODO: split nut-client so it does not require python
-%define nut_uid 57
-%define nut_gid 57
+%global nut_uid 57
+%global nut_gid 57
 
-%define initdir /etc/rc.d/init.d
-%define cgidir  /var/www/nut-cgi-bin
-%define piddir  /var/run/nut
-%define modeldir /sbin
+%global cgidir  /var/www/nut-cgi-bin
+%global piddir  /var/run/nut
+%global modeldir /sbin
 
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 6)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
@@ -16,8 +15,7 @@ Name: nut
 Version: 2.6.3
 Release: 2%{?dist}
 Group: Applications/System
-License: GPLv2+
-Buildroot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
+License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
@@ -115,6 +113,12 @@ sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 
+#fix crlf end of lines
+for f in docs/nut-qa.txt docs/website/css/ie-overrides.css docs/website/scripts/filter_png.js
+do
+  sed -i 's/\r\n*$//' $f
+done
+
 %build
 autoreconf -i
 %configure \
@@ -131,7 +135,7 @@ autoreconf -i
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
-    --with-systemdsystemunitdir=/lib/systemd/system \
+    --with-systemdsystemunitdir=%{_unitdir} \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --with-udev-dir=/lib/udev \
@@ -160,8 +164,6 @@ make install DESTDIR=%{buildroot}
   install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/tmpfiles.d/nut-client.conf
 %endif
 
-#install -m 644 man/gamatronic.*  %{buildroot}%{_mandir}/man8/
-
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
 
@@ -177,7 +179,6 @@ popd
 mv %{buildroot}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/lib/udev/rules.d/62-nut-usbups.rules
 mv %{buildroot}/lib/udev/rules.d/52-nut-ipmipsu.rules %{buildroot}/lib/udev/rules.d/62-nut-ipmipsu.rules
 
-#pushd %{buildroot}
 # fix encoding
 for fe in ./docs/cables/powerware.txt
 do
@@ -203,6 +204,7 @@ ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
 /usr/sbin/usermod -G dialout %{name}
 
 %post
+/sbin/ldconfig
 if [ $1 -eq 1 ] ; then 
     # Initial installation 
     /bin/systemctl daemon-reload >/dev/null 2>&1 || :
@@ -256,7 +258,8 @@ if [ $1 -eq 0 ] ; then
     /bin/systemctl stop nut-driver.service >/dev/null 2>&1 || :
 fi
 
-%postun
+%postun 
+/sbin/ldconfig
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
@@ -274,6 +277,7 @@ fi
 /usr/sbin/usermod -G dialout %{name}
 
 %post client
+/sbin/ldconfig
 if [ $1 -eq 1 ] ; then 
     # Initial installation 
     /bin/systemctl daemon-reload >/dev/null 2>&1 || :
@@ -326,6 +330,7 @@ if [ $1 -eq 0 ] ; then
 fi
 
 %postun client
+/sbin/ldconfig
 /bin/systemctl daemon-reload >/dev/null 2>&1 || :
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
@@ -337,7 +342,7 @@ rm -rf %{buildroot}
 
 %files
 %defattr(-,root,root,-)
-%doc COPYING ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
+%doc COPYING LICENSE-GPL2 LICENSE-GPL3 ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/nut.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
@@ -346,8 +351,8 @@ rm -rf %{buildroot}
 %attr(644,root,root) /lib/udev/rules.d/62-nut-ipmipsu.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
-/lib/systemd/system/nut-driver.service
-/lib/systemd/system/nut-server.service
+%{_unitdir}/nut-driver.service
+%{_unitdir}/nut-server.service
 %{_sbindir}/upsd
 %{_bindir}/nut-scanner
 %{_bindir}/upslog
@@ -417,10 +422,11 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upscode2.8*
 %{_mandir}/man8/upsd.8.gz
 %{_mandir}/man8/upsdrvctl.8.gz
+%{_mandir}/man8/upslog.8.gz
 %{_mandir}/man8/usbhid-ups.8.gz
 
 %files client
-%doc COPYING
+%doc COPYING LICENSE-GPL2 LICENSE-GPL3
 %defattr(-,root,root)
 %dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
@@ -436,7 +442,7 @@ rm -rf %{buildroot}
 %{_sbindir}/upsmon
 %{_sbindir}/upssched
 %{_bindir}/upssched-cmd
-/lib/systemd/system/nut-monitor.service
+%{_unitdir}/nut-monitor.service
 /lib/systemd/system-shutdown/nutshutdown
 %{_libdir}/libupsclient.so.*
 %{_mandir}/man5/upsmon.conf.5.gz
@@ -444,7 +450,6 @@ rm -rf %{buildroot}
 %{_mandir}/man8/upsc.8.gz
 %{_mandir}/man8/upscmd.8.gz
 %{_mandir}/man8/upsrw.8.gz
-%{_mandir}/man8/upslog.8.gz
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
 %{_bindir}/nut-monitor
