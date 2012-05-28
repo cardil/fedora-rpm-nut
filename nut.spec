@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -489,6 +489,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon May 28 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-3
+- bump release nubmer to fix upgrade path
+
 * Mon Apr 16 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-2
 - do not forget to create /var/run/nut before starting service (#812825)
 
