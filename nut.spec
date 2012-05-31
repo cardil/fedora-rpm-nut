@@ -13,13 +13,14 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.3
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
 Patch1: nut-2.6.3-tmpfiles.patch
+Patch2: nut-2.6.3-cve-2012-2944.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
@@ -108,6 +109,7 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch1 -p1 -b .tmpfiles
+%patch2 -p1 -b .cve-2012-2944
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -489,6 +491,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu May 31 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-4
+- fix heap-based buffer overflow due improper processing of non-printable 
+  characters in random network data (CVE-2012-2944)
+
 * Mon May 28 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-3
 - bump release nubmer to fix upgrade path
 
