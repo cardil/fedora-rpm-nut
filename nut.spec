@@ -12,15 +12,14 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.6.3
-Release: 4%{?dist}
+Version: 2.6.4
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
 Patch1: nut-2.6.3-tmpfiles.patch
-Patch2: nut-2.6.3-cve-2012-2944.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
@@ -109,7 +108,6 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch1 -p1 -b .tmpfiles
-%patch2 -p1 -b .cve-2012-2944
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -168,6 +166,8 @@ make install DESTDIR=%{buildroot}
 
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
+rm -rf docs/man
+find docs/ -name 'Makefile*' -delete
 
 pushd conf; 
 make install DESTDIR=%{buildroot}
@@ -407,6 +407,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/mge-shut.8.gz
 %{_mandir}/man8/nutupsdrv.8.gz
 %{_mandir}/man8/nut-ipmipsu.8.gz
+%{_mandir}/man8/nut-recorder.8.gz
 %{_mandir}/man8/nut-scanner.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/optiups.8.gz
@@ -491,6 +492,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Jun 14 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.4-1
+- nut updated to 2.6.4
+
 * Thu May 31 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.3-4
 - fix heap-based buffer overflow due improper processing of non-printable 
   characters in random network data (CVE-2012-2944)
