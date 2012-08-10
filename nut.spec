@@ -21,6 +21,9 @@ Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
 Patch1: nut-2.6.3-tmpfiles.patch
 
+#quick fix. TODO: fix it properly
+Patch3: nut-2.6.5-quickfix.patch
+
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
 Requires(postun): fileutils chkconfig 
@@ -108,6 +111,7 @@ necessary to develop NUT client applications.
 %prep
 %setup -q
 %patch1 -p1 -b .tmpfiles
+%patch3 -p1 -b .quickfix
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -492,8 +496,7 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
-* Thu Aug 09 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-1
-- nut updated to 2.6.5
+* Fri Aug 10 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-1
 
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
