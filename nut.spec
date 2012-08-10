@@ -497,6 +497,7 @@ rm -rf %{buildroot}
 
 %changelog
 * Fri Aug 10 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-1
+- nut updated to 2.6.5
 
 * Fri Jul 20 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.6.4-2
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild
