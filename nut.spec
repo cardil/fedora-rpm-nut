@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -496,6 +496,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon Sep 03 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-2
+- rebuilt with updated freeipmi
+
 * Fri Aug 10 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-1
 - nut updated to 2.6.5
 
