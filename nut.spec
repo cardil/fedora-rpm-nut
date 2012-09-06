@@ -13,17 +13,20 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
+Source4: libs.sh
 Patch1: nut-2.6.3-tmpfiles.patch
 
 #quick fix. TODO: fix it properly
 Patch3: nut-2.6.5-quickfix.patch
 Patch4: nut-2.6.5-ipmifix.patch
+Patch5: nut-2.6.5-dlfix.patch
+Patch6: nut-2.6.5-pthreadfix.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
@@ -114,6 +117,8 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .tmpfiles
 %patch3 -p1 -b .quickfix
 %patch4 -p1 -b .ipmifix
+%patch5 -p1 -b .dlfix
+%patch6 -p1 -b .pthreadfix
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -147,6 +152,8 @@ autoreconf -i
     --with-udev-dir=/lib/udev \
     --libdir=%{_libdir}
 #    --with-doc \ asciidoc >= 8.6.3 is required
+
+%{SOURCE4} >>include/config.h
 
 #remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
@@ -498,6 +505,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Sep 06 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-3
+- do not depend on devel files (#838139)
+
 * Mon Sep 03 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-2
 - rebuilt with updated freeipmi
 

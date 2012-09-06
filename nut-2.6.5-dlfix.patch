@@ -1,0 +1,126 @@
+diff -up nut-2.6.5/tools/nut-scanner/scan_avahi.c.dlfix nut-2.6.5/tools/nut-scanner/scan_avahi.c
+--- nut-2.6.5/tools/nut-scanner/scan_avahi.c.dlfix	2012-07-31 19:38:58.000000000 +0200
++++ nut-2.6.5/tools/nut-scanner/scan_avahi.c	2012-09-06 12:56:45.383206759 +0200
+@@ -36,7 +36,7 @@
+ #include <ltdl.h>
+ 
+ /* dynamic link library stuff */
+-static char * libname = "libavahi-client";
++static char * libname = LIBAVAHI_CLIENT_PATH;
+ static lt_dlhandle dl_handle = NULL;
+ static const char *dl_error = NULL;
+ 
+@@ -99,7 +99,7 @@ int nutscan_load_avahi_library()
+                 return 0;
+         }
+ 
+-        dl_handle = lt_dlopenext(libname);
++        dl_handle = lt_dlopen(libname);
+         if (!dl_handle) {
+                 dl_error = lt_dlerror();
+                 goto err;
+diff -up nut-2.6.5/tools/nut-scanner/scan_ipmi.c.dlfix nut-2.6.5/tools/nut-scanner/scan_ipmi.c
+--- nut-2.6.5/tools/nut-scanner/scan_ipmi.c.dlfix	2012-07-31 19:38:58.000000000 +0200
++++ nut-2.6.5/tools/nut-scanner/scan_ipmi.c	2012-09-06 12:56:55.760402197 +0200
+@@ -30,7 +30,7 @@
+ #define NUT_IPMI_DRV_NAME	"nut-ipmipsu"
+ 
+ /* dynamic link library stuff */
+-static char * libname = "libfreeipmi";
++static char * libname = LIBFREEIPMI_PATH;
+ static lt_dlhandle dl_handle = NULL;
+ static const char *dl_error = NULL;
+ 
+@@ -83,7 +83,7 @@ int nutscan_load_ipmi_library()
+ 		return 0;
+ 	}
+ 
+-	dl_handle = lt_dlopenext(libname);
++	dl_handle = lt_dlopen(libname);
+ 	if (!dl_handle) {
+ 		dl_error = lt_dlerror();
+ 		goto err;
+diff -up nut-2.6.5/tools/nut-scanner/scan_nut.c.dlfix nut-2.6.5/tools/nut-scanner/scan_nut.c
+--- nut-2.6.5/tools/nut-scanner/scan_nut.c.dlfix	2012-07-31 19:38:58.000000000 +0200
++++ nut-2.6.5/tools/nut-scanner/scan_nut.c	2012-09-06 12:54:59.308897430 +0200
+@@ -26,7 +26,7 @@
+ #include <ltdl.h>
+ 
+ /* dynamic link library stuff */
+-static char * libname = "libupsclient";
++static char * libname = LIBUPSCLIENT_PATH;
+ static lt_dlhandle dl_handle = NULL;
+ static const char *dl_error = NULL;
+ 
+@@ -66,7 +66,7 @@ int nutscan_load_upsclient_library()
+                 return 0;
+         }
+ 
+-        dl_handle = lt_dlopenext(libname);
++        dl_handle = lt_dlopen(libname);
+         if (!dl_handle) {
+                 dl_error = lt_dlerror();
+                 goto err;
+diff -up nut-2.6.5/tools/nut-scanner/scan_snmp.c.dlfix nut-2.6.5/tools/nut-scanner/scan_snmp.c
+--- nut-2.6.5/tools/nut-scanner/scan_snmp.c.dlfix	2012-07-31 19:38:58.000000000 +0200
++++ nut-2.6.5/tools/nut-scanner/scan_snmp.c	2012-09-06 12:57:16.250774817 +0200
+@@ -74,7 +74,7 @@ static int thread_count = 0;
+ long g_usec_timeout ;
+ 
+ /* dynamic link library stuff */
+-static char * libname = "libnetsnmp";
++static char * libname = LIBNETSNMP_PATH;
+ static lt_dlhandle dl_handle = NULL;
+ static const char *dl_error = NULL;
+ 
+@@ -119,7 +119,7 @@ int nutscan_load_snmp_library()
+                 return 0;
+         }
+ 
+-	dl_handle = lt_dlopenext(libname);
++	dl_handle = lt_dlopen(libname);
+ 	if (!dl_handle) {
+ 		dl_error = lt_dlerror();
+ 		goto err;
+diff -up nut-2.6.5/tools/nut-scanner/scan_usb.c.dlfix nut-2.6.5/tools/nut-scanner/scan_usb.c
+--- nut-2.6.5/tools/nut-scanner/scan_usb.c.dlfix	2012-07-31 19:38:58.000000000 +0200
++++ nut-2.6.5/tools/nut-scanner/scan_usb.c	2012-09-06 12:56:34.007987045 +0200
+@@ -28,7 +28,7 @@
+ #include <ltdl.h>
+ 
+ /* dynamic link library stuff */
+-static char * libname = "libusb";
++static char * libname = LIBUSB_PATH;
+ static lt_dlhandle dl_handle = NULL;
+ static const char *dl_error = NULL;
+ static int (*nut_usb_close)(usb_dev_handle *dev);
+@@ -58,7 +58,7 @@ int nutscan_load_usb_library()
+ 		return 0;
+ 	}
+ 
+-        dl_handle = lt_dlopenext(libname);
++        dl_handle = lt_dlopen(libname);
+         if (!dl_handle) {
+                 dl_error = lt_dlerror();
+                 goto err;
+diff -up nut-2.6.5/tools/nut-scanner/scan_xml_http.c.dlfix nut-2.6.5/tools/nut-scanner/scan_xml_http.c
+--- nut-2.6.5/tools/nut-scanner/scan_xml_http.c.dlfix	2012-07-31 19:38:58.000000000 +0200
++++ nut-2.6.5/tools/nut-scanner/scan_xml_http.c	2012-09-06 12:57:28.617991656 +0200
+@@ -33,7 +33,7 @@
+ #include <ltdl.h>
+ 
+ /* dynamic link library stuff */
+-static char * libname = "libneon";
++static char * libname = LIBNEON_PATH;
+ static lt_dlhandle dl_handle = NULL;
+ static const char *dl_error = NULL;
+ 
+@@ -64,7 +64,7 @@ int nutscan_load_neon_library()
+                 return 0;
+         }
+ 
+-        dl_handle = lt_dlopenext(libname);
++        dl_handle = lt_dlopen(libname);
+         if (!dl_handle) {
+                 dl_error = lt_dlerror();
+                 goto err;
