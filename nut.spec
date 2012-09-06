@@ -153,7 +153,7 @@ autoreconf -i
     --libdir=%{_libdir}
 #    --with-doc \ asciidoc >= 8.6.3 is required
 
-%{SOURCE4} >>include/config.h
+sh %{SOURCE4} >>include/config.h
 
 #remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
