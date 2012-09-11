@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -280,6 +280,7 @@ fi
 if [ $1 -ge 1 ] ; then
     # Package upgrade, not uninstall
     /bin/systemctl try-restart nut-server.service >/dev/null 2>&1 || :
+    /bin/systemctl try-restart nut-driver.service >/dev/null 2>&1 || :
 fi
 
 %pre client
@@ -505,6 +506,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Sep 11 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-4
+- do not forget to restart nut-driver.service in postun
+
 * Thu Sep 06 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-3
 - do not depend on devel files (#838139)
 
