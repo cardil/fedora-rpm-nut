@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -27,6 +27,7 @@ Patch3: nut-2.6.5-quickfix.patch
 Patch4: nut-2.6.5-ipmifix.patch
 Patch5: nut-2.6.5-dlfix.patch
 Patch6: nut-2.6.5-pthreadfix.patch
+Patch7: nut-2.6.5-foreground.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig 
@@ -119,6 +120,7 @@ necessary to develop NUT client applications.
 %patch4 -p1 -b .ipmifix
 %patch5 -p1 -b .dlfix
 %patch6 -p1 -b .pthreadfix
+%patch7 -p1 -b .foreground
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -506,6 +508,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Sep 11 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-5
+- add support for foreground mode
+
 * Tue Sep 11 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-4
 - do not forget to restart nut-driver.service in postun
 
