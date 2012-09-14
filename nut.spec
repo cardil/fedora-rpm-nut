@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 5%{?dist}
+Release: 6%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -30,8 +30,9 @@ Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
 
 Requires(pre): shadow-utils udev
-Requires(post): fileutils chkconfig 
-Requires(postun): fileutils chkconfig 
+Requires(post): fileutils chkconfig systemd-units
+Requires(preun): systemd-units
+Requires(postun): fileutils chkconfig systemd-units
 Obsoletes: nut-hal < 2.6.0-7
 
 BuildRequires: autoconf
@@ -222,68 +223,15 @@ ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
 
 %post
 /sbin/ldconfig
-if [ $1 -eq 1 ] ; then 
-    # Initial installation 
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-else
-    # update (migration) sysv init -> systemd
-    # trigger won't work if we change NEVR in Fn-1
-    # also we are splitting one script to multiple service files
-    activate=/bin/false
-    enable=/bin/false
-    TMPF=/var/run/nut/systemdmigration
-    migrate=/bin/false
-    if [ -f /etc/init.d/ups ]; then
-        install -d -o nut -g nut -m 750 /var/run/nut
-        touch $TMPF
-        source $TMPF
-        if ! $enable; then  
-            [ -n "$(find /etc/rc.d/rc5.d/ -name 'S??ups' 2>/dev/null)" ] && enable=/bin/true || :
-        fi
-        if ! $activate; then
-            systemctl is-active --quiet ups.service >/dev/null 2>&1 && activate=/bin/true || :
-        fi
-        echo "enable=$enable" >>$TMPF
-        echo "activate=$activate" >>$TMPF
-        migrate=/bin/true
-    fi
-    if [ -f /etc/sysconfig/ups ]; then
-        source /etc/sysconfig/ups
-        echo "MODE=$MODE" >>$TMPF
-        migrate=/bin/true
-    fi
-    if $migrate; then
-        source $TMPF
-        systemctl stop ups.service >/dev/null 2>&1 || :
-        /sbin/chkconfig ups off >/dev/null 2>&1 || :
-        /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-        case "$MODE" in
-            standalone|netserver|serveronly)
-                $enable && /bin/systemctl enable nut-server.service >/dev/null 2>&1 || :
-                $activate && /bin/systemctl start nut-server.service >/dev/null 2>&1 || :
-                ;;
-        esac
-    fi  
-fi
 udevadm control --reload ||:
+%systemd_post nut-driver.service nut-server.service
 
 %preun
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable nut-server.service >/dev/null 2>&1 || :
-    /bin/systemctl --no-reload disable nut-driver.service >/dev/null 2>&1 || :
-    /bin/systemctl stop nut-server.service >/dev/null 2>&1 || :
-    /bin/systemctl stop nut-driver.service >/dev/null 2>&1 || :
-fi
+%systemd_preun nut-driver.service nut-server.service 
 
 %postun 
 /sbin/ldconfig
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    # Package upgrade, not uninstall
-    /bin/systemctl try-restart nut-server.service >/dev/null 2>&1 || :
-    /bin/systemctl try-restart nut-driver.service >/dev/null 2>&1 || :
-fi
+%systemd_postun_with_restart nut-driver.service nut-server.service 
 
 %pre client
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} \
@@ -297,64 +245,14 @@ fi
 
 %post client
 /sbin/ldconfig
-if [ $1 -eq 1 ] ; then 
-    # Initial installation 
-    /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-else
-    # update (migration) sysv init -> systemd
-    # trigger won't work if we change NEVR in Fn-1
-    # also we are splitting one script to multiple service files
-    activate=/bin/false
-    enable=/bin/false
-    TMPF=/var/run/nut/systemdmigration
-    migrate=/bin/false
-    if [ -f /etc/init.d/ups ]; then
-        install -d -o nut -g nut -m 750 /var/run/nut
-        touch $TMPF
-        source $TMPF
-        if ! $enable; then  
-            [ -n "$(find /etc/rc.d/rc5.d/ -name 'S??ups' 2>/dev/null)" ] && enable=/bin/true || :
-        fi
-        if ! $activate; then
-            systemctl is-active --quiet ups.service >/dev/null 2>&1 && activate=/bin/true || :
-        fi
-        echo "enable=$enable" >>$TMPF
-        echo "activate=$activate" >>$TMPF
-        migrate=/bin/true
-    fi
-    if [ -f /etc/sysconfig/ups ]; then
-        source /etc/sysconfig/ups
-        echo "MODE=$MODE" >>$TMPF
-        migrate=/bin/true
-    fi
-    if $migrate; then
-        source $TMPF
-        systemctl stop ups.service >/dev/null 2>&1 || :
-        /sbin/chkconfig --del ups.service >/dev/null 2>&1 || :
-        /bin/systemctl daemon-reload >/dev/null 2>&1 || :
-        case "$MODE" in
-            standalone|netserver|netclient)
-                $enable && /bin/systemctl enable nut-monitor.service >/dev/null 2>&1 || :
-                $activate && /bin/systemctl start nut-monitor.service >/dev/null 2>&1 || :
-                ;;
-        esac
-    fi  
-fi
+%systemd_post nut-monitor.service
 
 %preun client
-if [ $1 -eq 0 ] ; then
-    # Package removal, not upgrade
-    /bin/systemctl --no-reload disable nut-monitor.service >/dev/null 2>&1 || :
-    /bin/systemctl stop not-monitor.service >/dev/null 2>&1 || :
-fi
+%systemd_preun nut-monitor.service
 
 %postun client
 /sbin/ldconfig
-/bin/systemctl daemon-reload >/dev/null 2>&1 || :
-if [ $1 -ge 1 ] ; then
-    # Package upgrade, not uninstall
-    /bin/systemctl try-restart nut-monitor.service >/dev/null 2>&1 || :
-fi
+%systemd_postun_with_restart nut-monitor.service
 
 %clean
 rm -rf %{buildroot}
@@ -508,6 +406,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Sep 14 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-6
+- use new systemd macros (#857416)
+
 * Tue Sep 11 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-5
 - add support for foreground mode
 
@@ -980,8 +881,6 @@ rm -rf %{buildroot}
 
 * Sat Dec 11 1999 <bo-rpm@vircio.com> (0.42.1-1)
 - fixed string length in bestups.c line 279.
-
-* Sat Dec 11 1999 <bo-rpm@vircio.com> (0.42.1-1)
 - upgraded package to 0.42.1 from 0.42.0
 
 * Mon Dec 6 1999 <bo-rpm@vircio.com> (0.42.0-8)
