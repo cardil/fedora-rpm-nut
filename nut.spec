@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 6%{?dist}
+Release: 7%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -406,6 +406,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Dec 21 2012 Adam Tkac <atkac redhat com> - 2.6.5-7
+- rebuild against new libjpeg
+
 * Fri Sep 14 2012 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-6
 - use new systemd macros (#857416)
 
