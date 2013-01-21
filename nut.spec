@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 8%{?dist}
+Release: 9%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -408,6 +408,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon Jan 21 2013 Adam Tkac <atkac redhat com> - 2.6.5-9
+- rebuild due to "jpeg8-ABI" feature drop
+
 * Mon Jan 07 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-8
 - do not traceback when ups is not reachable
 
