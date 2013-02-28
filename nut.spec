@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 9%{?dist}
+Release: 10%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -29,6 +29,7 @@ Patch5: nut-2.6.5-dlfix.patch
 Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
+Patch9: nut-2.6.5-rmpidf.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig systemd-units
@@ -124,6 +125,7 @@ necessary to develop NUT client applications.
 %patch6 -p1 -b .pthreadfix
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
+%patch9 -p1 -b .rmpidf
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -408,6 +410,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Feb 28 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-10
+- clean pid file on exit (#916468)
+
 * Mon Jan 21 2013 Adam Tkac <atkac redhat com> - 2.6.5-9
 - rebuild due to "jpeg8-ABI" feature drop
 
