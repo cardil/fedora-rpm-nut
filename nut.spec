@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 11%{?dist}
+Release: 12%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -66,6 +66,8 @@ BuildRequires: libusb-devel
 %endif
 
 ExcludeArch: s390 s390x
+
+%global restart_flag /var/run/%{name}/%{name}-restart-after-rpm-install
 
 %description
 These programs are part of a developing project to monitor the assortment 
@@ -165,8 +167,8 @@ sh %{SOURCE4} >>include/config.h
 #remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
-
-make %{?_smp_mflags}
+%global _hardened_build 1
+make %{?_smp_mflags} CFLAGS="%{__global_cflags}" LDFLAGS="-Wl,-z,now -Wl,-z,relro %{__global_ldflags}"
 
 %install
 rm -rf %{buildroot}
@@ -225,6 +227,15 @@ ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
 /usr/sbin/usermod -G dialout %{name}
 
+# do not let upsmon run during upgrade rhbz#916472
+# phase 1: stop upsmon before upsd changes
+if [ "$1" = "2" ]; then
+  rm -f %restart_flag
+  /bin/systemctl is-active nut-monitor.service >/dev/null 2>&1 && touch %restart_flag ||:
+  /bin/systemctl stop nut-monitor.service >/dev/null 2>&1
+fi
+
+
 %post
 /sbin/ldconfig
 udevadm control --reload ||:
@@ -256,7 +267,16 @@ udevadm control --reload ||:
 
 %postun client
 /sbin/ldconfig
-%systemd_postun_with_restart nut-monitor.service
+
+%posttrans
+# phase 2: start upsmon again
+if [ -e %restart_flag ]; then 
+  /bin/systemctl restart nut-monitor.service >/dev/null 2>&1 || : 
+  rm -f %restart_flag 
+else
+  # maybe we did not stop it - if we reinstalled just nut-client
+  /bin/systemctl try-restart nut-monitor.service >/dev/null 2>&1 || : 
+fi 
 
 %clean
 rm -rf %{buildroot}
@@ -410,6 +430,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon Apr 22 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-12
+- do not let upsmon run during update (#916472)
+- make binaries hardened (#955157)
+
 * Thu Feb 28 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-11
 - clean pid file on exit (#916468)
 
