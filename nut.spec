@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 12%{?dist}
+Release: 13%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -430,6 +430,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jun 11 2013 Remi Collet <rcollet@redhat.com> - 2.6.5-13
+- rebuild for new GD 2.1.0
+
 * Mon Apr 22 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-12
 - do not let upsmon run during update (#916472)
 - make binaries hardened (#955157)
