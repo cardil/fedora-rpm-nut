@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.6.5
-Release: 15%{?dist}
+Release: 16%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -430,6 +430,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Sep 24 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-16
+- rebuilt with updated freeipmi (1.3.2)
+
 * Tue Sep 03 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-15
 - rebuilt with updated freeipmi
 
@@ -555,13 +558,13 @@ rm -rf %{buildroot}
 - fix issue where nut fails to restart because it did not finished termination 
   yet and old instance blocks devices (#193058)
 
-* Fri Jul 07 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-4
+* Wed Jul 07 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-4
 - follow licensing guideline update
 
 * Fri Mar 26 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-3
 - replace BUS with SUBSYSTEMS in udev rules (#573806)
 
-* Mon Mar 23 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-2
+* Tue Mar 23 2010 Michal Hlavinka <mhlavink@redhat.com> - 2.4.3-2
 - reduced size of buffer to maximum size supported by low-speed USB devices
 - fixes #575334
 
@@ -840,7 +843,7 @@ rm -rf %{buildroot}
 - update to 0.45.2
 - fix bug #57417
 
-* Mon Nov 27 2001 Than Ngo <than@redhat.com> 0.45.2-1
+* Tue Nov 27 2001 Than Ngo <than@redhat.com> 0.45.2-1
 - update to 0.45.2
 - clean up some patch files for 0.45.2
 
@@ -941,13 +944,13 @@ rm -rf %{buildroot}
 * Mon Dec 6 1999 <bo-rpm@vircio.com> (0.42.0-7)
 - removed overlapping files between the nut and nut-client rpms
 
-* Mon Nov 23 1999 <bo-rpm@vircio.com> (0.42.0-6)
+* Tue Nov 23 1999 <bo-rpm@vircio.com> (0.42.0-6)
 - stop ups before uninstalling
 
-* Mon Nov 23 1999 <bo-rpm@vircio.com> (0.42.0-5)
+* Tue Nov 23 1999 <bo-rpm@vircio.com> (0.42.0-5)
 - build against gd 1.6.3
 
-* Thu Nov 03 1999 <bo-rpm@vircio.com> (0.42.0-4)
+* Wed Nov 03 1999 <bo-rpm@vircio.com> (0.42.0-4)
 - Initial build of nut (well almost).
 - Removed chmod from the make file so that the package
   does not have to be built as root.....
