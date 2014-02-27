@@ -1,6 +1,6 @@
-diff -up nut-2.6.5/tools/nut-scanner/scan_avahi.c.dlfix nut-2.6.5/tools/nut-scanner/scan_avahi.c
---- nut-2.6.5/tools/nut-scanner/scan_avahi.c.dlfix	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/tools/nut-scanner/scan_avahi.c	2012-09-06 12:56:45.383206759 +0200
+diff -up nut-2.7.1/tools/nut-scanner/scan_avahi.c.dlfix nut-2.7.1/tools/nut-scanner/scan_avahi.c
+--- nut-2.7.1/tools/nut-scanner/scan_avahi.c.dlfix	2013-07-31 22:41:31.000000000 +0200
++++ nut-2.7.1/tools/nut-scanner/scan_avahi.c	2014-02-27 11:25:57.610869514 +0100
 @@ -36,7 +36,7 @@
  #include <ltdl.h>
  
@@ -19,11 +19,11 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_avahi.c.dlfix nut-2.6.5/tools/nut-scan
          if (!dl_handle) {
                  dl_error = lt_dlerror();
                  goto err;
-diff -up nut-2.6.5/tools/nut-scanner/scan_ipmi.c.dlfix nut-2.6.5/tools/nut-scanner/scan_ipmi.c
---- nut-2.6.5/tools/nut-scanner/scan_ipmi.c.dlfix	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/tools/nut-scanner/scan_ipmi.c	2012-09-06 12:56:55.760402197 +0200
-@@ -30,7 +30,7 @@
- #define NUT_IPMI_DRV_NAME	"nut-ipmipsu"
+diff -up nut-2.7.1/tools/nut-scanner/scan_ipmi.c.dlfix nut-2.7.1/tools/nut-scanner/scan_ipmi.c
+--- nut-2.7.1/tools/nut-scanner/scan_ipmi.c.dlfix	2013-07-31 22:41:31.000000000 +0200
++++ nut-2.7.1/tools/nut-scanner/scan_ipmi.c	2014-02-27 11:32:20.393015238 +0100
+@@ -35,7 +35,7 @@
+ #define IPMI_RETRANSMISSION_TIMEOUT_LENGTH_DEFAULT	250
  
  /* dynamic link library stuff */
 -static char * libname = "libfreeipmi";
@@ -31,7 +31,7 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_ipmi.c.dlfix nut-2.6.5/tools/nut-scann
  static lt_dlhandle dl_handle = NULL;
  static const char *dl_error = NULL;
  
-@@ -83,7 +83,7 @@ int nutscan_load_ipmi_library()
+@@ -128,7 +128,7 @@ int nutscan_load_ipmi_library()
  		return 0;
  	}
  
@@ -40,9 +40,9 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_ipmi.c.dlfix nut-2.6.5/tools/nut-scann
  	if (!dl_handle) {
  		dl_error = lt_dlerror();
  		goto err;
-diff -up nut-2.6.5/tools/nut-scanner/scan_nut.c.dlfix nut-2.6.5/tools/nut-scanner/scan_nut.c
---- nut-2.6.5/tools/nut-scanner/scan_nut.c.dlfix	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/tools/nut-scanner/scan_nut.c	2012-09-06 12:54:59.308897430 +0200
+diff -up nut-2.7.1/tools/nut-scanner/scan_nut.c.dlfix nut-2.7.1/tools/nut-scanner/scan_nut.c
+--- nut-2.7.1/tools/nut-scanner/scan_nut.c.dlfix	2013-10-30 14:47:15.000000000 +0100
++++ nut-2.7.1/tools/nut-scanner/scan_nut.c	2014-02-27 11:25:57.611869522 +0100
 @@ -26,7 +26,7 @@
  #include <ltdl.h>
  
@@ -52,7 +52,7 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_nut.c.dlfix nut-2.6.5/tools/nut-scanne
  static lt_dlhandle dl_handle = NULL;
  static const char *dl_error = NULL;
  
-@@ -66,7 +66,7 @@ int nutscan_load_upsclient_library()
+@@ -67,7 +67,7 @@ int nutscan_load_upsclient_library()
                  return 0;
          }
  
@@ -61,9 +61,9 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_nut.c.dlfix nut-2.6.5/tools/nut-scanne
          if (!dl_handle) {
                  dl_error = lt_dlerror();
                  goto err;
-diff -up nut-2.6.5/tools/nut-scanner/scan_snmp.c.dlfix nut-2.6.5/tools/nut-scanner/scan_snmp.c
---- nut-2.6.5/tools/nut-scanner/scan_snmp.c.dlfix	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/tools/nut-scanner/scan_snmp.c	2012-09-06 12:57:16.250774817 +0200
+diff -up nut-2.7.1/tools/nut-scanner/scan_snmp.c.dlfix nut-2.7.1/tools/nut-scanner/scan_snmp.c
+--- nut-2.7.1/tools/nut-scanner/scan_snmp.c.dlfix	2013-07-31 22:41:31.000000000 +0200
++++ nut-2.7.1/tools/nut-scanner/scan_snmp.c	2014-02-27 11:25:57.611869522 +0100
 @@ -74,7 +74,7 @@ static int thread_count = 0;
  long g_usec_timeout ;
  
@@ -82,9 +82,9 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_snmp.c.dlfix nut-2.6.5/tools/nut-scann
  	if (!dl_handle) {
  		dl_error = lt_dlerror();
  		goto err;
-diff -up nut-2.6.5/tools/nut-scanner/scan_usb.c.dlfix nut-2.6.5/tools/nut-scanner/scan_usb.c
---- nut-2.6.5/tools/nut-scanner/scan_usb.c.dlfix	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/tools/nut-scanner/scan_usb.c	2012-09-06 12:56:34.007987045 +0200
+diff -up nut-2.7.1/tools/nut-scanner/scan_usb.c.dlfix nut-2.7.1/tools/nut-scanner/scan_usb.c
+--- nut-2.7.1/tools/nut-scanner/scan_usb.c.dlfix	2013-07-31 22:41:31.000000000 +0200
++++ nut-2.7.1/tools/nut-scanner/scan_usb.c	2014-02-27 11:25:57.611869522 +0100
 @@ -28,7 +28,7 @@
  #include <ltdl.h>
  
@@ -103,9 +103,9 @@ diff -up nut-2.6.5/tools/nut-scanner/scan_usb.c.dlfix nut-2.6.5/tools/nut-scanne
          if (!dl_handle) {
                  dl_error = lt_dlerror();
                  goto err;
-diff -up nut-2.6.5/tools/nut-scanner/scan_xml_http.c.dlfix nut-2.6.5/tools/nut-scanner/scan_xml_http.c
---- nut-2.6.5/tools/nut-scanner/scan_xml_http.c.dlfix	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/tools/nut-scanner/scan_xml_http.c	2012-09-06 12:57:28.617991656 +0200
+diff -up nut-2.7.1/tools/nut-scanner/scan_xml_http.c.dlfix nut-2.7.1/tools/nut-scanner/scan_xml_http.c
+--- nut-2.7.1/tools/nut-scanner/scan_xml_http.c.dlfix	2013-07-31 22:41:31.000000000 +0200
++++ nut-2.7.1/tools/nut-scanner/scan_xml_http.c	2014-02-27 11:25:57.611869522 +0100
 @@ -33,7 +33,7 @@
  #include <ltdl.h>
  

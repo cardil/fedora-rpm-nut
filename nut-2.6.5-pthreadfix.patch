@@ -1,7 +1,7 @@
-diff -up nut-2.6.5/tools/nut-scanner/nut-scanner.c.pthreadfix nut-2.6.5/tools/nut-scanner/nut-scanner.c
---- nut-2.6.5/tools/nut-scanner/nut-scanner.c.pthreadfix	2012-09-06 13:25:03.856936357 +0200
-+++ nut-2.6.5/tools/nut-scanner/nut-scanner.c	2012-09-06 13:25:03.881936493 +0200
-@@ -434,22 +434,22 @@ display_help:
+diff -up nut-2.7.1/tools/nut-scanner/nut-scanner.c.pthreadfix nut-2.7.1/tools/nut-scanner/nut-scanner.c
+--- nut-2.7.1/tools/nut-scanner/nut-scanner.c.pthreadfix	2014-02-27 11:37:57.045786437 +0100
++++ nut-2.7.1/tools/nut-scanner/nut-scanner.c	2014-02-27 11:39:02.591326696 +0100
+@@ -532,25 +532,25 @@ display_help:
  	}
  
  #ifdef HAVE_PTHREAD
@@ -28,5 +28,9 @@ diff -up nut-2.6.5/tools/nut-scanner/nut-scanner.c.pthreadfix nut-2.6.5/tools/nu
 -	if( allow_ipmi && nutscan_avail_ipmi ) {
 +	if( allow_ipmi && nutscan_avail_ipmi && thread[TYPE_IPMI]) {
  		pthread_join(thread[TYPE_IPMI],NULL);
+ 	}
+-	if (allow_eaton_serial) {
++	if (allow_eaton_serial && thread[TYPE_EATON_SERIAL]) {
+ 		pthread_join(thread[TYPE_EATON_SERIAL],NULL);
  	}
  #endif /* HAVE_PTHREAD */

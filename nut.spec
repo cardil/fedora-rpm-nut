@@ -12,12 +12,12 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.6.5
-Release: 16%{?dist}
+Version: 2.7.1
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
-Source: http://www.networkupstools.org/source/2.6/%{name}-%{version}.tar.gz
+Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
 Source4: libs.sh
 Patch1: nut-2.6.3-tmpfiles.patch
@@ -122,7 +122,7 @@ necessary to develop NUT client applications.
 %setup -q
 %patch1 -p1 -b .tmpfiles
 %patch3 -p1 -b .quickfix
-%patch4 -p1 -b .ipmifix
+#%patch4 -p1 -b .ipmifix
 %patch5 -p1 -b .dlfix
 %patch6 -p1 -b .pthreadfix
 %patch7 -p1 -b .foreground
@@ -159,8 +159,8 @@ autoreconf -i
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --with-udev-dir=/lib/udev \
-    --libdir=%{_libdir}
-#    --with-doc \ asciidoc >= 8.6.3 is required
+    --libdir=%{_libdir} 
+#    --with-doc # does not work in 2.7.1
 
 sh %{SOURCE4} >>include/config.h
 
@@ -300,25 +300,14 @@ rm -rf %{buildroot}
 %{_libdir}/libnutscan.so.*
 %{_datadir}/%{name}/cmdvartab
 %{_datadir}/%{name}/driver.list
-%{_mandir}/man3/nutscan_add_device_to_device.3.gz
-%{_mandir}/man3/nutscan_add_option_to_device.3.gz
-%{_mandir}/man3/nutscan_cidr_to_ip.3.gz
-%{_mandir}/man3/nutscan_display_parsable.3.gz
-%{_mandir}/man3/nutscan_display_ups_conf.3.gz
-%{_mandir}/man3/nutscan_free_device.3.gz
-%{_mandir}/man3/nutscan_new_device.3.gz
-%{_mandir}/man3/nutscan_scan_avahi.3.gz
-%{_mandir}/man3/nutscan_scan_ipmi.3.gz
-%{_mandir}/man3/nutscan_scan_nut.3.gz
-%{_mandir}/man3/nutscan_scan_snmp.3.gz
-%{_mandir}/man3/nutscan_scan_usb.3.gz
-%{_mandir}/man3/nutscan_scan_xml_http.3.gz
 %{_mandir}/man5/nut.conf.5.gz
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
+%{_mandir}/man8/al175.8.gz
 %{_mandir}/man8/apcsmart.8.gz
 %{_mandir}/man8/apcsmart-old.8.gz
+%{_mandir}/man8/apcupsd-ups.8.gz
 %{_mandir}/man8/bcmxcp.8*
 %{_mandir}/man8/bcmxcp_usb.8.gz
 %{_mandir}/man8/belkin.8.gz
@@ -327,7 +316,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/bestfortress.8.gz
 %{_mandir}/man8/bestups.8.gz
 %{_mandir}/man8/bestuferrups.8.gz
-%{_mandir}/man8/blazer.8.gz
+%{_mandir}/man8/blazer_ser.8.gz
+%{_mandir}/man8/blazer_usb.8.gz
 %{_mandir}/man8/clone.8.gz
 %{_mandir}/man8/dummy-ups.8.gz
 %{_mandir}/man8/everups.8.gz
@@ -347,6 +337,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/nut-ipmipsu.8.gz
 %{_mandir}/man8/nut-recorder.8.gz
 %{_mandir}/man8/nut-scanner.8.gz
+%{_mandir}/man8/nutdrv_qx.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/optiups.8.gz
 %{_mandir}/man8/powercom.8.gz
@@ -354,6 +345,8 @@ rm -rf %{buildroot}
 %{_mandir}/man8/powerpanel.8.gz
 %{_mandir}/man8/rhino.8.gz
 %{_mandir}/man8/richcomm_usb.8.gz
+%{_mandir}/man8/riello_ser.8.gz
+%{_mandir}/man8/riello_usb.8.gz
 %{_mandir}/man8/safenet.8.gz
 %{_mandir}/man8/snmp-ups.8.gz
 %{_mandir}/man8/solis.8*
@@ -387,6 +380,7 @@ rm -rf %{buildroot}
 %{_unitdir}/nut-monitor.service
 /lib/systemd/system-shutdown/nutshutdown
 %{_libdir}/libupsclient.so.*
+%{_libdir}/libnutclient.so.*
 %{_mandir}/man5/upsmon.conf.5.gz
 %{_mandir}/man5/upssched.conf.5.gz
 %{_mandir}/man8/upsc.8.gz
@@ -424,12 +418,19 @@ rm -rf %{buildroot}
 %{_includedir}/*
 %{_mandir}/man3/upscli*
 %{_mandir}/man3/nutscan*
+%{_mandir}/man3/nutclient*
+%{_mandir}/man3/libnutclient*
 %{_libdir}/libupsclient.so
+%{_libdir}/libnutclient.so
 %{_libdir}/libnutscan.so
 %{_libdir}/pkgconfig/libupsclient.pc
+%{_libdir}/pkgconfig/libnutclient.pc
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Feb 27 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-1
+- nut updated to 2.7.1
+
 * Tue Sep 24 2013 Michal Hlavinka <mhlavink@redhat.com> - 2.6.5-16
 - rebuilt with updated freeipmi (1.3.2)
 

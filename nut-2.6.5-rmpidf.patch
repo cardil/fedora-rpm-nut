@@ -1,7 +1,7 @@
-diff -up nut-2.6.5/clients/upsmon.c.rmpidf nut-2.6.5/clients/upsmon.c
---- nut-2.6.5/clients/upsmon.c.rmpidf	2013-02-28 12:08:34.487394359 +0100
-+++ nut-2.6.5/clients/upsmon.c	2013-02-28 12:08:34.494394419 +0100
-@@ -2037,6 +2037,7 @@ int main(int argc, char *argv[])
+diff -up nut-2.7.1/clients/upsmon.c.rmpidf nut-2.7.1/clients/upsmon.c
+--- nut-2.7.1/clients/upsmon.c.rmpidf	2014-02-27 11:41:09.139369295 +0100
++++ nut-2.7.1/clients/upsmon.c	2014-02-27 11:41:09.145369344 +0100
+@@ -2027,6 +2027,7 @@ int main(int argc, char *argv[])
  
  	upslogx(LOG_INFO, "Signal %d: exiting", exit_flag);
  	upsmon_cleanup();
@@ -9,9 +9,9 @@ diff -up nut-2.6.5/clients/upsmon.c.rmpidf nut-2.6.5/clients/upsmon.c
  
  	exit(EXIT_SUCCESS);
  }
-diff -up nut-2.6.5/common/common.c.rmpidf nut-2.6.5/common/common.c
---- nut-2.6.5/common/common.c.rmpidf	2012-07-31 19:38:58.000000000 +0200
-+++ nut-2.6.5/common/common.c	2013-02-28 12:08:34.494394419 +0100
+diff -up nut-2.7.1/common/common.c.rmpidf nut-2.7.1/common/common.c
+--- nut-2.7.1/common/common.c.rmpidf	2013-11-20 20:53:31.000000000 +0100
++++ nut-2.7.1/common/common.c	2014-02-27 11:41:09.146369353 +0100
 @@ -229,6 +229,20 @@ void writepid(const char *name)
  	umask(mask);
  }
@@ -33,10 +33,10 @@ diff -up nut-2.6.5/common/common.c.rmpidf nut-2.6.5/common/common.c
  /* open pidfn, get the pid, then send it sig */
  int sendsignalfn(const char *pidfn, int sig)
  {
-diff -up nut-2.6.5/include/common.h.rmpidf nut-2.6.5/include/common.h
---- nut-2.6.5/include/common.h.rmpidf	2012-07-31 19:38:56.000000000 +0200
-+++ nut-2.6.5/include/common.h	2013-02-28 12:08:34.495394429 +0100
-@@ -64,6 +64,9 @@ void chroot_start(const char *path);
+diff -up nut-2.7.1/include/common.h.rmpidf nut-2.7.1/include/common.h
+--- nut-2.7.1/include/common.h.rmpidf	2013-11-20 20:53:31.000000000 +0100
++++ nut-2.7.1/include/common.h	2014-02-27 11:41:09.146369353 +0100
+@@ -70,6 +70,9 @@ void chroot_start(const char *path);
  /* write a pid file - <name> is a full pathname *or* just the program name */
  void writepid(const char *name);
  
@@ -46,11 +46,11 @@ diff -up nut-2.6.5/include/common.h.rmpidf nut-2.6.5/include/common.h
  /* send a signal to another running process */
  int sendsignal(const char *progname, int sig);
  
-diff -up nut-2.6.5/server/upsd.c.rmpidf nut-2.6.5/server/upsd.c
---- nut-2.6.5/server/upsd.c.rmpidf	2013-02-28 12:08:37.967424582 +0100
-+++ nut-2.6.5/server/upsd.c	2013-02-28 12:08:37.982424720 +0100
-@@ -1040,6 +1040,7 @@ int main(int argc, char **argv)
- 	}
+diff -up nut-2.7.1/server/upsd.c.rmpidf nut-2.7.1/server/upsd.c
+--- nut-2.7.1/server/upsd.c.rmpidf	2014-02-27 11:41:09.146369353 +0100
++++ nut-2.7.1/server/upsd.c	2014-02-27 11:42:03.715818754 +0100
+@@ -1050,6 +1050,7 @@ int main(int argc, char **argv)
+ 	ssl_cleanup();
  
  	upslogx(LOG_INFO, "Signal %d: exiting", exit_flag);
 +	if (*pidfn) cleanpid(pidfn);
