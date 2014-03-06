@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.1
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -33,6 +33,7 @@ Patch9: nut-2.6.5-rmpidf.patch
 # libupsclient.so contains undefined reference to upslogx,upslog_with_errno,upsdebugx
 # link it with common.c containing above functions, rhbz#1071919
 Patch10: nut-2.7.1-fixupslog.patch
+Patch11: nut-2.7.1-systemdfix.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig systemd-units
@@ -132,6 +133,7 @@ necessary to develop NUT client applications.
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
 %patch10 -p1 -b .fixupslog
+%patch11 -p1 -b .systemdfix
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -162,7 +164,7 @@ autoreconf -i
     --with-systemdsystemunitdir=%{_unitdir} \
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
-    --with-udev-dir=/lib/udev \
+    --with-udev-dir=%{_usr}/lib/udev \
     --libdir=%{_libdir} 
 #    --with-doc # does not work in 2.7.1
 
@@ -204,8 +206,8 @@ done
 popd
 
 #fix collision with virtualbox
-mv %{buildroot}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/lib/udev/rules.d/62-nut-usbups.rules
-mv %{buildroot}/lib/udev/rules.d/52-nut-ipmipsu.rules %{buildroot}/lib/udev/rules.d/62-nut-ipmipsu.rules
+mv %{buildroot}/%{_usr}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/%{_usr}/lib/udev/rules.d/62-nut-usbups.rules
+mv %{buildroot}/%{_usr}/lib/udev/rules.d/52-nut-ipmipsu.rules %{buildroot}/%{_usr}/lib/udev/rules.d/62-nut-ipmipsu.rules
 
 # fix encoding
 for fe in ./docs/cables/powerware.txt
@@ -292,8 +294,8 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.users
-%attr(644,root,root) /lib/udev/rules.d/62-nut-usbups.rules
-%attr(644,root,root) /lib/udev/rules.d/62-nut-ipmipsu.rules
+%attr(644,root,root) %{_usr}/lib/udev/rules.d/62-nut-usbups.rules
+%attr(644,root,root) %{_usr}/lib/udev/rules.d/62-nut-ipmipsu.rules
 %{modeldir}/*
 %exclude %{modeldir}/netxml-ups
 %{_unitdir}/nut-driver.service
@@ -432,6 +434,10 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Mar 06 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-3
+- fix path of nut-driver executable (#1072076)
+- fix location of udev rules
+
 * Thu Mar 06 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-2
 - fix undefined references in libupsclient (#1071919)
 
