@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.1
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -30,6 +30,9 @@ Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
+# libupsclient.so contains undefined reference to upslogx,upslog_with_errno,upsdebugx
+# link it with common.c containing above functions, rhbz#1071919
+Patch10: nut-2.7.1-fixupslog.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig systemd-units
@@ -128,6 +131,7 @@ necessary to develop NUT client applications.
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
+%patch10 -p1 -b .fixupslog
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -428,6 +432,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Mar 06 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-2
+- fix undefined references in libupsclient (#1071919)
+
 * Thu Feb 27 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-1
 - nut updated to 2.7.1
 
