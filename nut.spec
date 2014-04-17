@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.1
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -144,6 +144,9 @@ for f in docs/nut-qa.txt docs/website/css/ie-overrides.css docs/website/scripts/
 do
   sed -i 's/\r\n*$//' $f
 done
+
+# workaround for multilib conflicts - caused by patch changing modification time of scripts
+find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
 
 %build
 autoreconf -i
@@ -434,6 +437,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Apr 17 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-4
+- fix multilib issue (#831429)
+
 * Thu Mar 06 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-3
 - fix path of nut-driver executable (#1072076)
 - fix location of udev rules
