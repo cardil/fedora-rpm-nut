@@ -1,6 +1,6 @@
-diff -up nut-2.7.1/configure.in.quickfix nut-2.7.1/configure.in
---- nut-2.7.1/configure.in.quickfix	2013-11-20 20:53:31.000000000 +0100
-+++ nut-2.7.1/configure.in	2014-02-27 11:25:57.608869497 +0100
+diff -up nut-2.7.1/configure.ac.quickfix nut-2.7.1/configure.ac
+--- nut-2.7.1/configure.ac.quickfix	2013-11-20 20:53:31.000000000 +0100
++++ nut-2.7.1/configure.ac	2014-02-27 11:25:57.608869497 +0100
 @@ -1027,9 +1027,8 @@ dnl Override installation directory, wit
  dnl prefix. This is needed for 'distcheck*' targets, otherwise
  dnl files will try to get intalled to the actual system directories

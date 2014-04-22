@@ -4,7 +4,7 @@
 
 %global cgidir  /var/www/nut-cgi-bin
 %global piddir  /var/run/nut
-%global modeldir /sbin
+%global modeldir /usr/sbin
 
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 6)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
@@ -12,8 +12,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.7.1
-Release: 4%{?dist}
+Version: 2.7.2
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -30,10 +30,6 @@ Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
-# libupsclient.so contains undefined reference to upslogx,upslog_with_errno,upsdebugx
-# link it with common.c containing above functions, rhbz#1071919
-Patch10: nut-2.7.1-fixupslog.patch
-Patch11: nut-2.7.1-systemdfix.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig systemd-units
@@ -132,8 +128,8 @@ necessary to develop NUT client applications.
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
-%patch10 -p1 -b .fixupslog
-%patch11 -p1 -b .systemdfix
+#%patch10 -p1 -b .fixupslog
+#%patch11 -p1 -b .systemdfix
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -142,7 +138,7 @@ sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 #fix crlf end of lines
 for f in docs/nut-qa.txt docs/website/css/ie-overrides.css docs/website/scripts/filter_png.js
 do
-  sed -i 's/\r\n*$//' $f
+  sed -i 's/\r\n*$//' $f ||:
 done
 
 # workaround for multilib conflicts - caused by patch changing modification time of scripts
@@ -343,6 +339,7 @@ rm -rf %{buildroot}
 %{_mandir}/man8/mge-utalk.8.gz
 %{_mandir}/man8/mge-shut.8.gz
 %{_mandir}/man8/nutupsdrv.8.gz
+%{_mandir}/man8/nutdrv_atcl_usb.8.gz
 %{_mandir}/man8/nut-ipmipsu.8.gz
 %{_mandir}/man8/nut-recorder.8.gz
 %{_mandir}/man8/nut-scanner.8.gz
@@ -437,6 +434,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Apr 22 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.2-1
+- nut updated to 2.7.2
+
 * Thu Apr 17 2014 Michal Hlavinka <mhlavink@redhat.com> - 2.7.1-4
 - fix multilib issue (#831429)
 
