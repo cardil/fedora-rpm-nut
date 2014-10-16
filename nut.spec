@@ -24,7 +24,6 @@ Patch1: nut-2.6.3-tmpfiles.patch
 
 #quick fix. TODO: fix it properly
 Patch3: nut-2.6.5-quickfix.patch
-Patch4: nut-2.6.5-ipmifix.patch
 Patch5: nut-2.6.5-dlfix.patch
 Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
@@ -122,14 +121,13 @@ necessary to develop NUT client applications.
 %setup -q
 %patch1 -p1 -b .tmpfiles
 %patch3 -p1 -b .quickfix
-#%patch4 -p1 -b .ipmifix
 %patch5 -p1 -b .dlfix
 %patch6 -p1 -b .pthreadfix
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
-#%patch10 -p1 -b .fixupslog
-#%patch11 -p1 -b .systemdfix
+
+
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
@@ -272,6 +270,7 @@ udevadm control --reload ||:
 
 %postun client
 /sbin/ldconfig
+%systemd_postun_with_restart nut-monitor.service
 
 %posttrans
 # phase 2: start upsmon again
