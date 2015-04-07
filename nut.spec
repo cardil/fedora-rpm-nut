@@ -162,8 +162,8 @@ autoreconf -i
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --with-udev-dir=%{_usr}/lib/udev \
-    --libdir=%{_libdir} 
-#    --with-doc # does not work in 2.7.1 ||:
+    --libdir=%{_libdir} ||:
+#    --with-doc # does not work in 2.7.1
 cat config.log
 
 exit 0
