@@ -163,7 +163,10 @@ autoreconf -i
     --disable-static \
     --with-udev-dir=%{_usr}/lib/udev \
     --libdir=%{_libdir} 
-#    --with-doc # does not work in 2.7.1
+#    --with-doc # does not work in 2.7.1 ||:
+cat config.log
+
+exit 0
 
 sh %{SOURCE4} >>include/config.h
 
