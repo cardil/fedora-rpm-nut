@@ -1,3 +1,6 @@
+# Does not build with hardened build enabled due to PIC
+%global _hardened_build 0
+
 #TODO: split nut-client so it does not require python
 %global nut_uid 57
 %global nut_gid 57
@@ -144,8 +147,6 @@ find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
 
 %build
 autoreconf -i
-export CFLAGS="%{optflags} -fPIC"
-export CCFLAGS="%{optflags} -fPIC"
 %configure \
     --with-all \
     --with-libltdl \
