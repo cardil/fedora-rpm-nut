@@ -61,7 +61,7 @@ BuildRequires: desktop-file-utils
 BuildRequires: freeipmi-devel
 
 %ifnarch s390 s390x
-BuildRequires: libusbx-devel
+BuildRequires: libusb-devel
 %endif
 
 ExcludeArch: s390 s390x
