@@ -433,7 +433,7 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
-* Mon Apr  6 2014 Tom Callaway <spot@fedoraproject.org> - 2.7.2-4
+* Mon Apr  6 2015 Tom Callaway <spot@fedoraproject.org> - 2.7.2-4
 - rebuild against libvpx 1.4.0
 
 * Sun Aug 17 2014 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.7.2-3
