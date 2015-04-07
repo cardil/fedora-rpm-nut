@@ -144,6 +144,8 @@ find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
 
 %build
 autoreconf -i
+export CFLAGS="%{optflags} -fPIC"
+export CCFLAGS="%{optflags} -fPIC"
 %configure \
     --with-all \
     --with-libltdl \
@@ -162,11 +164,8 @@ autoreconf -i
     --with-pkgconfig-dir=%{_libdir}/pkgconfig \
     --disable-static \
     --with-udev-dir=%{_usr}/lib/udev \
-    --libdir=%{_libdir} ||:
+    --libdir=%{_libdir}
 #    --with-doc # does not work in 2.7.1
-cat config.log
-
-exit 0
 
 sh %{SOURCE4} >>include/config.h
 
