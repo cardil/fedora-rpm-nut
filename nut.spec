@@ -15,8 +15,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.7.2
-Release: 4%{?dist}
+Version: 2.7.3
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -147,6 +147,8 @@ find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
 
 %build
 autoreconf -i
+# prevent assignment of default value, it would break configure's tests
+export LDFLAGS="-Wl,-z,now"
 %configure \
     --with-all \
     --with-libltdl \
@@ -206,7 +208,7 @@ done
 popd
 
 #fix collision with virtualbox
-mv %{buildroot}/%{_usr}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/%{_usr}/lib/udev/rules.d/62-nut-usbups.rules
+#mv %{buildroot}/%{_usr}/lib/udev/rules.d/52-nut-usbups.rules %{buildroot}/%{_usr}/lib/udev/rules.d/62-nut-usbups.rules
 mv %{buildroot}/%{_usr}/lib/udev/rules.d/52-nut-ipmipsu.rules %{buildroot}/%{_usr}/lib/udev/rules.d/62-nut-ipmipsu.rules
 
 # fix encoding
@@ -436,6 +438,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Apr 23 2015 Michal Hlavinka <mhlavink@redhat.com> - 2.7.3-1
+- nut updated to 2.7.3
+
 * Mon Apr  6 2015 Tom Callaway <spot@fedoraproject.org> - 2.7.2-4
 - rebuild against libvpx 1.4.0
 

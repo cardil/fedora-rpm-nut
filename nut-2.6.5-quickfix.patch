@@ -1,14 +1,12 @@
-diff -up nut-2.7.1/configure.ac.quickfix nut-2.7.1/configure.ac
---- nut-2.7.1/configure.ac.quickfix	2013-11-20 20:53:31.000000000 +0100
-+++ nut-2.7.1/configure.ac	2014-02-27 11:25:57.608869497 +0100
-@@ -1027,9 +1027,8 @@ dnl Override installation directory, wit
+diff -up nut-2.7.3/configure.ac.quickfix nut-2.7.3/configure.ac
+--- nut-2.7.3/configure.ac.quickfix	2015-04-23 12:05:21.219228670 +0200
++++ nut-2.7.3/configure.ac	2015-04-23 12:05:21.230228646 +0200
+@@ -1065,7 +1065,7 @@ dnl Override installation directory, wit
  dnl prefix. This is needed for 'distcheck*' targets, otherwise
  dnl files will try to get intalled to the actual system directories
  if test -n "${systemdsystemunitdir}"; then
 -	systemdsystemshutdowndir="${libdir}/systemd/system-shutdown"
 +	systemdsystemshutdowndir="/lib/systemd/system-shutdown"
  	AC_MSG_RESULT(using ${systemdsystemunitdir})
--	systemdsystemunitdir="`echo ${systemdsystemunitdir} | sed 's/\/lib/\${libdir}/'`"
  else
  	AC_MSG_RESULT(no)
- fi
