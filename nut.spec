@@ -16,7 +16,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.3
-Release: 1%{?dist}
+Release: 2%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -32,6 +32,7 @@ Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
+Patch10: nut-2.7.3-systemdfix.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig systemd-units
@@ -129,6 +130,7 @@ necessary to develop NUT client applications.
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
+%patch10 -p1 -b .systemdfix
 
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
@@ -438,6 +440,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Apr 28 2015 Michal Hlavinka <mhlavink@redhat.com> - 2.7.3-2
+- start nut driver before the daemon
+
 * Thu Apr 23 2015 Michal Hlavinka <mhlavink@redhat.com> - 2.7.3-1
 - nut updated to 2.7.3
 
