@@ -16,7 +16,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.3
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -440,6 +440,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Sat May 02 2015 Kalev Lember <kalevlember@gmail.com> - 2.7.3-3
+- Rebuilt for GCC 5 C++11 ABI change
+
 * Tue Apr 28 2015 Michal Hlavinka <mhlavink@redhat.com> - 2.7.3-2
 - start nut driver before the daemon
 
