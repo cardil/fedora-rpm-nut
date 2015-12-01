@@ -16,7 +16,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.3
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -440,6 +440,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Dec  1 2015 Tom Callaway <spot@fedoraproject.org> - 2.7.3-5
+- rebuild for libvpx 1.5.0
+
 * Wed Jun 17 2015 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.7.3-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_23_Mass_Rebuild
 
