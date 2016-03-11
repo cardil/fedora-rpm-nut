@@ -15,8 +15,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.7.3
-Release: 7%{?dist}
+Version: 2.7.4
+Release: 1%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -28,11 +28,9 @@ Patch1: nut-2.6.3-tmpfiles.patch
 #quick fix. TODO: fix it properly
 Patch3: nut-2.6.5-quickfix.patch
 Patch5: nut-2.6.5-dlfix.patch
-Patch6: nut-2.6.5-pthreadfix.patch
 Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
-Patch10: nut-2.7.3-systemdfix.patch
 
 Requires(pre): shadow-utils udev
 Requires(post): fileutils chkconfig systemd-units
@@ -126,11 +124,9 @@ necessary to develop NUT client applications.
 %patch1 -p1 -b .tmpfiles
 %patch3 -p1 -b .quickfix
 %patch5 -p1 -b .dlfix
-%patch6 -p1 -b .pthreadfix
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
-%patch10 -p1 -b .systemdfix
 
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
@@ -440,6 +436,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Sat Mar 12 2016 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-1
+- nut updated to 2.7.4
+
 * Thu Feb 04 2016 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.3-7
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_24_Mass_Rebuild
 
