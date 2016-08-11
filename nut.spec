@@ -16,7 +16,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 2%{?dist}
+Release: 3%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -436,6 +436,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Aug 11 2016 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-3
+- make sure tmpfiles creation is executped before ups driver (#1365904,#1349362)
+
 * Tue Jul 19 2016 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 2.7.4-2
 - https://fedoraproject.org/wiki/Changes/Automatic_Provides_for_Python_RPM_Packages
 
