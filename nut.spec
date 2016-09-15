@@ -8,6 +8,8 @@
 %global cgidir  /var/www/nut-cgi-bin
 %global piddir  /var/run/nut
 %global modeldir /usr/sbin
+# powerman is retired on Fedora, therefore disable it by default
+%bcond_with powerman
 
 %if ! (0%{?fedora} > 12 || 0%{?rhel} > 6)
 %{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
@@ -16,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 3%{?dist}
+Release: 4%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -57,7 +59,9 @@ BuildRequires: net-snmp-devel
 BuildRequires: netpbm-devel
 BuildRequires: openssl-devel
 BuildRequires: pkgconfig
+%if %{with powerman}
 BuildRequires: powerman-devel
+%endif
 BuildRequires: python-devel
 BuildRequires: desktop-file-utils
 BuildRequires: freeipmi-devel
@@ -149,6 +153,9 @@ autoreconf -i
 export LDFLAGS="-Wl,-z,now"
 %configure \
     --with-all \
+%if %{without powerman}
+    --without-powerman \
+%endif
     --with-libltdl \
     --without-hal \
     --with-cgi \
@@ -349,7 +356,9 @@ rm -rf %{buildroot}
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/optiups.8.gz
 %{_mandir}/man8/powercom.8.gz
+%if %{with powerman}
 %{_mandir}/man8/powerman-pdu.8.gz
+%endif
 %{_mandir}/man8/powerpanel.8.gz
 %{_mandir}/man8/rhino.8.gz
 %{_mandir}/man8/richcomm_usb.8.gz
@@ -436,6 +445,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Sep 15 2016 Till Maas <opensource@till.name> - 2.7.4-4
+- Disable powerman support, powerman was retired on Fedora
+
 * Thu Aug 11 2016 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-3
 - make sure tmpfiles creation is executped before ups driver (#1365904,#1349362)
 
