@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 4%{?dist}
+Release: 5%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -196,7 +196,7 @@ mkdir -p %{buildroot}%{modeldir} \
 make install DESTDIR=%{buildroot}
 
 %if %{?fedora}0 > 140 || %{?rhel}0 > 60
-  install -p -D -m 644 %{SOURCE3} %{buildroot}%{_sysconfdir}/tmpfiles.d/nut-client.conf
+  install -p -D -m 644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/nut-client.conf
 %endif
 
 rm -rf %{buildroot}%{_prefix}/html
@@ -384,7 +384,7 @@ rm -rf %{buildroot}
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
 %if %{?fedora}0 > 140 || %{?rhel}0 > 60
-  %config(noreplace) %{_sysconfdir}/tmpfiles.d/nut-client.conf
+  %config(noreplace) %{_tmpfilesdir}/nut-client.conf
 %endif
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
 %ghost %{piddir}
@@ -445,6 +445,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Nov 11 2016 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-5
+- use %%_tmpfilesdir macro (#1394009)
+
 * Thu Sep 15 2016 Till Maas <opensource@till.name> - 2.7.4-4
 - Disable powerman support, powerman was retired on Fedora
 
