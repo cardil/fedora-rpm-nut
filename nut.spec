@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 5%{?dist}
+Release: 6%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -445,6 +445,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Feb 01 2017 Sandro Mani <manisandro@gmail.com> - 2.7.4-6
+- Rebuild (libwebp)
+
 * Fri Nov 11 2016 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-5
 - use %%_tmpfilesdir macro (#1394009)
 
