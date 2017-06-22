@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 8%{?dist}
+Release: 9%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -65,6 +65,7 @@ BuildRequires: powerman-devel
 BuildRequires: python-devel
 BuildRequires: desktop-file-utils
 BuildRequires: freeipmi-devel
+BuildRequires: nss-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -157,6 +158,7 @@ export LDFLAGS="-Wl,-z,now"
     --without-powerman \
 %endif
     --with-libltdl \
+    --with-nss \
     --without-hal \
     --with-cgi \
     --datadir=%{_datadir}/%{name} \
@@ -445,6 +447,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Jun 22 2017 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-9
+- enable nss crypto (#1463071)
+
 * Wed May 24 2017 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-8
 - fix location of tmpfiles.d in service files (#1399602)
 
