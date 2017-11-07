@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 12%{?dist}
+Release: 13%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -35,9 +35,9 @@ Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
 
 Requires(pre): shadow-utils udev
-Requires(post): fileutils chkconfig systemd-units
+Requires(post): coreutils chkconfig systemd-units
 Requires(preun): systemd-units
-Requires(postun): fileutils chkconfig systemd-units
+Requires(postun): coreutils chkconfig systemd-units
 Obsoletes: nut-hal < 2.6.0-7
 
 BuildRequires: autoconf
@@ -447,6 +447,9 @@ rm -rf %{buildroot}
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Nov 07 2017 Igor Gnatenko <ignatenkobrain@fedoraproject.org> - 2.7.4-13
+- Remove old crufty coreutils requires
+
 * Wed Aug 30 2017 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-12
 - rebuild for freeipmi update
 
