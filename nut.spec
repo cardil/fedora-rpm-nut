@@ -294,9 +294,6 @@ else
   /bin/systemctl try-restart nut-monitor.service >/dev/null 2>&1 || : 
 fi 
 
-%clean
-rm -rf %{buildroot}
-
 %files
 %defattr(-,root,root,-)
 %doc COPYING LICENSE-GPL2 LICENSE-GPL3 ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
