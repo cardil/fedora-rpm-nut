@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 14%{?dist}
+Release: 15%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -62,7 +62,7 @@ BuildRequires: pkgconfig
 %if %{with powerman}
 BuildRequires: powerman-devel
 %endif
-BuildRequires: python-devel
+BuildRequires: python2-devel
 BuildRequires: desktop-file-utils
 BuildRequires: freeipmi-devel
 BuildRequires: nss-devel
@@ -444,6 +444,10 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Feb 14 2018 Iryna Shcherbina <ishcherb@redhat.com> - 2.7.4-15
+- Update Python 2 dependency declarations to new packaging standards
+  (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
+
 * Thu Feb 08 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.4-14
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_28_Mass_Rebuild
 
