@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 15%{?dist}
+Release: 16%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -47,6 +47,7 @@ BuildRequires: dbus-glib-devel
 BuildRequires: elfutils-devel
 BuildRequires: fontconfig-devel
 BuildRequires: freetype-devel
+BuildRequires: gcc
 BuildRequires: gd-devel
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
@@ -444,6 +445,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Mar 07 2018 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-16
+- add gcc buildrequire
+
 * Wed Feb 14 2018 Iryna Shcherbina <ishcherb@redhat.com> - 2.7.4-15
 - Update Python 2 dependency declarations to new packaging standards
   (See https://fedoraproject.org/wiki/FinalizingFedoraSwitchtoPython3)
