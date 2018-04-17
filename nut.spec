@@ -67,6 +67,7 @@ BuildRequires: python2-devel
 BuildRequires: desktop-file-utils
 BuildRequires: freeipmi-devel
 BuildRequires: nss-devel
+BuildRequires: cppunit-devel
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
