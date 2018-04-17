@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 16%{?dist}
+Release: 17%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -440,6 +440,12 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Apr 17 2018 Xavier Bachelot <xavier@bachelot.org> - 2.7.4-17
+- Remove unrecognized configure option --without-hal
+- Explicitely disable tcpwrapper support
+- Remove unneeded CRLF EOL fix
+- Add BR: cppunit-devel
+
 * Wed Mar 07 2018 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-16
 - add gcc buildrequire
 
