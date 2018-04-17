@@ -160,7 +160,6 @@ export LDFLAGS="-Wl,-z,now"
 %endif
     --with-libltdl \
     --with-nss \
-    --without-hal \
     --with-cgi \
     --datadir=%{_datadir}/%{name} \
     --with-user=%{name} \
