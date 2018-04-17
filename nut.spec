@@ -140,12 +140,6 @@ sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 
-#fix crlf end of lines
-for f in docs/nut-qa.txt docs/website/css/ie-overrides.css docs/website/scripts/filter_png.js
-do
-  sed -i 's/\r\n*$//' $f ||:
-done
-
 # workaround for multilib conflicts - caused by patch changing modification time of scripts
 find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
 
