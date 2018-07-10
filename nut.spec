@@ -291,7 +291,6 @@ else
 fi 
 
 %files
-%defattr(-,root,root,-)
 %doc COPYING LICENSE-GPL2 LICENSE-GPL3 ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/nut.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
@@ -407,7 +406,6 @@ fi
 %{_datadir}/applications/nut-monitor.desktop
 
 %files cgi
-%defattr(-,root,root,-)
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/hosts.conf
 %config(noreplace) %attr(600,nut,root) %{_sysconfdir}/ups/upsset.conf
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats.html
@@ -421,12 +419,10 @@ fi
 %{_mandir}/man8/upsset.cgi.8.gz
 
 %files xml
-%defattr(-,root,root)
 %{modeldir}/netxml-ups
 %doc %{_mandir}/man8/netxml-ups.8.gz
 
 %files devel
-%defattr(-,root,root,-)
 %{_includedir}/*
 %{_mandir}/man3/upscli*
 %{_mandir}/man3/nutscan*
