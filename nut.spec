@@ -40,6 +40,7 @@ Requires(preun): systemd-units
 Requires(postun): coreutils chkconfig systemd-units
 Obsoletes: nut-hal < 2.6.0-7
 
+BuildRequires:  gcc-c++
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: avahi-devel
