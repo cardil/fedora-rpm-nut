@@ -18,7 +18,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 18%{?dist}
+Release: 19%{?dist}
 Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
@@ -437,6 +437,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jul 24 2018 Adam Williamson <awilliam@redhat.com> - 2.7.4-19
+- Rebuild for new net-snmp
+
 * Fri Jul 13 2018 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.4-18
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_29_Mass_Rebuild
 
