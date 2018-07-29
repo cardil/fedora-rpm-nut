@@ -401,7 +401,7 @@ fi
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
 %{_bindir}/nut-monitor
-%{python_sitelib}/PyNUT.*
+%{python2_sitelib}/PyNUT.*
 %{_datadir}/nut
 %{_datadir}/pixmaps/nut-monitor.png
 %{_datadir}/applications/nut-monitor.desktop
