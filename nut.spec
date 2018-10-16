@@ -1,5 +1,4 @@
-# Does not build with hardened build enabled due to PIC
-%global _hardened_build 0
+%global _hardened_build 1
 
 #TODO: split nut-client so it does not require python
 %global nut_uid 57
@@ -14,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 19%{?dist}
+Release: 21%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -65,6 +64,7 @@ BuildRequires: powerman-devel
 %endif
 BuildRequires: python2-devel
 BuildRequires: python2-setuptools
+BuildRequires: /usr/bin/pathfix.py
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -128,12 +128,14 @@ necessary to develop NUT client applications.
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
 
-
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i 's|env python|env python2|' scripts/python/app/NUT-Monitor
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
+
+# Fix python shbangs
+pathfix.py -pni "%{__python2} %{py2_shbang_opts}" scripts/python scripts/python/app/NUT-Monitor
 
 # workaround for multilib conflicts - caused by patch changing modification time of scripts
 find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
@@ -172,8 +174,7 @@ sh %{SOURCE4} >>include/config.h
 #remove rpath
 sed -i 's|^hardcode_libdir_flag_spec=.*|hardcode_libdir_flag_spec=""|g' libtool
 sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
-%global _hardened_build 1
-make %{?_smp_mflags} CFLAGS="%{__global_cflags}" LDFLAGS="-Wl,-z,now -Wl,-z,relro %{__global_ldflags}"
+%make_build LDFLAGS="%{__global_ldflags}"
 
 %install
 mkdir -p %{buildroot}%{modeldir} \
@@ -183,9 +184,9 @@ mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_localstatedir}/lib/ups \
          %{buildroot}%{_libexecdir}
 
-make install DESTDIR=%{buildroot}
+%make_install
 
-%if %{?fedora}0 > 140 || %{?rhel}0 > 60
+%if 0%{?fedora} || 0%{?rhel} > 6
   install -p -D -m 644 %{SOURCE3} %{buildroot}%{_tmpfilesdir}/nut-client.conf
 %endif
 
@@ -195,7 +196,7 @@ rm -rf docs/man
 find docs/ -name 'Makefile*' -delete
 
 pushd conf; 
-make install DESTDIR=%{buildroot}
+%make_install
 for file in %{buildroot}%{_sysconfdir}/ups/*.sample
 do
    mv $file %{buildroot}%{_sysconfdir}/ups/`basename $file .sample`
@@ -369,11 +370,12 @@ fi
 %dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
-%if %{?fedora}0 > 140 || %{?rhel}0 > 60
-  %config(noreplace) %{_tmpfilesdir}/nut-client.conf
+%if 0%{?fedora} || 0%{?rhel} > 6
+  %{_tmpfilesdir}/nut-client.conf
 %endif
 %dir %attr(750,nut,nut) %{_localstatedir}/lib/ups
-%ghost %{piddir}
+# upsmon.pid is written as root, so root needs access for now
+%ghost %attr(770,root,nut) %{piddir}
 %{_bindir}/upsc
 %{_bindir}/upscmd
 %{_bindir}/upsrw
@@ -428,6 +430,11 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Oct 16 2018 Orion Poplawski <orion@nwra.com> - 2.7.4-21
+- Cleanup and modernize spec
+- Fix ownership/permissions of /var/run/nut (bug #1584330, #1580082)
+- Fix python shbangs
+
 * Sun Oct 14 2018 Peter Robinson <pbrobinson@fedoraproject.org> 2.7.4-20
 - Updates dependencies, modernise spec, use %%license
 - Python build fixes
