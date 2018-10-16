@@ -11,15 +11,10 @@
 # powerman is retired on Fedora, therefore disable it by default
 %bcond_with powerman
 
-%if ! (0%{?fedora} > 12 || 0%{?rhel} > 6)
-%{!?python_sitelib: %global python_sitelib %(%{__python} -c "from distutils.sysconfig import get_python_lib; print (get_python_lib())")}
-%endif
-
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
 Release: 19%{?dist}
-Group: Applications/System
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -34,21 +29,24 @@ Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
 
-Requires(pre): shadow-utils udev
-Requires(post): coreutils chkconfig systemd-units
-Requires(preun): systemd-units
-Requires(postun): coreutils chkconfig systemd-units
+Requires(pre): shadow-utils systemd-udev
+Requires(post): coreutils systemd
+Requires(preun): systemd
+Requires(postun): coreutils systemd
 Obsoletes: nut-hal < 2.6.0-7
 
-BuildRequires:  gcc-c++
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: avahi-devel
+BuildRequires: cppunit-devel
 BuildRequires: dbus-glib-devel
+BuildRequires: desktop-file-utils
 BuildRequires: elfutils-devel
 BuildRequires: fontconfig-devel
+BuildRequires: freeipmi-devel
 BuildRequires: freetype-devel
 BuildRequires: gcc
+BuildRequires: gcc-c++
 BuildRequires: gd-devel
 BuildRequires: libjpeg-devel
 BuildRequires: libpng-devel
@@ -59,16 +57,14 @@ BuildRequires: libXpm-devel
 BuildRequires: neon-devel
 BuildRequires: net-snmp-devel
 BuildRequires: netpbm-devel
+BuildRequires: nss-devel
 BuildRequires: openssl-devel
 BuildRequires: pkgconfig
 %if %{with powerman}
 BuildRequires: powerman-devel
 %endif
 BuildRequires: python2-devel
-BuildRequires: desktop-file-utils
-BuildRequires: freeipmi-devel
-BuildRequires: nss-devel
-BuildRequires: cppunit-devel
+BuildRequires: python2-setuptools
 
 %ifnarch s390 s390x
 BuildRequires: libusb-devel
@@ -86,11 +82,10 @@ capability has been harnessed where possible to allow for safe shutdowns,
 live status tracking on web pages, and more.
 
 %package client
-Group: Applications/System
 Summary: Network UPS Tools client monitoring utilities
-Requires(post): chkconfig
-Requires(preun): chkconfig
-Requires(pre): shadow-utils udev
+Requires(post): systemd
+Requires(preun): systemd
+Requires(pre): shadow-utils systemd-udev
 #only for python and gui part
 #Requires:
 
@@ -100,7 +95,6 @@ ups that the client host has access to, but where the UPS is physically
 attached to a different computer on the network.
 
 %package cgi
-Group: Applications/System
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
 Requires(pre): shadow-utils udev
@@ -110,7 +104,6 @@ This package includes CGI programs for accessing UPS status via a web
 browser.
 
 %package xml
-Group: Applications/System
 Summary: XML UPS driver for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release}
 
@@ -119,7 +112,6 @@ This package adds the netxml-ups driver, that allows NUT to monitor a XML
 capable UPS.
 
 %package devel
-Group: Development/Libraries
 Summary: Development files for NUT Client
 Requires: %{name}-client = %{version}-%{release} webserver openssl-devel
 
@@ -138,6 +130,7 @@ necessary to develop NUT client applications.
 
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
+sed -i 's|env python|env python2|' scripts/python/app/NUT-Monitor
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
@@ -183,8 +176,6 @@ sed -i 's|^runpath_var=LD_RUN_PATH|runpath_var=DIE_RPATH_DIE|g' libtool
 make %{?_smp_mflags} CFLAGS="%{__global_cflags}" LDFLAGS="-Wl,-z,now -Wl,-z,relro %{__global_ldflags}"
 
 %install
-rm -rf %{buildroot}
-
 mkdir -p %{buildroot}%{modeldir} \
          %{buildroot}%{_sysconfdir}/udev/rules.d \
          %{buildroot}%{_sysconfdir}/ups \
@@ -224,7 +215,7 @@ do
 done
 
 # install PyNUT 
-install -p -D -m 644 scripts/python/module/PyNUT.py %{buildroot}%{python_sitelib}/PyNUT.py
+install -p -D -m 644 scripts/python/module/PyNUT.py %{buildroot}%{python2_sitelib}/PyNUT.py
 # install nut-monitor
 mkdir -p %{buildroot}%{_datadir}/nut/nut-monitor/pixmaps
 install -p -m 755 scripts/python/app/NUT-Monitor %{buildroot}%{_datadir}/nut/nut-monitor/nut-monitor
@@ -292,7 +283,8 @@ else
 fi 
 
 %files
-%doc COPYING LICENSE-GPL2 LICENSE-GPL3 ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
+%license COPYING LICENSE-GPL2 LICENSE-GPL3
+%doc ChangeLog AUTHORS MAINTAINERS README docs UPGRADING INSTALL NEWS
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/nut.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/ups.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsd.conf
@@ -373,8 +365,7 @@ fi
 %{_mandir}/man8/usbhid-ups.8.gz
 
 %files client
-%doc COPYING LICENSE-GPL2 LICENSE-GPL3
-%defattr(-,root,root)
+%license COPYING LICENSE-GPL2 LICENSE-GPL3
 %dir %{_sysconfdir}/ups
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upsmon.conf
 %config(noreplace) %attr(640,root,nut) %{_sysconfdir}/ups/upssched.conf
@@ -437,6 +428,10 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Sun Oct 14 2018 Peter Robinson <pbrobinson@fedoraproject.org> 2.7.4-20
+- Updates dependencies, modernise spec, use %%license
+- Python build fixes
+
 * Tue Jul 24 2018 Adam Williamson <awilliam@redhat.com> - 2.7.4-19
 - Rebuild for new net-snmp
 
