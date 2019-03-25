@@ -13,7 +13,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 22%{?dist}
+Release: 23%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -27,6 +27,7 @@ Patch5: nut-2.6.5-dlfix.patch
 Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
+Patch10: nut-2.7.4-cloexec.patch
 
 Requires(pre): shadow-utils systemd-udev
 Requires(post): coreutils systemd
@@ -128,6 +129,7 @@ necessary to develop NUT client applications.
 %patch7 -p1 -b .foreground
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
+%patch10 -p1 -b .cloexec
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i 's|env python|env python2|' scripts/python/app/NUT-Monitor
@@ -431,6 +433,10 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon Mar 25 2019 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-23
+- add missing requirements for nut monitor
+- fix file descriptor leak for notifycmd
+
 * Fri Feb 01 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.4-22
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_30_Mass_Rebuild
 
