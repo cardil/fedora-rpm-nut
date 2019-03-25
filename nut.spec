@@ -86,6 +86,7 @@ Summary: Network UPS Tools client monitoring utilities
 Requires(post): systemd
 Requires(preun): systemd
 Requires(pre): shadow-utils systemd-udev
+Requires: pygtk2, pygtk2-libglade
 #only for python and gui part
 #Requires:
 
