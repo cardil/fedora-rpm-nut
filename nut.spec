@@ -1,4 +1,6 @@
 %global _hardened_build 1
+#global with_python2 0
+%bcond_with python2
 
 #TODO: split nut-client so it does not require python
 %global nut_uid 57
@@ -13,7 +15,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 24%{?dist}
+Release: 25%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -63,8 +65,8 @@ BuildRequires: pkgconfig
 %if %{with powerman}
 BuildRequires: powerman-devel
 %endif
-BuildRequires: python2-devel
-BuildRequires: python2-setuptools
+BuildRequires: python3-devel
+BuildRequires: python3-setuptools
 BuildRequires: /usr/bin/pathfix.py
 
 %ifnarch s390 s390x
@@ -132,13 +134,13 @@ necessary to develop NUT client applications.
 %patch10 -p1 -b .cloexec
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
-sed -i 's|env python|env python2|' scripts/python/app/NUT-Monitor
+sed -i 's|env python|env python3|' scripts/python/app/NUT-Monitor
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
 
 # Fix python shbangs
-pathfix.py -pni "%{__python2} %{py2_shbang_opts}" scripts/python scripts/python/app/NUT-Monitor
+pathfix.py -pni "%{__python3} %{py3_shbang_opts}" scripts/python scripts/python/app/NUT-Monitor
 
 # workaround for multilib conflicts - caused by patch changing modification time of scripts
 find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
@@ -219,8 +221,9 @@ do
 done
 
 # install PyNUT 
-install -p -D -m 644 scripts/python/module/PyNUT.py %{buildroot}%{python2_sitelib}/PyNUT.py
+install -p -D -m 644 scripts/python/module/PyNUT.py %{buildroot}%{python3_sitelib}/PyNUT.py
 # install nut-monitor
+%if %{with python2}
 mkdir -p %{buildroot}%{_datadir}/nut/nut-monitor/pixmaps
 install -p -m 755 scripts/python/app/NUT-Monitor %{buildroot}%{_datadir}/nut/nut-monitor/nut-monitor
 install -p -m 644 scripts/python/app/gui-1.3.glade %{buildroot}%{_datadir}/nut/nut-monitor
@@ -228,6 +231,7 @@ install -p -m 644 scripts/python/app/pixmaps/* %{buildroot}%{_datadir}/nut/nut-m
 install -p -D scripts/python/app/nut-monitor.png %{buildroot}%{_datadir}/pixmaps/nut-monitor.png
 desktop-file-install --dir=%{buildroot}%{_datadir}/applications scripts/python/app/nut-monitor.desktop
 ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
+%endif
 
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
@@ -396,11 +400,13 @@ fi
 %{_mandir}/man8/upsrw.8.gz
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
-%{_bindir}/nut-monitor
-%{python2_sitelib}/PyNUT.*
+%{python3_sitelib}/
 %{_datadir}/nut
+%if %{with python2}
+%{_bindir}/nut-monitor
 %{_datadir}/pixmaps/nut-monitor.png
 %{_datadir}/applications/nut-monitor.desktop
+%endif
 
 %files cgi
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/hosts.conf
@@ -433,6 +439,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Oct 03 2019 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-25
+- drop python 2 requirements including nut-monitor app
+
 * Thu Jul 25 2019 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.4-24
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_31_Mass_Rebuild
 
