@@ -15,7 +15,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 25%{?dist}
+Release: 26%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -89,8 +89,10 @@ Summary: Network UPS Tools client monitoring utilities
 Requires(post): systemd
 Requires(preun): systemd
 Requires(pre): shadow-utils systemd-udev
+%if %{with python2}
 Requires: pygtk2, pygtk2-libglade
 #only for python and gui part
+%endif
 #Requires:
 
 %description client
@@ -439,6 +441,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Oct 04 2019 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-26
+- drop pygtk2 requirements
+
 * Thu Oct 03 2019 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-25
 - drop python 2 requirements including nut-monitor app
 
