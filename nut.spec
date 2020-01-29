@@ -15,7 +15,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 26%{?dist}
+Release: 27%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -441,6 +441,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Jan 29 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.4-27
+- Rebuilt for https://fedoraproject.org/wiki/Fedora_32_Mass_Rebuild
+
 * Fri Oct 04 2019 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-26
 - drop pygtk2 requirements
 
