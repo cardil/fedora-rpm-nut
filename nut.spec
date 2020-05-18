@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 29%{?dist}
+Release: 30%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -32,7 +32,7 @@ Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
 Patch10: nut-2.7.4-cloexec.patch
 
-Requires(pre): shadow-utils systemd-udev
+Requires(pre): shadow-utils
 Requires(post): coreutils systemd
 Requires(preun): systemd
 Requires(postun): coreutils systemd
@@ -89,7 +89,7 @@ live status tracking on web pages, and more.
 Summary: Network UPS Tools client monitoring utilities
 Requires(post): systemd
 Requires(preun): systemd
-Requires(pre): shadow-utils systemd-udev
+Requires(pre): shadow-utils
 %if %{with python2}
 Requires: pygtk2, pygtk2-libglade
 #only for python and gui part
@@ -104,7 +104,7 @@ attached to a different computer on the network.
 %package cgi
 Summary: CGI utilities for the Network UPS Tools
 Requires: %{name}-client = %{version}-%{release} webserver
-Requires(pre): shadow-utils udev
+Requires(pre): shadow-utils
 
 %description cgi
 This package includes CGI programs for accessing UPS status via a web
@@ -255,7 +255,6 @@ fi
 
 %post
 /sbin/ldconfig
-udevadm control --reload ||:
 %systemd_post nut-driver.service nut-server.service
 
 %preun
@@ -445,6 +444,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue May 26 2020 Orion Poplawski <orion@nwra.com> - 2.7.4-30
+- Drop old udev requires/scriptlet
+
 * Tue May 26 2020 Orion Poplawski <orion@nwra.com> - 2.7.4-29
 - Add upstream patch for OpenSSL 1.1.0 support, enable for Fedora >= 33
 
