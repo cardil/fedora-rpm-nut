@@ -1,5 +1,4 @@
 %global _hardened_build 1
-#global with_python2 0
 %bcond_with python2
 
 #TODO: split nut-client so it does not require python
@@ -15,12 +14,14 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 28%{?dist}
+Release: 29%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
 Source3: nut-client.tmpfiles
 Source4: libs.sh
+# Upstream support for OpenSSL-1.1.0, TLS > 1.0
+Patch0: https://patch-diff.githubusercontent.com/raw/networkupstools/nut/pull/504.patch
 Patch1: nut-2.6.3-tmpfiles.patch
 
 #quick fix. TODO: fix it properly
@@ -127,6 +128,7 @@ necessary to develop NUT client applications.
 
 %prep
 %setup -q
+%patch0 -p1 -b .openssl
 %patch1 -p1 -b .tmpfiles
 %patch3 -p1 -b .quickfix
 %patch5 -p1 -b .dlfix
@@ -157,7 +159,9 @@ export LDFLAGS="-Wl,-z,now"
     --without-powerman \
 %endif
     --with-libltdl \
+%if (0%{?fedora} && 0%{?fedora} < 33) || 0%{?el8}
     --with-nss \
+%endif
     --without-wrap \
     --with-cgi \
     --datadir=%{_datadir}/%{name} \
@@ -441,6 +445,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue May 26 2020 Orion Poplawski <orion@nwra.com> - 2.7.4-29
+- Add upstream patch for OpenSSL 1.1.0 support, enable for Fedora >= 33
+
 * Tue May 26 2020 Miro Hrončok <mhroncok@redhat.com> - 2.7.4-28
 - Rebuilt for Python 3.9
 
