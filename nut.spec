@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 30%{?dist}
+Release: 31%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -444,6 +444,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jun 02 2020 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-31
+- update tmpfiles nut run directory
+
 * Tue May 26 2020 Orion Poplawski <orion@nwra.com> - 2.7.4-30
 - Drop old udev requires/scriptlet
 
