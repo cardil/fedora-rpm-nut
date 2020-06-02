@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 31%{?dist}
+Release: 32%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -242,7 +242,7 @@ ln -s %{_datadir}/nut/nut-monitor/nut-monitor %{buildroot}%{_bindir}/nut-monitor
 %pre
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid}  \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
-/usr/sbin/usermod -G dialout %{name}
+/usr/sbin/usermod -G dialout,tty %{name}
 
 # do not let upsmon run during upgrade rhbz#916472
 # phase 1: stop upsmon before upsd changes
@@ -267,12 +267,12 @@ fi
 %pre client
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
-/usr/sbin/usermod -G dialout %{name}
+/usr/sbin/usermod -G dialout,tty %{name}
 
 %pre cgi
 /usr/sbin/useradd -c "Network UPS Tools" -u %{nut_uid} \
         -s /bin/false -r -d %{_localstatedir}/lib/ups %{name} 2> /dev/null || :
-/usr/sbin/usermod -G dialout %{name}
+/usr/sbin/usermod -G dialout,tty %{name}
 
 %post client
 /sbin/ldconfig
@@ -444,6 +444,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jun 02 2020 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-32
+- nut user needs tty group for wall (#1774591)
+
 * Tue Jun 02 2020 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-31
 - update tmpfiles nut run directory
 
