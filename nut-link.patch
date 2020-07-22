@@ -1,0 +1,12 @@
+diff -Nrup a/tools/nut-scanner/Makefile.am b/tools/nut-scanner/Makefile.am
+--- a/tools/nut-scanner/Makefile.am	2015-12-29 05:08:34.000000000 -0700
++++ b/tools/nut-scanner/Makefile.am	2020-01-07 15:26:14.134932956 -0700
+@@ -21,7 +21,7 @@ libnutscan_la_CFLAGS = -I$(top_srcdir)/c
+ 
+ nut_scanner_SOURCES = nut-scanner.c
+ nut_scanner_CFLAGS = -I$(top_srcdir)/clients -I$(top_srcdir)/include
+-nut_scanner_LDADD = libnutscan.la ../../common/libcommon.la
++nut_scanner_LDADD = libnutscan.la
+ 
+ if WITH_SSL
+   libnutscan_la_CFLAGS += $(LIBSSL_CFLAGS)

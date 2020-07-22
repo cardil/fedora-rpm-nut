@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 32%{?dist}
+Release: 33%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -31,6 +31,7 @@ Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
 Patch10: nut-2.7.4-cloexec.patch
+Patch11: nut-link.patch
 
 Requires(pre): shadow-utils
 Requires(post): coreutils systemd
@@ -136,6 +137,7 @@ necessary to develop NUT client applications.
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
 %patch10 -p1 -b .cloexec
+%patch11 -p1 -b .link
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i 's|env python|env python3|' scripts/python/app/NUT-Monitor
@@ -444,6 +446,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jul 21 2020 Jeff Law <law@redhat.com> - 2.7.4-33
+- Do not link nut_scanner against libcommon.
+
 * Tue Jun 02 2020 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-32
 - nut user needs tty group for wall (#1774591)
 
