@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 34%{?dist}
+Release: 35%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -31,6 +31,7 @@ Patch7: nut-2.6.5-foreground.patch
 Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
 Patch10: nut-2.7.4-cloexec.patch
+Patch11: nut-2.7.4-nutscanner-FTBFS.patch
 
 Requires(pre): shadow-utils
 Requires(post): coreutils systemd
@@ -136,6 +137,7 @@ necessary to develop NUT client applications.
 %patch8 -p1 -b .unreachable
 %patch9 -p1 -b .rmpidf
 %patch10 -p1 -b .cloexec
+%patch11 -p1 -b .nutscanner-FTBFS
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i 's|env python|env python3|' scripts/python/app/NUT-Monitor
@@ -444,6 +446,10 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Sep 02 2020 Josef Ridky <jridky@redhat.com> - 2.7.4-35
+- Resolves: #1865077 - FTBFS in Fedora 33
+- Rebuilt for new release of net-snmp
+
 * Sat Aug 01 2020 Fedora Release Engineering <releng@fedoraproject.org> - 2.7.4-34
 - Second attempt - Rebuilt for
   https://fedoraproject.org/wiki/Fedora_33_Mass_Rebuild
