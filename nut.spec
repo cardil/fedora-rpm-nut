@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 35%{?dist}
+Release: 36%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -153,6 +153,7 @@ find . -mtime -1 -print0 | xargs -0 touch --reference %{SOURCE0}
 
 %build
 autoreconf -i
+export CXXFLAGS="-std=c++14 $RPM_OPT_FLAGS"
 # prevent assignment of default value, it would break configure's tests
 export LDFLAGS="-Wl,-z,now"
 %configure \
@@ -446,6 +447,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Sep 15 2020 Jeff Law <law@redhat.com> - 2.7.4-36
+- Force C++14 as this code is not C++17 ready
+
 * Wed Sep 02 2020 Josef Ridky <jridky@redhat.com> - 2.7.4-35
 - Resolves: #1865077 - FTBFS in Fedora 33
 - Rebuilt for new release of net-snmp
