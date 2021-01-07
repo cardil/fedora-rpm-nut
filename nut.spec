@@ -39,6 +39,7 @@ Requires(preun): systemd
 Requires(postun): coreutils systemd
 Obsoletes: nut-hal < 2.6.0-7
 
+BuildRequires: make
 BuildRequires: autoconf
 BuildRequires: automake
 BuildRequires: avahi-devel
