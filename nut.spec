@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 38%{?dist}
+Release: 39%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -448,6 +448,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2.7.4-39
+- Rebuilt for Python 3.10
+
 * Tue Mar 02 2021 Zbigniew Jędrzejewski-Szmek <zbyszek@in.waw.pl> - 2.7.4-38
 - Rebuilt for updated systemd-rpm-macros
   See https://pagure.io/fesco/issue/2583.
