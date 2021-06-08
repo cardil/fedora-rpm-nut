@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 39%{?dist}
+Release: 40%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -32,6 +32,7 @@ Patch8: nut-2.6.5-unreachable.patch
 Patch9: nut-2.6.5-rmpidf.patch
 Patch10: nut-2.7.4-cloexec.patch
 Patch11: nut-2.7.4-nutscanner-FTBFS.patch
+Patch12: nut-2.7.4-scratchdes.patch
 
 Requires(pre): shadow-utils
 Requires(post): coreutils systemd
@@ -139,6 +140,7 @@ necessary to develop NUT client applications.
 %patch9 -p1 -b .rmpidf
 %patch10 -p1 -b .cloexec
 %patch11 -p1 -b .nutscanner-FTBFS
+%patch12 -p1 -b .scratchdes
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor.desktop
 sed -i 's|env python|env python3|' scripts/python/app/NUT-Monitor
@@ -448,6 +450,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jun 08 2021 Michal Hlavinka <mhlavink@redhat.com> - 2.7.4-40
+- drop snmp-ups support for DES, as required net-snmp no longer supports it
+
 * Fri Jun 04 2021 Python Maint <python-maint@redhat.com> - 2.7.4-39
 - Rebuilt for Python 3.10
 
