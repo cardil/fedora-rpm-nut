@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.7.4
-Release: 42%{?dist}
+Release: 43%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.7/%{name}-%{version}.tar.gz
@@ -411,7 +411,7 @@ fi
 %{_mandir}/man8/upsrw.8.gz
 %{_mandir}/man8/upsmon.8.gz
 %{_mandir}/man8/upssched.8.gz
-%{python3_sitelib}/
+%pycached %{python3_sitelib}/PyNUT.py
 %{_datadir}/nut
 %if %{with python2}
 %{_bindir}/nut-monitor
@@ -450,6 +450,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Thu Sep 23 2021 Miro Hrončok <mhroncok@redhat.com> - 2.7.4-43
+- Don't own /usr/lib/python3.X/site-packages
+
 * Tue Sep 14 2021 Sahana Prasad <sahana@redhat.com> - 2.7.4-42
 - Rebuilt with OpenSSL 3.0.0
 
