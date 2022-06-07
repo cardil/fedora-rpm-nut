@@ -75,7 +75,7 @@ BuildRequires: python3-setuptools
 BuildRequires: /usr/bin/pathfix.py
 
 %ifnarch s390 s390x
-BuildRequires: libusb-devel
+BuildRequires: libusb1-devel
 %endif
 
 ExcludeArch: s390 s390x
