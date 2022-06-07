@@ -42,6 +42,7 @@ Obsoletes: nut-hal < 2.6.0-7
 BuildRequires: make
 BuildRequires: autoconf
 BuildRequires: automake
+BuildRequires: augeas-libs
 BuildRequires: avahi-devel
 BuildRequires: cppunit-devel
 BuildRequires: dbus-glib-devel
