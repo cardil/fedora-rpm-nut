@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.8.0
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -211,6 +211,7 @@ mv %{buildroot}%{_tmpfilesdir}/nut-common.tmpfiles %{buildroot}%{_tmpfilesdir}/n
 rm -rf %{buildroot}%{_prefix}/html
 rm -f %{buildroot}%{_libdir}/*.la
 rm -rf docs/man
+rm -rf %{buildroot}%{_datadir}/nut/solaris-init
 find docs/ -name 'Makefile*' -delete
 
 pushd conf; 
@@ -473,6 +474,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Tue Jun 07 2022 Michal Hlavinka <mhlavink@redhat.com> - 2.8.0-2
+- drop unused solaris init script pulling unnecessary dependency
+
 * Mon May 09 2022 Michal Hlavinka <mhlavink@redhat.com> - 2.8.0-1
 - updated to 2.8.0
 
