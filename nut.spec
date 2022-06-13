@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.8.0
-Release: 2%{?dist}
+Release: 3%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -474,6 +474,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Mon Jun 13 2022 Python Maint <python-maint@redhat.com> - 2.8.0-3
+- Rebuilt for Python 3.11
+
 * Tue Jun 07 2022 Michal Hlavinka <mhlavink@redhat.com> - 2.8.0-2
 - drop unused solaris init script pulling unnecessary dependency
 
