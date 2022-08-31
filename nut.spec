@@ -6,7 +6,7 @@
 %global nut_gid 57
 
 %global cgidir  /var/www/nut-cgi-bin
-%global piddir  /var/run/nut
+%global piddir  /run/nut
 %global modeldir /usr/sbin
 # powerman is retired on Fedora, therefore disable it by default
 %bcond_with powerman
@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.8.0
-Release: 4%{?dist}
+Release: 5%{?dist}
 License: GPLv2+ and GPLv3+
 Url: http://www.networkupstools.org/
 Source: http://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -74,6 +74,7 @@ BuildRequires: powerman-devel
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
 BuildRequires: /usr/bin/pathfix.py
+BuildRequires: systemd-rpm-macros
 
 %ifnarch s390 s390x
 BuildRequires: libusb1-devel
@@ -81,7 +82,7 @@ BuildRequires: libusb1-devel
 
 ExcludeArch: s390 s390x
 
-%global restart_flag /var/run/%{name}/%{name}-restart-after-rpm-install
+%global restart_flag /run/%{name}/%{name}-restart-after-rpm-install
 
 %description
 These programs are part of a developing project to monitor the assortment 
@@ -171,9 +172,9 @@ export LDFLAGS="-Wl,-z,now"
     --datadir=%{_datadir}/%{name} \
     --with-user=%{name} \
     --with-group=dialout \
-    --with-statepath=/var/run \
-    --with-pidpath=/var/run \
-    --with-altpidpath=/var/run \
+    --with-statepath=/run/nut \
+    --with-pidpath=/run/nut \
+    --with-altpidpath=/run/nut \
     --sysconfdir=%{_sysconfdir}/ups \
     --with-cgipath=%{cgidir} \
     --with-drvpath=%{modeldir} \
@@ -474,6 +475,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Aug 31 2022 Michal Hlavinka <mhlavink@redhat.com> - 2.8.0-5
+- update pid path
+
 * Fri Jul 22 2022 Fedora Release Engineering <releng@fedoraproject.org> - 2.8.0-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_37_Mass_Rebuild
 
