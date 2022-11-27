@@ -1,0 +1,17 @@
+Call the defined foo function instead of the undeclared func function.
+
+Submitted upstream: <https://github.com/networkupstools/nut/pull/1720>
+
+diff --git a/m4/ax_c___attribute__.m4 b/m4/ax_c___attribute__.m4
+index 0e952e7841c35b60..780bc2bb14ac5a78 100644
+--- a/m4/ax_c___attribute__.m4
++++ b/m4/ax_c___attribute__.m4
+@@ -67,7 +67,7 @@ AC_DEFUN([AX_C___ATTRIBUTE__], [
+ 	  foo(__attribute__ ((unused)) int i) {
+ 	      return;
+ 	  }
+-        ]], [func(1);])],
++        ]], [foo(1);])],
+       [ax_cv___attribute__unused_arg=yes],
+       [ax_cv___attribute__unused_arg=no]
+     )
