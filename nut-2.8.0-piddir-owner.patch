@@ -1,0 +1,48 @@
+diff -up nut-2.8.0/configure.ac.piddir-owner nut-2.8.0/configure.ac
+--- nut-2.8.0/configure.ac.piddir-owner	2022-04-26 18:03:36.000000000 -0400
++++ nut-2.8.0/configure.ac	2022-11-30 13:29:58.418038393 -0500
+@@ -2833,23 +2833,23 @@ AS_IF([test -n "$systemdtmpfilesdir"],
+     [mkdir -p "${TOP_BUILDDIR}"/scripts/systemd
+      cat > "${TOP_BUILDDIR}"/scripts/systemd/nut-common.tmpfiles.in << EOF
+ # State file (e.g. upsd to driver) and pidfile location for NUT:
+-d @STATEPATH@/nut 0770 @RUN_AS_USER@ @RUN_AS_GROUP@ - -
+-X @STATEPATH@/nut
++d @STATEPATH@ 0770 root @RUN_AS_GROUP@ - -
++X @STATEPATH@
+ EOF
+     AS_IF([test "$STATEPATH" != "$PIDPATH"],
+         [cat >> "${TOP_BUILDDIR}"/scripts/systemd/nut-common.tmpfiles.in << EOF
+-d @PIDPATH@/nut 0770 @RUN_AS_USER@ @RUN_AS_GROUP@ - -
+-X @PIDPATH@/nut
++d @PIDPATH@ 0770 root @RUN_AS_GROUP@ - -
++X @PIDPATH@
+ EOF])
+     AS_IF([test -n "$ALTPIDPATH" && test "$STATEPATH" != "$ALTPIDPATH" && test "$PIDPATH" != "$ALTPIDPATH"],
+         [cat >> "${TOP_BUILDDIR}"/scripts/systemd/nut-common.tmpfiles.in << EOF
+-d @ALTPIDPATH@/nut 0770 @RUN_AS_USER@ @RUN_AS_GROUP@ - -
+-X @ALTPIDPATH@/nut
++d @ALTPIDPATH@ 0770 root @RUN_AS_GROUP@ - -
++X @ALTPIDPATH@
+ EOF])
+     AS_IF([test -n "$ALTSTATEPATH" && test "$STATEPATH" != "$ALTSTATEPATH" && test "$ALTSTATEPATH" != "$ALTPIDPATH" && test "$PIDPATH" != "$ALTSTATEPATH"],
+         [cat >> "${TOP_BUILDDIR}"/scripts/systemd/nut-common.tmpfiles.in << EOF
+-d @ALTSTATEPATH@/nut 0770 @RUN_AS_USER@ @RUN_AS_GROUP@ - -
+-X @ALTSTATEPATH@/nut
++d @ALTSTATEPATH@ 0770 root @RUN_AS_GROUP@ - -
++X @ALTSTATEPATH@
+ EOF])
+ ])
+ AC_MSG_RESULT([done])
+diff -up nut-2.8.0/scripts/systemd/nut-common.tmpfiles.in.piddir-owner nut-2.8.0/scripts/systemd/nut-common.tmpfiles.in
+--- nut-2.8.0/scripts/systemd/nut-common.tmpfiles.in.piddir-owner	2022-04-26 18:06:27.000000000 -0400
++++ nut-2.8.0/scripts/systemd/nut-common.tmpfiles.in	2022-11-30 13:30:11.651106256 -0500
+@@ -1,5 +1,5 @@
+ # State file (e.g. upsd to driver) and pidfile location for NUT:
+-d @STATEPATH@/nut 0770 @RUN_AS_USER@ @RUN_AS_GROUP@ - -
+-X @STATEPATH@/nut
+-d @PIDPATH@/nut 0770 @RUN_AS_USER@ @RUN_AS_GROUP@ - -
+-X @PIDPATH@/nut
++d @STATEPATH@ 0770 root @RUN_AS_GROUP@ - -
++X @STATEPATH@
++d @PIDPATH@ 0770 root @RUN_AS_GROUP@ - -
++X @PIDPATH@
