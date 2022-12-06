@@ -16,8 +16,8 @@ Name: nut
 Version: 2.8.0
 Release: 7%{?dist}
 License: GPLv2+ and GPLv3+
-Url: http://www.networkupstools.org/
-Source: http://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
+Url: https://www.networkupstools.org/
+Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
 Source4: libs.sh
 # Upstream support for OpenSSL-1.1.0, TLS > 1.0
 Patch0: https://patch-diff.githubusercontent.com/raw/networkupstools/nut/pull/504.patch
