@@ -28,5 +28,5 @@ do
   echo "#define $( echo "$l" | tr '[a-z]-' '[A-Z]_')_PATH \"$rp\""
 done
 
-VINFO=$(sed -e '/version-info/!d' -e 's/#.*$//' -e 's/^.*-version-info//' -e 's/[[:space:]]//g' clients/Makefile)
+VINFO=$(sed -e '/version-info/!d' -e 's/#.*$//' -e 's/^.*-version-info//' -e 's/[[:space:]]//g' -e 's/\\//g' clients/Makefile)
 echo "#define LIBUPSCLIENT_PATH \"libupsclient.so.$(( ${VINFO%%:*}-${VINFO##*:} ))\""
