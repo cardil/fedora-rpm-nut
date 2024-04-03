@@ -13,8 +13,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.8.1
-Release: 4%{?dist}
+Version: 2.8.2
+Release: 1%{?dist}
 License: GPL-2.0-or-later AND GPL-3.0-or-later
 Url: https://www.networkupstools.org/
 Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -313,11 +313,15 @@ fi
 %exclude %{modeldir}/netxml-ups
 %{_unitdir}/nut-driver-enumerator.path
 %{_unitdir}/nut-driver-enumerator.service
+%{_unitdir}/nut-driver-enumerator-daemon-activator.path
+%{_unitdir}/nut-driver-enumerator-daemon-activator.service
+%{_unitdir}/nut-driver-enumerator-daemon.service
 %{_unitdir}/nut-driver@.service
 %{_unitdir}/nut-driver.target
 %{_unitdir}/nut-server.service
 %{_unitdir}/nut.target
 %{_sbindir}/upsd
+%{_bindir}/nutconf
 %{_bindir}/nut-scanner
 %{_libdir}/libnutscan.so.*
 %{_libexecdir}/nut-driver-enumerator.sh
@@ -328,6 +332,8 @@ fi
 %{_mandir}/man5/ups.conf.5.gz
 %{_mandir}/man5/upsd.conf.5.gz
 %{_mandir}/man5/upsd.users.5.gz
+
+%{_mandir}/man8/nutconf.8.gz
 
 %{_mandir}/man8/adelsystem_cbi.8.gz
 %{_mandir}/man8/apc_modbus.8.gz
@@ -481,6 +487,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Apr 03 2024 Michal Hlavinka <mhlavink@redhat.com> - 2.8.2-1
+- updated to 2.8.2(2272586)
+
 * Thu Jan 25 2024 Fedora Release Engineering <releng@fedoraproject.org> - 2.8.1-4
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_40_Mass_Rebuild
 
