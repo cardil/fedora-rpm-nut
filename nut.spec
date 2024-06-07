@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.8.2
-Release: 1%{?dist}
+Release: 2%{?dist}
 License: GPL-2.0-or-later AND GPL-3.0-or-later
 Url: https://www.networkupstools.org/
 Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -487,6 +487,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Jun 07 2024 Python Maint <python-maint@redhat.com> - 2.8.2-2
+- Rebuilt for Python 3.13
+
 * Wed Apr 03 2024 Michal Hlavinka <mhlavink@redhat.com> - 2.8.2-1
 - updated to 2.8.2(2272586)
 
