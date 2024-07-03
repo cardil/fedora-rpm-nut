@@ -13,8 +13,8 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.8.2
-Release: 2%{?dist}
+Version: 2.8.2.1
+Release: 0%{?dist}.1.git20240703pr2505
 License: GPL-2.0-or-later AND GPL-3.0-or-later
 Url: https://www.networkupstools.org/
 Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -128,9 +128,9 @@ necessary to develop NUT client applications.
 
 %prep
 %setup -q
-%patch -P2 -p1 -b .piddir-owner
-%patch -P9 -p1 -b .rmpidf
-%patch -P15 -p1
+%patch -P 2 -p1 -b .piddir-owner
+%patch -P 9 -p1 -b .rmpidf
+%patch -P 15 -p1
 
 sed -i 's|=NUT-Monitor|=nut-monitor|'  scripts/python/app/nut-monitor-py3qt5.desktop
 sed -i "s|sys.argv\[0\]|'%{_datadir}/%{name}/nut-monitor/nut-monitor'|" scripts/python/app/NUT-Monitor-py3qt5.in
@@ -327,6 +327,7 @@ fi
 %{_libexecdir}/nut-driver-enumerator.sh
 %{_libexecdir}/sockdebug
 %{_datadir}/augeas/lenses/dist/nut*
+%{_datadir}/augeas/lenses/dist/tests/test_nut.aug
 %{_datadir}/%{name}/cmdvartab
 %{_datadir}/%{name}/driver.list
 %{_mandir}/man5/ups.conf.5.gz
@@ -351,6 +352,7 @@ fi
 %{_mandir}/man8/bestfortress.8.gz
 %{_mandir}/man8/bestups.8.gz
 %{_mandir}/man8/bestuferrups.8.gz
+%{_mandir}/man8/bicker_ser.8.gz
 %{_mandir}/man8/blazer_ser.8.gz
 %{_mandir}/man8/blazer_usb.8.gz
 %{_mandir}/man8/clone.8.gz
@@ -363,6 +365,7 @@ fi
 %if 0%{?fedora} < 39
 %{_mandir}/man8/generic_gpio.8.gz
 %endif
+%{_mandir}/man8/hwmon_ina219.8.gz
 %{_mandir}/man8/huawei-ups2000.8.gz
 %{_mandir}/man8/isbmex.8.gz
 %{_mandir}/man8/ivtscd.8.gz
@@ -487,6 +490,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Wed Jul 03 2024 Michal Hlavinka <mhlavink@redhat.com> - 2.8.2.1-0.1.git20240703pr2505
+- fix python FTBFS, uses git snapshot as of 20240703 with PR 2505
+
 * Fri Jun 07 2024 Python Maint <python-maint@redhat.com> - 2.8.2-2
 - Rebuilt for Python 3.13
 
