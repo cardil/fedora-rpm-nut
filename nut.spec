@@ -14,7 +14,7 @@
 Summary: Network UPS Tools
 Name: nut
 Version: 2.8.2.1
-Release: 1%{?dist}.1.git20240703pr2505
+Release: 2%{?dist}.1.git20240703pr2505
 License: GPL-2.0-or-later AND GPL-3.0-or-later
 Url: https://www.networkupstools.org/
 Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
@@ -68,6 +68,7 @@ BuildRequires: powerman-devel
 %endif
 BuildRequires: python3-devel
 BuildRequires: python3-setuptools
+BuildRequires: systemd-devel
 BuildRequires: systemd-rpm-macros
 
 %ifnarch s390 s390x
@@ -490,6 +491,9 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Fri Nov 15 2024 Orion Poplawski <orion@nwra.com> - 2.8.2.1-2.1.git20240703pr2505
+- Add BR systemd-devel to enable systemd notification support
+
 * Thu Jul 18 2024 Fedora Release Engineering <releng@fedoraproject.org> - 2.8.2.1-1.1.git20240703pr2505
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_41_Mass_Rebuild
 
