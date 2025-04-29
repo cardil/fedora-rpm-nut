@@ -47,6 +47,7 @@ BuildRequires: freetype-devel
 BuildRequires: gcc
 BuildRequires: gcc-c++
 BuildRequires: gd-devel
+BuildRequires: jq
 %if 0%{?fedora} < 39
 BuildRequires: libgpiod-devel
 %endif
