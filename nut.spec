@@ -12,19 +12,26 @@
 
 Summary: Network UPS Tools
 Name: nut
-Version: 2.8.4
-Release: 7%{?dist}
+Version: 2.8.5~rc6
+Release: 1%{?dist}
 License: GPL-2.0-or-later AND GPL-3.0-or-later
 Url: https://www.networkupstools.org/
-Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
+# Pre-release dist tarball from NUT master, built by GitHub Actions (GHA-01: Tarballs).
+# This includes pre-generated configure, man pages and docs — not available as a plain
+# GitHub archive. Fetch latest via:
+#   gh run download $(gh run list --repo networkupstools/nut \
+#     --workflow="GHA-01: Tarballs" --branch=master \
+#     --status=success --limit=1 --json databaseId -q '.[0].databaseId') \
+#     --repo networkupstools/nut -n NUT-tarballs-master
+# After NUT 2.8.5 is released, replace with:
+#Source: https://www.networkupstools.org/source/2.8/%{name}-%{version}.tar.gz
+Source: nut-%{version}.tar.gz
 Source4: libs.sh
 Patch2: nut-2.8.0-piddir-owner.patch
 
 #quick fix. TODO: fix it properly
 Patch9: nut-2.6.5-rmpidf.patch
 Patch15: nut-c99-strdup.patch
-Patch16: nut-2.8.3-rhinoname.patch
-
 Requires(post): coreutils systemd
 Requires(preun): systemd
 Requires(postun): coreutils systemd
@@ -138,7 +145,6 @@ necessary to develop NUT client applications.
 #patch -P 2 -p1 -b .piddir-owner
 %patch -P 9 -p1 -b .rmpidf
 #patch -P 15 -p1
-%patch -P 16 -p2 -b .rhinoname
 
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient-config.in
 sed -i 's|LIBSSL_LDFLAGS|LIBSSL_LIBS|' lib/libupsclient.pc.in
@@ -334,7 +340,6 @@ fi
 %{_unitdir}/nut-server.service
 %{_unitdir}/nut.target
 %{_presetdir}/nut-systemd.preset
-%{_unitdir}/enphase-monitor@.service
 %{_unitdir}/nut-logger.service
 %{_unitdir}/nut-udev-settle.service
 %{_sbindir}/upsd
@@ -346,7 +351,6 @@ fi
 %{_libdir}/libnutconf.so.*
 %{_libexecdir}/nut-driver-enumerator.sh
 %{_libexecdir}/sockdebug
-%{_libexecdir}/enphase-monitor
 %{_datadir}/augeas/lenses/dist/nut*
 %{_datadir}/augeas/lenses/dist/tests/test_nut.aug
 %{_datadir}/%{name}/cmdvartab
@@ -405,11 +409,12 @@ fi
 %{_mandir}/man8/nutupsdrv.8.gz
 %{_mandir}/man8/nutdrv_atcl_usb.8.gz
 %{_mandir}/man8/nutdrv_hashx.8.gz
-%{_mandir}/man8/nutdrv_siemens_sitop.8.gz
+%{_mandir}/man8/nutdrv_siemens-sitop.8.gz
 %{_mandir}/man8/nut-driver-enumerator.8.gz
 %{_mandir}/man8/nut-ipmipsu.8.gz
 %{_mandir}/man8/nut-recorder.8.gz
 %{_mandir}/man8/nut-scanner.8.gz
+%{_mandir}/man8/nut-upower.8.gz
 %{_mandir}/man8/nutdrv_qx.8.gz
 %{_mandir}/man8/oneac.8.gz
 %{_mandir}/man8/optiups.8.gz
@@ -442,7 +447,10 @@ fi
 %{_mandir}/man8/usbhid-ups.8.gz
 %{_mandir}/man8/victronups.8.gz
 %{_mandir}/man8/ve-direct.8.gz
+%{_mandir}/man8/meanwell_ntu.8.gz
+%{_mandir}/man8/must_ep2000pro.8.gz
 %{_sysusersdir}/nut.conf
+%{_sysusersdir}/nut-common-sysusers.conf
 
 %files client
 %license COPYING LICENSE-GPL2 LICENSE-GPL3
@@ -493,13 +501,14 @@ fi
 %{_datadir}/nut-monitor/
 %{_mandir}/man8/NUT-Monitor*.8.gz
 %pycached %{python3_sitelib}/PyNUT.py
-%pycached %{python3_sitelib}/test_nutclient.py
 
 %files cgi
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/hosts.conf
 %config(noreplace) %attr(600,nut,root) %{_sysconfdir}/ups/upsset.conf
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats.html
 %config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats-single.html
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats-modern-list.html
+%config(noreplace) %attr(644,root,root) %{_sysconfdir}/ups/upsstats-modern-single.html
 %{cgidir}/
 %{_mandir}/man5/hosts.conf.5.gz
 %{_mandir}/man5/upsstats.html.5.gz
@@ -530,6 +539,12 @@ fi
 %{_libdir}/pkgconfig/libnutscan.pc
 
 %changelog
+* Sun Mar 29 2026 Chris Suszynski <ksuszyns@redhat.com> - 2.8.5~rc6-1
+- Update to 2.8.5~rc6 pre-release
+- Drop enphase-monitor: accidentally included since f40 due to a buggy
+  configure default; upstream intent was always opt-in (default: no),
+  fixed in NUT PR#3140; RHEL never shipped it, OBS excludes it
+
 * Fri Jan 23 2026 Benjamin A. Beasley <code@musicinmybrain.net> - 2.8.4-7
 - Rebuilt for net-snmp 5.9.5.2
 
